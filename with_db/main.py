@@ -23,6 +23,11 @@ Define endpoints below
 """
 
 
+@app.get("/")
+def welcome():
+    return "Welcome to the API training"
+
+
 @app.get("/products")
 def get_all_products():
     with Session(engine) as session:
