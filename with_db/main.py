@@ -1,10 +1,11 @@
 # imports for API operation
 from fastapi import FastAPI, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select
+from sqlalchemy import select, exc
+from typing import List
 
 # import list of products and ProductBase class
-from . import models
+from . import models, schemas
 from .db import engine, Base
 
 """
@@ -13,13 +14,7 @@ Start the api server
 app = FastAPI()
 
 """
-Configure the database
-"""
-# create the product table in the database
-Base.metadata.create_all(engine)
-
-"""
-Define endpoints below
+Define endpoints
 """
 
 
@@ -29,9 +24,29 @@ def welcome():
 
 
 @app.get("/products")
-def get_all_products():
+def get_all_products() -> List[schemas.Product]:
     with Session(engine) as session:
-        products = select(models.Product)
-        if products is None:
-            raise HTTPException(status_code=404, detail="No product found")
-        return [product for product in session.scalars(products)]
+        try:
+            query = select(models.Product)
+            products = session.execute(query).scalars().all()
+        # manage error in case no product was found
+        except exc.NoResultFound:
+            raise HTTPException(status_code=404,
+                                detail="No product found")
+        return [product for product in products]
+
+
+@app.get("/products/{product_id}")
+def get_product(product_id: int):
+    with Session(engine) as session:
+        try:
+            query = (
+                select(models.Product)
+                .where(models.Product.id == int(product_id))
+            )
+            product = session.execute(query).scalar_one()
+        # manage error in case no product was found
+        except exc.NoResultFound:
+            raise HTTPException(status_code=404,
+                                detail=f"No product with id {product_id} found")
+        return product

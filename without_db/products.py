@@ -31,8 +31,8 @@ all_products = [
     ),
     Product(
         id=4,
-        name="Sac à Dos de Randonnee",
-        description="Sac à dos durable et spacieux avec plusieurs compartiments pour le trekking.",
+        name="Sac a Dos de Randonnee",
+        description="Sac a dos durable et spacieux avec plusieurs compartiments pour le trekking.",
         price=89.95,
         category="Sport et Plein Air",
         stock=200

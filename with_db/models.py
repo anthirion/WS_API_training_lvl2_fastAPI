@@ -3,8 +3,8 @@ This module defines the model used by SQLAlchemy for Product
 in order to map the object to the SQL table Products
 """
 
-from sqlalchemy import Float, Column, Integer, String
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import Float, Integer, String
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 STRING_LENGTH: int = 255
 
@@ -14,17 +14,24 @@ class Base(DeclarativeBase):
 
 
 class Product(Base):
+    # the name of the SQL table associated to this class
     __tablename__ = "products"
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(STRING_LENGTH), nullable=False)
-    description = Column(String(STRING_LENGTH),
-                         nullable=False)
-    price = Column(Float, nullable=False)
-    category = Column(String(STRING_LENGTH), nullable=False)
-    stock = Column(Integer, nullable=False)
+    # define product attributes
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(STRING_LENGTH), nullable=False)
+    description: Mapped[str] = mapped_column(String(STRING_LENGTH),
+                                             nullable=False)
+    price: Mapped[float] = mapped_column(Float, nullable=False)
+    category: Mapped[str] = mapped_column(
+        String(STRING_LENGTH), nullable=False)
+    stock: Mapped[int] = mapped_column(Integer, nullable=False)
 
     def __repr__(self):
-        return f"Product(id={self.id}, name='{self.name}', description='{self.description}'," \
-            f"price={self.price}, category='{
-                self.category}', stock={self.stock})"
+        """
+        Defines how the product will be displayed
+        """
+        return f"Product(id={self.id}, name='{self.name}', " \
+            f"description='{self.description}', " \
+            f"price={self.price}, category='{self.category}', "\
+            f"stock={self.stock})"
