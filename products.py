@@ -1,28 +1,22 @@
-from pydantic import BaseModel
+"""
+This module defines a list of products
+"""
 
-
-class Product(BaseModel):
-    id: int
-    name: str
-    description: str
-    price: float
-    category: str
-    stock: int
-
+from .schemas import Product
 
 all_products = [
     Product(
         id=1,
         name="Smartwatch Alpha",
-        description="Une montre intelligente avec des fonctionnalités avancées de suivi de la santé.",
+        description="Une montre intelligente avec des fonctionnalites avancees de suivi de la sante.",
         price=199.99,
-        category="Électronique",
+        category="Electronique",
         stock=150
     ),
     Product(
         id=2,
-        name="Café Gourmet",
-        description="Un mélange exquis de grains de café biologiques provenant des meilleures plantations.",
+        name="Cafe Gourmet",
+        description="Un melange exquis de grains de cafe biologiques provenant des meilleures plantations.",
         price=15.50,
         category="Alimentation",
         stock=300
@@ -37,7 +31,7 @@ all_products = [
     ),
     Product(
         id=4,
-        name="Sac à Dos de Randonnée",
+        name="Sac à Dos de Randonnee",
         description="Sac à dos durable et spacieux avec plusieurs compartiments pour le trekking.",
         price=89.95,
         category="Sport et Plein Air",
@@ -45,10 +39,10 @@ all_products = [
     ),
     Product(
         id=5,
-        name="Sérum Anti-Âge",
-        description="Sérum haut de gamme pour réduire les rides et améliorer la texture de la peau.",
+        name="Serum Anti-age",
+        description="Serum haut de gamme pour reduire les rides et ameliorer la texture de la peau.",
         price=49.99,
-        category="Beauté",
+        category="Beaute",
         stock=500
     )
 ]
