@@ -1,7 +1,7 @@
 # imports for API operation
 from fastapi import FastAPI, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select, exc
+from sqlalchemy import select, update, delete, exc
 from typing import List
 
 # import list of products and ProductBase class
@@ -97,12 +97,13 @@ def add_product(product: schemas.ProductBase) -> schemas.ProductBase:
                 select(models.Product)
                 .where(models.Product.name == product.name)
             )
+            # WARNING: KEEP the .scalar_one() to raise the exception
             session.execute(query).scalar_one()
             raise HTTPException(status_code=409,
                                 detail="Produit déjà existant")
         except exc.NoResultFound:
             """ Add the product to the database  """
-            # create a product model compatible with SQLAlchemy
+            # create a product model compatible with SQLAlchemy using the models module
             db_product = models.Product(name=product.name,
                                         description=product.description,
                                         price=product.price,
@@ -113,3 +114,55 @@ def add_product(product: schemas.ProductBase) -> schemas.ProductBase:
             # commit to register in the database
             session.commit()
     return product
+
+
+@app.put("/products/{product_id}",
+         description="Modifier un produit existant",
+         response_description="Produit mis à jour",
+         responses={404: {"model": ErrorMessage}},
+         )
+def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas.ProductBase:
+    with Session(engine) as session:
+        """ Search the given product in the database with its name  """
+        query = (
+            update(models.Product)
+            .where(models.Product.id == product_id)
+            .values(name=new_product.name,
+                    description=new_product.description,
+                    price=new_product.price,
+                    category=new_product.category,
+                    stock=new_product.stock,
+                    )
+        )
+        rows_affected = session.execute(query).rowcount
+        if rows_affected == 0:
+            # no row was changed
+            raise HTTPException(status_code=404,
+                                detail="Le produit à mettre à jour n'existe pas")
+
+        # Do not forget to save changes in the database
+        session.commit()
+        return new_product
+
+
+@app.delete("/products/{product_id}",
+            description="Supprimer un produit",
+            response_description="Produit supprimé",
+            responses={404: {"model": ErrorMessage}},
+            )
+def delete_product(product_id: int, new_product: schemas.ProductBase) -> schemas.ProductBase:
+    with Session(engine) as session:
+        """ Search the given product in the database with its name  """
+        query = (
+            delete(models.Product)
+            .where(models.Product.id == product_id)
+        )
+        rows_affected = session.execute(query).rowcount
+        if rows_affected == 0:
+            # no row was changed
+            raise HTTPException(status_code=404,
+                                detail="Le produit à supprimer n'existe pas")
+
+        # Do not forget to save changes in the database
+        session.commit()
+        return new_product
