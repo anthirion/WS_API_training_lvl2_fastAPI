@@ -18,10 +18,20 @@ def get_all_products() -> List[Product]:
 
 
 @app.get("/products/{product_id}")
-def get_product(product_id: int, ) -> Product:
+def get_product_by_id(product_id: int) -> Product:
     product_id = int(product_id)
     for product in all_products:
         if product.id == product_id:
             return product
     # if no product is found, raise an error
     raise HTTPException(status_code=404, detail="Product not found")
+
+
+@app.post("/products")
+def add_product(product: Product) -> Product:
+    if product not in all_products:
+        all_products.append(product)
+        return product
+    else:
+        raise HTTPException(status_code=404,
+                            detail="Already existing product")
