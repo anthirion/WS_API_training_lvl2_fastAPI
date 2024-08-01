@@ -22,15 +22,15 @@ def welcome():
 # WARNING: Do NOT add quotes for query parameters -> products?category=Alimentation
 def get_all_products(name: str = "", category: str = "") -> List[Product]:
     if name:
-        # name parameter is specified by the user
+        """ Retrieve all elements of name "name" if the name parameter is declared  """
         return [product for product in all_products
                 if product.name == name]
     elif category:
-        # category parameter is specified by the user
+        """ Retrieve all elements of category "category" if the category parameter is declared  """
         return [product for product in all_products
                 if product.category == category]
     else:
-        # no query parameter is specified by the user
+        """ Retrieve all products if no parameter is declared  """
         return all_products
 
 
@@ -58,6 +58,7 @@ def get_product_by_id(product_id: int) -> Product:
           responses={409: {"model": ErrorMessage}},
           )
 def add_product(product: Product) -> Product:
+    """ Check that the product is not already in the database   """
     if product not in all_products:
         all_products.append(product)
         return product
@@ -72,6 +73,7 @@ def add_product(product: Product) -> Product:
          responses={404: {"model": ErrorMessage}},
          )
 def modify_product(new_product: Product) -> Product:
+    """ Search the given product in the database with its id  """
     for product in all_products:
         if product.id == new_product.id:
             product = new_product

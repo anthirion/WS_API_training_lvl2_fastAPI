@@ -30,6 +30,7 @@ def welcome():
          response_description="	Liste des produits",
          )
 def get_all_products(name: str = "", category: str = "") -> List[schemas.Product]:
+    # start a session to make requests to the database
     with Session(engine) as session:
         try:
             if name:
