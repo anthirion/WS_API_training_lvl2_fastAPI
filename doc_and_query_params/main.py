@@ -6,9 +6,9 @@ from .products import all_products, Product
 from pydantic import BaseModel
 
 
-class Message(BaseModel):
+class ErrorMessage(BaseModel):
     """
-    Defines a model for API responses
+    Defines a model for API responses in case of an error
     """
     message: str
 
@@ -36,10 +36,9 @@ def get_all_products() -> List[Product]:
          response_description="	Détails du produit",
          # responses enables you to define additional responses code and message
          # the default code responses are 200 and 422
-         responses={404: {"model": Message}},
+         responses={404: {"model": ErrorMessage}},
          )
 def get_product_by_id(product_id: int) -> Product:
-    product_id = int(product_id)
     for product in all_products:
         if product.id == product_id:
             return product
@@ -53,7 +52,7 @@ def get_product_by_id(product_id: int) -> Product:
           # since this operation is a creation, return 201 instead of 200
           status_code=201,
           response_description="Produit ajouté",
-          responses={409: {"model": Message}},
+          responses={409: {"model": ErrorMessage}},
           )
 def add_product(product: Product) -> Product:
     if product not in all_products:
@@ -66,11 +65,8 @@ def add_product(product: Product) -> Product:
 
 @app.put("/products/{product_id}",
          description="Modifier un produit existant",
-         # status code defines the status code to return when no error occured
-         # since this operation is a creation, return 201 instead of 200
-         status_code=201,
-         response_description="Produit ajouté",
-         responses={409: {"model": Message}},
+         response_description="Produit mis à jour",
+         responses={404: {"model": ErrorMessage}},
          )
 def modify_product(new_product: Product) -> Product:
     for product in all_products:

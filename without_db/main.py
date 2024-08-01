@@ -19,7 +19,6 @@ def get_all_products() -> List[Product]:
 
 @app.get("/products/{product_id}")
 def get_product_by_id(product_id: int) -> Product:
-    product_id = int(product_id)
     for product in all_products:
         if product.id == product_id:
             return product
