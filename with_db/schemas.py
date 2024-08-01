@@ -37,3 +37,10 @@ class ProductCreate(ProductBase):
     Therefore, id attribute is absent from this class
     """
     pass
+
+
+class ErrorMessage(BaseModel):
+    """
+    Defines a model for API responses in case of an error
+    """
+    message: str
