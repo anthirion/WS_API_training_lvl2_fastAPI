@@ -29,17 +29,31 @@ def welcome():
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          response_description="	Liste des produits",
          )
-def get_all_products() -> List[schemas.Product]:
+def get_all_products(name: str = "", category: str = "") -> List[schemas.Product]:
     with Session(engine) as session:
         try:
-            """ Retrieve all products in the database  """
-            query = select(models.Product)
-            products = session.execute(query).scalars().all()
+            if name:
+                """ Retrieve all elements of name "name" if the name parameter is declared  """
+                query = (
+                    select(models.Product)
+                    .where(models.Product.name == name)
+                )
+                return [session.execute(query).scalar_one()]
+            elif category:
+                """ Retrieve all elements of category "category" if the category parameter is declared  """
+                query = (
+                    select(models.Product)
+                    .where(models.Product.category == category)
+                )
+                return [session.execute(query).scalar_one()]
+            else:
+                """ Retrieve all products if no parameter is declared  """
+                query = select(models.Product)
+                return session.execute(query).scalars().all()
         # manage error in case no product was found
         except exc.NoResultFound:
             raise HTTPException(status_code=404,
                                 detail="No product found")
-    return [product for product in products]
 
 
 @app.get("/products/{product_id}",
