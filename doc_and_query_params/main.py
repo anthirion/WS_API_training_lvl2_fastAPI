@@ -2,16 +2,7 @@ from fastapi import FastAPI, HTTPException
 from typing import List
 
 from .products import all_products, Product
-
-from pydantic import BaseModel
-
-
-class ErrorMessage(BaseModel):
-    """
-    Defines a model for API responses in case of an error
-    """
-    message: str
-
+from .schemas import ErrorMessage
 
 # start the API server
 app = FastAPI()

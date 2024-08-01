@@ -15,3 +15,10 @@ class Product(BaseModel):
     price: float
     category: str
     stock: int
+
+
+class ErrorMessage(BaseModel):
+    """
+    Defines a model for API responses in case of an error
+    """
+    message: str
