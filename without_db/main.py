@@ -12,7 +12,7 @@ def welcome():
     return "Welcome to the API training"
 
 
-@app.get("/products/")
+@app.get("/products")
 def get_all_products() -> List[Product]:
     return all_products
 

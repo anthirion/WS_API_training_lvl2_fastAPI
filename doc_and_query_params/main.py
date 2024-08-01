@@ -22,13 +22,25 @@ def welcome():
     return "Welcome to the API training"
 
 
-@app.get("/products/",
+@app.get("/products",
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          # response_description is the description to display when no error occured (code 200)
          response_description="	Liste des produits",
          )
-def get_all_products() -> List[Product]:
-    return all_products
+# Declare query parameters for name and category only (makes more sense)
+# WARNING: Do NOT add quotes for query parameters -> products?category=Alimentation
+def get_all_products(name: str = "", category: str = "") -> List[Product]:
+    if name:
+        # name parameter is specified by the user
+        return [product for product in all_products
+                if product.name == name]
+    elif category:
+        # category parameter is specified by the user
+        return [product for product in all_products
+                if product.category == category]
+    else:
+        # no query parameter is specified by the user
+        return all_products
 
 
 @app.get("/products/{product_id}",
