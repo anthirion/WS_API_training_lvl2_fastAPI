@@ -147,10 +147,11 @@ def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas
 
 @app.delete("/products/{product_id}",
             description="Supprimer un produit",
+            status_code=204,
             response_description="Produit supprimé",
             responses={404: {"model": ErrorMessage}},
             )
-def delete_product(product_id: int, new_product: schemas.ProductBase) -> schemas.ProductBase:
+def delete_product(product_id: int):
     with Session(engine) as session:
         """ Search the given product in the database with its name  """
         query = (
@@ -165,4 +166,3 @@ def delete_product(product_id: int, new_product: schemas.ProductBase) -> schemas
 
         # Do not forget to save changes in the database
         session.commit()
-        return new_product
