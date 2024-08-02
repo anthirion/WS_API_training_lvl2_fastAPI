@@ -12,6 +12,8 @@ app = FastAPI()
 def welcome():
     return "Welcome to the API training"
 
+# the parameters of the operation decorators are for documentation purpose only
+
 
 @app.get("/products",
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
