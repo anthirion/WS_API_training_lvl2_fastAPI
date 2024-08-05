@@ -24,20 +24,6 @@ class Product(ProductBase):
     """
     id: int
 
-    # configure pydantic to use ORM
-    # this will make pydantic use object attributs in addition to dict values
-    # class Config:
-    #     orm_mode = True
-
-
-class ProductCreate(ProductBase):
-    """
-    This class is used for product creation
-    When creating a product, you do not know its id
-    Therefore, id attribute is absent from this class
-    """
-    pass
-
 
 class ErrorMessage(BaseModel):
     """

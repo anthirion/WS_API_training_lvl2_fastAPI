@@ -53,10 +53,10 @@ def get_product_by_id(product_id: int) -> Product:
 
 @app.post("/products",
           description="Ajouter un nouveau produit",
+          response_description="Produit ajouté",
           # status code defines the status code to return when no error occured
           # since this operation is a creation, return 201 instead of 200
           status_code=201,
-          response_description="Produit ajouté",
           responses={409: {"model": ErrorMessage}},
           )
 def add_product(product: Product) -> Product:
