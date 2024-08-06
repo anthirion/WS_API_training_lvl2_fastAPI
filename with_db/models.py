@@ -6,7 +6,7 @@ in order to map the object to the SQL table Products
 from sqlalchemy import Float, Integer, String
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-STRING_LENGTH: int = 255
+MAX_STRING_LENGTH: int = 255
 
 
 class Base(DeclarativeBase):
@@ -19,12 +19,13 @@ class Product(Base):
 
     # define product attributes
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(STRING_LENGTH), nullable=False)
-    description: Mapped[str] = mapped_column(String(STRING_LENGTH),
+    name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
+                                      nullable=False)
+    description: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                              nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
-    category: Mapped[str] = mapped_column(
-        String(STRING_LENGTH), nullable=False)
+    category: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
+                                          nullable=False)
     stock: Mapped[int] = mapped_column(Integer, nullable=False)
 
     def __repr__(self):

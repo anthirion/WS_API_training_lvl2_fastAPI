@@ -1,8 +1,8 @@
 from fastapi import FastAPI, HTTPException
 from typing import List
 
-from .products import all_products, Product
-from .schemas import ErrorMessage
+from .resources import all_products
+from .schemas import ProductBase, Product, ErrorMessage
 
 # start the API server
 app = FastAPI()
@@ -69,16 +69,40 @@ def add_product(product: Product) -> Product:
                             detail="Produit déjà existant")
 
 
-@app.put("/products/{product_id}",
+@app.put("/products",
          description="Modifier un produit existant",
          response_description="Produit mis à jour",
          responses={404: {"model": ErrorMessage}},
          )
-def modify_product(new_product: Product) -> Product:
+def modify_product(product_id: int, new_product: ProductBase) -> Product:
     """ Search the given product in the database with its id  """
-    for product in all_products:
-        if product.id == new_product.id:
-            product = new_product
-            return product
+    for i, product in enumerate(all_products):
+        if product.id == product_id:
+            # add the id in the URL to the given product
+            new_product_with_id = Product.add_id(new_product, product_id)
+            all_products[i] = new_product_with_id
+            return new_product_with_id
     raise HTTPException(status_code=404,
                         detail="Produit non trouvé")
+
+
+@app.delete("/products/{product_id}",
+            description="Supprimer un produit",
+            response_description="Produit supprimé",
+            status_code=204,
+            responses={404: {"model": ErrorMessage}},)
+def delete_product(product_id: int):
+    """ Search the given product in the database with its id  """
+    found = False
+    for i, product in enumerate(all_products):
+        if product.id == product_id:
+            del all_products[i]
+            found = True
+    if not found:
+        raise HTTPException(status_code=404,
+                            detail="Produit non trouvé")
+
+
+"""
+Define all endpoints relative to user below
+"""

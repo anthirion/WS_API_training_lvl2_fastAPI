@@ -2,7 +2,7 @@
 This module defines a list of products
 """
 
-from .schemas import Product
+from .schemas import Product, User
 
 all_products = [
     Product(
@@ -45,4 +45,32 @@ all_products = [
         category="Beaute",
         stock=500
     )
+]
+
+all_users = [
+    User(id=1,
+         name="Alice",
+         email="alice@example.com",
+         address="123 Apple St Wonderland",
+         password="password123"),
+    User(id=2,
+         name="Bob",
+         email="bob@example.com",
+         address="456 Orange Ave Fruitland",
+         password="bobspassword"),
+    User(id=3,
+         name="Charlie",
+         email="charlie@example.com",
+         address="789 Banana Blvd Tropicland",
+         password="charliepass"),
+    User(id=4,
+         name="Diana",
+         email="diana@example.com",
+         address="321 Grape Rd Vineyard",
+         password="dianasecret"),
+    User(id=5,
+         name="Eve",
+         email="eve@example.com",
+         address="654 Peach Ln Orchard",
+         password="evepassword")
 ]

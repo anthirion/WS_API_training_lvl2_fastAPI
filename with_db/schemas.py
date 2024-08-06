@@ -7,8 +7,9 @@ from pydantic import BaseModel
 
 class ProductBase(BaseModel):
     """
-    A base class defining base product attributes
-    This class is used by child classes for CRUD operations (read, create, etc)
+    A base class defining base product attributes. It defines all attributes except id.
+    This class is used for operations that do not need id (the product provided in the body
+    of a PUT operation do not have id)
     """
     name: str
     description: str
@@ -19,8 +20,8 @@ class ProductBase(BaseModel):
 
 class Product(ProductBase):
     """
-    This class is used for product retrieval
-    When retrieving a product from the API, display its id
+    This class adds the id attribute to the ProductBase class. It is useful for all operations
+    excluding PUT.
     """
     id: int
 
