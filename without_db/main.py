@@ -75,3 +75,54 @@ def delete_product(product_id: int):
 """
 Define all endpoints relative to user below
 """
+
+
+@app.get("/admin/users")
+def get_all_users() -> List[User]:
+    return all_users
+
+
+@app.get("/admin/users/{user_id}")
+def get_user_by_id(user_id: int) -> User:
+    for user in all_users:
+        if user.id == user_id:
+            return user
+    # if no user is found, raise an error
+    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+
+
+@app.post("/users")
+def add_user(user: User) -> User:
+    """ Check that the user is not already in the database   """
+    if user not in all_users:
+        all_users.append(user)
+        return user
+    else:
+        raise HTTPException(status_code=404,
+                            detail="Utilisateur déjà existant")
+
+
+@app.put("/admin/users/{user_id}")
+def modify_user(user_id: int, new_user: UserBase) -> User:
+    """ Search the given user in the database with its id  """
+    for i, user in enumerate(all_users):
+        if user.id == user_id:
+            # add the id in the URL to the given user
+            new_user_with_id = user.add_id(new_user, user_id)
+            all_users[i] = new_user_with_id
+            return new_user_with_id
+    raise HTTPException(status_code=404,
+                        detail="Utilisateur non trouvé")
+
+
+@app.delete("/admin/users/{user_id}")
+def delete_user(user_id: int):
+    """ Search the given user in the database with its id  """
+    found = False
+    for i, user in enumerate(all_users):
+        if user.id == user_id:
+            del all_users[i]
+            found = True
+    if not found:
+        raise HTTPException(status_code=404,
+                            detail="Utilisateur non trouvé")

@@ -28,7 +28,7 @@ class Product(ProductBase):
     @staticmethod
     def add_id(product: ProductBase, id_: int):
         """
-        Adds an id to the product given
+        Adds an id to the given product
         """
         return Product(id=id_,
                        name=product.name,
@@ -57,3 +57,15 @@ class User(UserBase):
     excluding PUT.
     """
     id: int
+
+    @staticmethod
+    def add_id(user: UserBase, id_: int):
+        """
+        Adds an id to the given user
+        """
+        return User(id=id_,
+                    name=user.name,
+                    email=user.email,
+                    address=user.address,
+                    password=user.password,
+                    )

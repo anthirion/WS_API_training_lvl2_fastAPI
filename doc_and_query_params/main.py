@@ -1,8 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from typing import List
 
-from .resources import all_products
-from .schemas import ProductBase, Product, ErrorMessage
+from .resources import all_products, all_users
+from .schemas import (
+    ProductBase, Product,
+    User, UserBase,
+    ErrorMessage
+)
 
 # start the API server
 app = FastAPI()
@@ -24,11 +28,11 @@ def welcome():
 # WARNING: Do NOT add quotes for query parameters -> products?category=Alimentation
 def get_all_products(name: str = "", category: str = "") -> List[Product]:
     if name:
-        """ Retrieve all elements of name "name" if the name parameter is declared  """
+        """ Retrieve all products of name "name" if the name parameter is declared  """
         return [product for product in all_products
                 if product.name == name]
     elif category:
-        """ Retrieve all elements of category "category" if the category parameter is declared  """
+        """ Retrieve all products of category "category" if the category parameter is declared  """
         return [product for product in all_products
                 if product.category == category]
     else:
@@ -90,7 +94,8 @@ def modify_product(product_id: int, new_product: ProductBase) -> Product:
             description="Supprimer un produit",
             response_description="Produit supprimé",
             status_code=204,
-            responses={404: {"model": ErrorMessage}},)
+            responses={404: {"model": ErrorMessage}},
+            )
 def delete_product(product_id: int):
     """ Search the given product in the database with its id  """
     found = False
@@ -106,3 +111,87 @@ def delete_product(product_id: int):
 """
 Define all endpoints relative to user below
 """
+
+
+@app.get("/admin/users",
+         description="Retourne un tableau JSON contenant les utilisateurs avec leurs détails",
+         response_description="	Liste des utilisateurs",
+         )
+def get_all_users(name: str = "", email: str = "") -> List[User]:
+    if name:
+        """ Retrieve all users of name "name" if the name parameter is declared  """
+        return [user for user in all_users
+                if user.name == name]
+    elif email:
+        """ Retrieve all users of email "email" if the email parameter is declared  """
+        return [user for user in all_users
+                if user.email == email]
+    else:
+        """ Retrieve all users if no parameter is declared  """
+        return all_users
+
+
+@app.get("/admin/users/{user_id}",
+         description="Retourne un objet JSON contenant les détails d'un utilisateur spécifique",
+         response_description="	Détails de l'utilisateur",
+         # responses enables you to define additional responses code and message
+         # the default code responses are 200 and 422
+         responses={404: {"model": ErrorMessage}},
+         )
+def get_user_by_id(user_id: int) -> User:
+    for user in all_users:
+        if user.id == user_id:
+            return user
+    # if no user is found, raise an error
+    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+
+
+@app.post("/users",
+          description="Ajouter un nouveau utilisateur",
+          response_description="Utilisateur ajouté",
+          status_code=201,
+          responses={409: {"model": ErrorMessage}},
+          )
+def add_user(user: User) -> User:
+    """ Check that the user is not already in the database   """
+    if user not in all_users:
+        all_users.append(user)
+        return user
+    else:
+        raise HTTPException(status_code=404,
+                            detail="Utilisateur déjà existant")
+
+
+@app.put("/admin/users/{user_id}",
+         description="Modifier un utilisateur existant",
+         response_description="Utilisateur mis à jour",
+         responses={404: {"model": ErrorMessage}},
+         )
+def modify_user(user_id: int, new_user: UserBase) -> User:
+    """ Search the given user in the database with its id  """
+    for i, user in enumerate(all_users):
+        if user.id == user_id:
+            # add the id in the URL to the given user
+            new_user_with_id = user.add_id(new_user, user_id)
+            all_users[i] = new_user_with_id
+            return new_user_with_id
+    raise HTTPException(status_code=404,
+                        detail="Utilisateur non trouvé")
+
+
+@app.delete("/admin/users/{user_id}",
+            description="Supprimer un utilisateur",
+            response_description="Utilisateur supprimé",
+            status_code=204,
+            responses={404: {"model": ErrorMessage}},
+            )
+def delete_user(user_id: int):
+    """ Search the given user in the database with its id  """
+    found = False
+    for i, user in enumerate(all_users):
+        if user.id == user_id:
+            del all_users[i]
+            found = True
+    if not found:
+        raise HTTPException(status_code=404,
+                            detail="Utilisateur non trouvé")
