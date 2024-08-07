@@ -1,10 +1,11 @@
 from fastapi import FastAPI, HTTPException
 from typing import List
 
-from .resources import all_products, all_users
+from .resources import all_products, all_users, all_orders
 from .schemas import (
     ProductBase, Product,
     User, UserBase,
+    Order, OrderBase,
     ErrorMessage
 )
 
@@ -45,7 +46,8 @@ def get_all_products(name: str = "", category: str = "") -> List[Product]:
          response_description="	Détails du produit",
          # responses enables you to define additional responses code and message
          # the default code responses are 200 and 422
-         responses={404: {"model": ErrorMessage}},
+         responses={404: {"model": ErrorMessage,
+                          "description": "Produit non trouvé"}},
          )
 def get_product_by_id(product_id: int) -> Product:
     for product in all_products:
@@ -61,7 +63,8 @@ def get_product_by_id(product_id: int) -> Product:
           # status code defines the status code to return when no error occured
           # since this operation is a creation, return 201 instead of 200
           status_code=201,
-          responses={409: {"model": ErrorMessage}},
+          responses={409: {"model": ErrorMessage,
+                           "description": "Produit déjà existant"}},
           )
 def add_product(product: Product) -> Product:
     """ Check that the product is not already in the database   """
@@ -76,7 +79,8 @@ def add_product(product: Product) -> Product:
 @app.put("/products",
          description="Modifier un produit existant",
          response_description="Produit mis à jour",
-         responses={404: {"model": ErrorMessage}},
+         responses={404: {"model": ErrorMessage,
+                          "description": "Produit non trouvé"}},
          )
 def modify_product(product_id: int, new_product: ProductBase) -> Product:
     """ Search the given product in the database with its id  """
@@ -94,7 +98,8 @@ def modify_product(product_id: int, new_product: ProductBase) -> Product:
             description="Supprimer un produit",
             response_description="Produit supprimé",
             status_code=204,
-            responses={404: {"model": ErrorMessage}},
+            responses={404: {"model": ErrorMessage,
+                             "description": "Produit non trouvé"}},
             )
 def delete_product(product_id: int):
     """ Search the given product in the database with its id  """
@@ -134,9 +139,8 @@ def get_all_users(name: str = "", email: str = "") -> List[User]:
 @app.get("/admin/users/{user_id}",
          description="Retourne un objet JSON contenant les détails d'un utilisateur spécifique",
          response_description="	Détails de l'utilisateur",
-         # responses enables you to define additional responses code and message
-         # the default code responses are 200 and 422
-         responses={404: {"model": ErrorMessage}},
+         responses={404: {"model": ErrorMessage,
+                          "description": "Utilisateur non trouvé"}},
          )
 def get_user_by_id(user_id: int) -> User:
     for user in all_users:
@@ -150,7 +154,8 @@ def get_user_by_id(user_id: int) -> User:
           description="Ajouter un nouveau utilisateur",
           response_description="Utilisateur ajouté",
           status_code=201,
-          responses={409: {"model": ErrorMessage}},
+          responses={409: {"model": ErrorMessage,
+                           "description": "Utilisateur déjà existant"}},
           )
 def add_user(user: User) -> User:
     """ Check that the user is not already in the database   """
@@ -165,14 +170,15 @@ def add_user(user: User) -> User:
 @app.put("/admin/users/{user_id}",
          description="Modifier un utilisateur existant",
          response_description="Utilisateur mis à jour",
-         responses={404: {"model": ErrorMessage}},
+         responses={404: {"model": ErrorMessage,
+                          "description": "Utilisateur non trouvé"}},
          )
 def modify_user(user_id: int, new_user: UserBase) -> User:
     """ Search the given user in the database with its id  """
     for i, user in enumerate(all_users):
         if user.id == user_id:
             # add the id in the URL to the given user
-            new_user_with_id = user.add_id(new_user, user_id)
+            new_user_with_id = User.add_id(new_user, user_id)
             all_users[i] = new_user_with_id
             return new_user_with_id
     raise HTTPException(status_code=404,
@@ -183,7 +189,8 @@ def modify_user(user_id: int, new_user: UserBase) -> User:
             description="Supprimer un utilisateur",
             response_description="Utilisateur supprimé",
             status_code=204,
-            responses={404: {"model": ErrorMessage}},
+            responses={404: {"model": ErrorMessage,
+                             "description": "Utilisateur non trouvé"}},
             )
 def delete_user(user_id: int):
     """ Search the given user in the database with its id  """
@@ -195,3 +202,83 @@ def delete_user(user_id: int):
     if not found:
         raise HTTPException(status_code=404,
                             detail="Utilisateur non trouvé")
+
+
+"""
+Define all endpoints relative to orders below
+"""
+
+
+@app.get("/admin/orders",
+         description="Retourne un tableau JSON contenant les commandes avec leurs détails",
+         response_description="	Liste des commandes",
+         )
+def get_all_orders() -> List[Order]:
+    return all_orders
+
+
+@app.get("/admin/orders/{order_id}",
+         description="Retourne un objet JSON contenant les détails d'une commande spécifique",
+         response_description="	Détails de la commande",
+         responses={404: {"model": ErrorMessage,
+                          "description": "Commande non trouvée"}},
+         )
+def get_order_by_id(order_id: int) -> Order:
+    for order in all_orders:
+        if order.id == order_id:
+            return order
+    # if no order is found, raise an error
+    raise HTTPException(status_code=404, detail="Commande non trouvée")
+
+
+@app.post("/orders",
+          description="Ajouter une nouvelle commande",
+          response_description="Commande ajoutée",
+          status_code=201,
+          responses={409: {"model": ErrorMessage,
+                           "description": "Commande déjà existante"}},
+          )
+def add_order(order: Order) -> Order:
+    """ Check that the order is not already in the database   """
+    if order not in all_orders:
+        all_orders.append(order)
+        return order
+    else:
+        raise HTTPException(status_code=404,
+                            detail="Commande déjà existante")
+
+
+@app.put("/admin/orders/{order_id}",
+         description="Modifier une commande existante",
+         response_description="Commande mise à jour",
+         responses={404: {"model": ErrorMessage,
+                          "description": "Commande non trouvée"}},)
+def modify_order(order_id: int, new_order: OrderBase) -> Order:
+    """ Search the given order in the database with its id  """
+    for i, order in enumerate(all_orders):
+        if order.id == order_id:
+            # add the id in the URL to the given order
+            new_order_with_id = Order.add_id(new_order, order_id)
+            all_orders[i] = new_order_with_id
+            return new_order_with_id
+    raise HTTPException(status_code=404,
+                        detail="Commande non trouvée")
+
+
+@app.delete("/admin/orders/{order_id}",
+            description="Supprimer une commande",
+            response_description="Commande supprimée",
+            status_code=204,
+            responses={404: {"model": ErrorMessage,
+                             "description": "Commande non trouvée"}},
+            )
+def delete_order(order_id: int):
+    """ Search the given order in the database with its id  """
+    found = False
+    for i, order in enumerate(all_orders):
+        if order.id == order_id:
+            del all_orders[i]
+            found = True
+    if not found:
+        raise HTTPException(status_code=404,
+                            detail="Commande non trouvée")

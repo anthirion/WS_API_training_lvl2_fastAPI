@@ -2,7 +2,7 @@
 This module defines a list of products
 """
 
-from .schemas import Product, User
+from .schemas import Product, User, Order, Item
 
 all_products = [
     Product(
@@ -73,4 +73,54 @@ all_users = [
          email="eve@example.com",
          address="654 Peach Ln Orchard",
          password="evepassword")
+]
+
+all_orders = [
+    Order(
+        id=1,
+        userId=1,
+        items=[
+            Item(productId=101, quantity=2, UnitPrice=19.99),
+            Item(productId=102, quantity=1, UnitPrice=5.99),
+        ],
+        total=45.97,
+        status="Completed"
+    ),
+    Order(
+        id=2,
+        userId=2,
+        items=[
+            Item(productId=103, quantity=3, UnitPrice=7.99),
+        ],
+        total=23.97,
+        status="Pending"
+    ),
+    Order(
+        id=3,
+        userId=3,
+        items=[
+            Item(productId=104, quantity=1, UnitPrice=299.99),
+        ],
+        total=299.99,
+        status="Shipped"
+    ),
+    Order(
+        id=4,
+        userId=1,
+        items=[
+            Item(productId=105, quantity=5, UnitPrice=3.49),
+        ],
+        total=17.45,
+        status="Cancelled"
+    ),
+    Order(
+        id=5,
+        userId=4,
+        items=[
+            Item(productId=106, quantity=2, UnitPrice=15.99),
+            Item(productId=107, quantity=1, UnitPrice=45.00),
+        ],
+        total=76.98,
+        status="Processing"
+    )
 ]

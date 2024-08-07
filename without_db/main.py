@@ -3,9 +3,10 @@ from typing import List
 
 from .schemas import (
     Product, ProductBase,
-    User, UserBase
+    User, UserBase,
+    Order, OrderBase,
 )
-from .resources import all_products, all_users
+from .resources import all_products, all_users, all_orders
 
 # start the API server
 app = FastAPI()
@@ -108,7 +109,7 @@ def modify_user(user_id: int, new_user: UserBase) -> User:
     for i, user in enumerate(all_users):
         if user.id == user_id:
             # add the id in the URL to the given user
-            new_user_with_id = user.add_id(new_user, user_id)
+            new_user_with_id = User.add_id(new_user, user_id)
             all_users[i] = new_user_with_id
             return new_user_with_id
     raise HTTPException(status_code=404,
@@ -126,3 +127,59 @@ def delete_user(user_id: int):
     if not found:
         raise HTTPException(status_code=404,
                             detail="Utilisateur non trouvé")
+
+
+"""
+Define all endpoints relative to orders below
+"""
+
+
+@app.get("/admin/orders")
+def get_all_orders() -> List[Order]:
+    return all_orders
+
+
+@app.get("/admin/orders/{order_id}")
+def get_order_by_id(order_id: int) -> Order:
+    for order in all_orders:
+        if order.id == order_id:
+            return order
+    # if no order is found, raise an error
+    raise HTTPException(status_code=404, detail="Commande non trouvée")
+
+
+@app.post("/orders")
+def add_order(order: Order) -> Order:
+    """ Check that the order is not already in the database   """
+    if order not in all_orders:
+        all_orders.append(order)
+        return order
+    else:
+        raise HTTPException(status_code=404,
+                            detail="Commande déjà existante")
+
+
+@app.put("/admin/orders/{order_id}")
+def modify_order(order_id: int, new_order: OrderBase) -> Order:
+    """ Search the given order in the database with its id  """
+    for i, order in enumerate(all_orders):
+        if order.id == order_id:
+            # add the id in the URL to the given order
+            new_order_with_id = Order.add_id(new_order, order_id)
+            all_orders[i] = new_order_with_id
+            return new_order_with_id
+    raise HTTPException(status_code=404,
+                        detail="Commande non trouvée")
+
+
+@app.delete("/admin/orders/{order_id}")
+def delete_order(order_id: int):
+    """ Search the given order in the database with its id  """
+    found = False
+    for i, order in enumerate(all_orders):
+        if order.id == order_id:
+            del all_orders[i]
+            found = True
+    if not found:
+        raise HTTPException(status_code=404,
+                            detail="Commande non trouvée")
