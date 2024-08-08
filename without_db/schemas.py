@@ -5,6 +5,8 @@ This module defines a schema used by Pydantic for type checking
 from pydantic import BaseModel
 from typing import List
 
+allowed_status = ["Completed", "Pending", "Shipped", "Cancelled"]
+
 
 class ProductBase(BaseModel):
     """
@@ -72,10 +74,26 @@ class User(UserBase):
                     )
 
 
-class Item(BaseModel):
-    productId: int
+class Item(Product):
+    """
+    This class represents an ordered product in an order. It has all the attributes of a product,
+    plus a quantity
+    """
     quantity: int
-    UnitPrice: float
+
+    @staticmethod
+    def add_quantity(product: Product, quantity_: int):
+        """
+        Adds an id to the given order
+        """
+        return Item(id=product.id,
+                    name=product.name,
+                    description=product.description,
+                    price=product.price,
+                    category=product.category,
+                    stock=product.stock,
+                    quantity=quantity_,
+                    )
 
 
 class OrderBase(BaseModel):
@@ -88,6 +106,36 @@ class OrderBase(BaseModel):
     items: List[Item]
     total: float
     status: str
+
+    def is_correct(self, products: List[Product]) -> bool:
+        """
+        Check that the order is correct, that is:
+        - the userId exists in the list of users
+        - the products in the order exist (the id is correct)
+        - the stock of the product is bigger than the ordered quantity
+        - the total amount of the order is correct (equals to the price
+        of the products multiplied by the quantity)
+        - the status type is allowed (is in the allowed_status list)
+        """
+        try:
+            order_amount = 0
+            for item in self.items:
+                # check that the products in the order exist
+                # Note: the name, description, etc are not checked
+                assert item.id in {product.id for product in products}
+                # check that the products in the order are available
+                product = products[item.id]
+                assert item.quantity <= product.stock
+                # update the product's stock
+                product.stock -= item.quantity
+                order_amount += item.price * item.quantity
+            # check that the total amount of the order is correct
+            assert order_amount == self.total
+            # check that the status is correct
+            assert self.status in allowed_status
+            return True
+        except AssertionError:
+            return False
 
 
 class Order(OrderBase):

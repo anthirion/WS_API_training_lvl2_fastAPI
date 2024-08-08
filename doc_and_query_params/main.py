@@ -47,14 +47,14 @@ def get_all_products(name: str = "", category: str = "") -> List[Product]:
          # responses enables you to define additional responses code and message
          # the default code responses are 200 and 422
          responses={404: {"model": ErrorMessage,
-                          "description": "Produit non trouvé"}},
+                          "description": "Produit introuvable"}},
          )
 def get_product_by_id(product_id: int) -> Product:
     for product in all_products:
         if product.id == product_id:
             return product
     # if no product is found, raise an error
-    raise HTTPException(status_code=404, detail="Produit non trouvé")
+    raise HTTPException(status_code=404, detail="Produit introuvable")
 
 
 @app.post("/products",
@@ -80,7 +80,7 @@ def add_product(product: Product) -> Product:
          description="Modifier un produit existant",
          response_description="Produit mis à jour",
          responses={404: {"model": ErrorMessage,
-                          "description": "Produit non trouvé"}},
+                          "description": "Produit introuvable"}},
          )
 def modify_product(product_id: int, new_product: ProductBase) -> Product:
     """ Search the given product in the database with its id  """
@@ -91,7 +91,7 @@ def modify_product(product_id: int, new_product: ProductBase) -> Product:
             all_products[i] = new_product_with_id
             return new_product_with_id
     raise HTTPException(status_code=404,
-                        detail="Produit non trouvé")
+                        detail="Produit introuvable")
 
 
 @app.delete("/products/{product_id}",
@@ -99,7 +99,7 @@ def modify_product(product_id: int, new_product: ProductBase) -> Product:
             response_description="Produit supprimé",
             status_code=204,
             responses={404: {"model": ErrorMessage,
-                             "description": "Produit non trouvé"}},
+                             "description": "Produit introuvable"}},
             )
 def delete_product(product_id: int):
     """ Search the given product in the database with its id  """
@@ -110,7 +110,7 @@ def delete_product(product_id: int):
             found = True
     if not found:
         raise HTTPException(status_code=404,
-                            detail="Produit non trouvé")
+                            detail="Produit introuvable")
 
 
 """
@@ -140,14 +140,14 @@ def get_all_users(name: str = "", email: str = "") -> List[User]:
          description="Retourne un objet JSON contenant les détails d'un utilisateur spécifique",
          response_description="	Détails de l'utilisateur",
          responses={404: {"model": ErrorMessage,
-                          "description": "Utilisateur non trouvé"}},
+                          "description": "Utilisateur introuvable"}},
          )
 def get_user_by_id(user_id: int) -> User:
     for user in all_users:
         if user.id == user_id:
             return user
     # if no user is found, raise an error
-    raise HTTPException(status_code=404, detail="Utilisateur non trouvé")
+    raise HTTPException(status_code=404, detail="Utilisateur introuvable")
 
 
 @app.post("/users",
@@ -171,7 +171,7 @@ def add_user(user: User) -> User:
          description="Modifier un utilisateur existant",
          response_description="Utilisateur mis à jour",
          responses={404: {"model": ErrorMessage,
-                          "description": "Utilisateur non trouvé"}},
+                          "description": "Utilisateur introuvable"}},
          )
 def modify_user(user_id: int, new_user: UserBase) -> User:
     """ Search the given user in the database with its id  """
@@ -182,7 +182,7 @@ def modify_user(user_id: int, new_user: UserBase) -> User:
             all_users[i] = new_user_with_id
             return new_user_with_id
     raise HTTPException(status_code=404,
-                        detail="Utilisateur non trouvé")
+                        detail="Utilisateur introuvable")
 
 
 @app.delete("/admin/users/{user_id}",
@@ -190,7 +190,7 @@ def modify_user(user_id: int, new_user: UserBase) -> User:
             response_description="Utilisateur supprimé",
             status_code=204,
             responses={404: {"model": ErrorMessage,
-                             "description": "Utilisateur non trouvé"}},
+                             "description": "Utilisateur introuvable"}},
             )
 def delete_user(user_id: int):
     """ Search the given user in the database with its id  """
@@ -201,7 +201,7 @@ def delete_user(user_id: int):
             found = True
     if not found:
         raise HTTPException(status_code=404,
-                            detail="Utilisateur non trouvé")
+                            detail="Utilisateur introuvable")
 
 
 """
@@ -221,14 +221,14 @@ def get_all_orders() -> List[Order]:
          description="Retourne un objet JSON contenant les détails d'une commande spécifique",
          response_description="	Détails de la commande",
          responses={404: {"model": ErrorMessage,
-                          "description": "Commande non trouvée"}},
+                          "description": "Commande introuvable"}},
          )
 def get_order_by_id(order_id: int) -> Order:
     for order in all_orders:
         if order.id == order_id:
             return order
     # if no order is found, raise an error
-    raise HTTPException(status_code=404, detail="Commande non trouvée")
+    raise HTTPException(status_code=404, detail="Commande introuvable")
 
 
 @app.post("/orders",
@@ -236,13 +236,19 @@ def get_order_by_id(order_id: int) -> Order:
           response_description="Commande ajoutée",
           status_code=201,
           responses={409: {"model": ErrorMessage,
-                           "description": "Commande déjà existante"}},
+                           "description": "Commande déjà existante"},
+                     400: {"model": ErrorMessage,
+                           "description": "Commande incorrecte"}},
           )
 def add_order(order: Order) -> Order:
-    """ Check that the order is not already in the database   """
+    """ Check that the order is correct and is not already in the database   """
     if order not in all_orders:
-        all_orders.append(order)
-        return order
+        if order.is_correct(all_products) is False:
+            raise HTTPException(status_code=400,
+                                detail="Commande incorrecte")
+        else:
+            all_orders.append(order)
+            return order
     else:
         raise HTTPException(status_code=404,
                             detail="Commande déjà existante")
@@ -252,7 +258,10 @@ def add_order(order: Order) -> Order:
          description="Modifier une commande existante",
          response_description="Commande mise à jour",
          responses={404: {"model": ErrorMessage,
-                          "description": "Commande non trouvée"}},)
+                          "description": "Commande introuvable"},
+                    400: {"model": ErrorMessage,
+                          "description": "Commande incorrecte"}},
+         )
 def modify_order(order_id: int, new_order: OrderBase) -> Order:
     """ Search the given order in the database with its id  """
     for i, order in enumerate(all_orders):
@@ -262,7 +271,7 @@ def modify_order(order_id: int, new_order: OrderBase) -> Order:
             all_orders[i] = new_order_with_id
             return new_order_with_id
     raise HTTPException(status_code=404,
-                        detail="Commande non trouvée")
+                        detail="Commande introuvable")
 
 
 @app.delete("/admin/orders/{order_id}",
@@ -270,7 +279,7 @@ def modify_order(order_id: int, new_order: OrderBase) -> Order:
             response_description="Commande supprimée",
             status_code=204,
             responses={404: {"model": ErrorMessage,
-                             "description": "Commande non trouvée"}},
+                             "description": "Commande introuvable"}},
             )
 def delete_order(order_id: int):
     """ Search the given order in the database with its id  """
@@ -281,4 +290,4 @@ def delete_order(order_id: int):
             found = True
     if not found:
         raise HTTPException(status_code=404,
-                            detail="Commande non trouvée")
+                            detail="Commande introuvable")
