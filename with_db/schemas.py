@@ -4,6 +4,12 @@ This module defines a schema used by Pydantic for type checking
 
 from pydantic import BaseModel
 from typing import List
+from .db import engine
+from sqlalchemy.orm import Session
+from sqlalchemy import select
+from . import models
+
+allowed_status = ["Completed", "Pending", "Shipped", "Cancelled"]
 
 
 class ProductBase(BaseModel):
@@ -12,11 +18,11 @@ class ProductBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    name: str
-    description: str
-    price: float
-    category: str
-    stock: int
+    name: str = ""
+    description: str = ""
+    price: float = 0.0
+    category: str = ""
+    stock: int = 0
 
 
 class Product(ProductBase):
@@ -26,19 +32,6 @@ class Product(ProductBase):
     """
     id: int
 
-    @staticmethod
-    def add_id(product: ProductBase, id_: int):
-        """
-        Adds an id to the given product
-        """
-        return Product(id=id_,
-                       name=product.name,
-                       description=product.description,
-                       price=product.price,
-                       category=product.category,
-                       stock=product.stock,
-                       )
-
 
 class UserBase(BaseModel):
     """
@@ -46,10 +39,10 @@ class UserBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    name: str
-    email: str
-    address: str
-    password: str
+    name: str = ""
+    email: str = ""
+    address: str = ""
+    password: str = ""
 
 
 class User(UserBase):
@@ -59,23 +52,15 @@ class User(UserBase):
     """
     id: int
 
-    @staticmethod
-    def add_id(user: UserBase, id_: int):
-        """
-        Adds an id to the given user
-        """
-        return User(id=id_,
-                    name=user.name,
-                    email=user.email,
-                    address=user.address,
-                    password=user.password,
-                    )
 
-
-class Item(BaseModel):
+class OrderLineBase(BaseModel):
     productId: int
-    quantity: int
-    UnitPrice: float
+    productQuantity: int = 0
+
+
+class OrderLine(OrderLineBase):
+    id: int
+    orderId: int
 
 
 class OrderBase(BaseModel):
@@ -85,9 +70,32 @@ class OrderBase(BaseModel):
     of a PUT operation do not have id)
     """
     userId: int
-    items: List[Item]
+    items: List[OrderLineBase] = []
     total: float
     status: str
+
+    def amount_is_correct(self) -> bool:
+        """
+        Check that the total attribute is equal to the sum of the prices of
+        the ordered products
+        """
+        amount = 0.0
+        """ Retrieve the price of each product of the items list """
+        for item in self.items:
+            price = 0.0
+            with Session(engine) as session:
+                query = (
+                    select(models.Product)
+                    .where(models.Product.id == item.productId)
+                )
+                # we consider that the execution of the query cannot fail
+                # because our database contains correct product ids
+                product = session.execute(query).scalar_one()
+                price = product.price * item.productQuantity
+                amount += price
+        print("AMOUNT: ", amount)
+        # WARNING: make sure you round up the amount to avoid approximation errors
+        return round(amount, 2) == self.total
 
 
 class Order(OrderBase):
@@ -96,18 +104,6 @@ class Order(OrderBase):
     excluding PUT.
     """
     id: int
-
-    @staticmethod
-    def add_id(order: OrderBase, id_: int):
-        """
-        Adds an id to the given order
-        """
-        return Order(id=id_,
-                     userId=order.userId,
-                     items=order.items,
-                     total=order.total,
-                     status=order.status,
-                     )
 
 
 """

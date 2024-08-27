@@ -77,12 +77,12 @@ class User(UserBase):
 class Item(Product):
     """
     This class represents an ordered product in an order. It has all the attributes of a product,
-    plus a quantity
+    plus an ordered quantity
     """
-    quantity: int
+    ordered_quantity: int
 
     @staticmethod
-    def add_quantity(product: Product, quantity_: int):
+    def add_ordered_quantity(product: Product, ordered_quantity_: int):
         """
         Adds an id to the given order
         """
@@ -92,7 +92,7 @@ class Item(Product):
                     price=product.price,
                     category=product.category,
                     stock=product.stock,
-                    quantity=quantity_,
+                    ordered_quantity=ordered_quantity_,
                     )
 
 
@@ -125,10 +125,10 @@ class OrderBase(BaseModel):
                 assert item.id in {product.id for product in products}
                 # check that the products in the order are available
                 product = products[item.id]
-                assert item.quantity <= product.stock
+                assert item.ordered_quantity <= product.stock
                 # update the product's stock
-                product.stock -= item.quantity
-                order_amount += item.price * item.quantity
+                product.stock -= item.ordered_quantity
+                order_amount += item.price * item.ordered_quantity
             # check that the total amount of the order is correct
             assert order_amount == self.total
             # check that the status is correct

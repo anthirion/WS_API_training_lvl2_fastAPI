@@ -1,3 +1,19 @@
+"""
+WITHOUT DB
+"""
+# Endpoints users
+POST http://127.0.0.1:8000/users/
+
+    {
+        "name": "Marc Durand",
+        "email": "marc.durand@example.com",
+        "address": "45 Avenue des Champs-Élysées",
+        "password": "mypassword789"
+    } 
+
+
+
+# Endpoints orders
 POST http://127.0.0.1:8000/orders/
 Body:
     {
@@ -52,5 +68,28 @@ Body:
             }
         ],
         "total": 379.89,
+        "status": "Completed"
+    }
+
+
+"""
+WITHOUT DB
+"""
+# Endpoints orders
+POST http://127.0.0.1:8000/orders/
+Body:
+    {
+        "userId": 3,
+        "items": [
+            {
+                "productId": 1,
+                "productQuantity": 2
+            },
+            {
+                "productId": 4,
+                "productQuantity": 1
+            }
+        ],
+        "total": 489.93,
         "status": "Completed"
     }
