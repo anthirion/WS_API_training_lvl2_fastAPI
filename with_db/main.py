@@ -51,14 +51,15 @@ def get_all_products(name: str = "", category: str = "") -> List[schemas.Product
                 return session.execute(query).scalars().all()
         # manage error in case no product was found
         except exc.NoResultFound:
-            raise HTTPException(status_code=404,
-                                detail="No product found")
+            # no product found in the db
+            return {}
 
 
 @app.get("/products/{product_id}",
          description="Retourne un objet JSON contenant les détails d'un produit spécifique",
          response_description="	Détails du produit",
-         responses={404: {"model": ErrorMessage}},
+         responses={404: {"model": ErrorMessage,
+                          "description": "Produit introuvable"}},
          )
 def get_product_by_id(product_id: int) -> schemas.Product:
     with Session(engine) as session:
@@ -72,7 +73,7 @@ def get_product_by_id(product_id: int) -> schemas.Product:
         # manage error in case no product was found
         except exc.NoResultFound:
             raise HTTPException(status_code=404,
-                                detail=f"No product with id {product_id} found")
+                                detail="Produit introuvable")
     return product
 
 
@@ -82,7 +83,8 @@ def get_product_by_id(product_id: int) -> schemas.Product:
           # since this operation is a creation, return 201 instead of 200
           status_code=201,
           response_description="Produit ajouté",
-          responses={409: {"model": ErrorMessage}},
+          responses={409: {"model": ErrorMessage,
+                           "description": "Produit déjà existant"}},
           )
 def add_product(product: schemas.ProductBase) -> schemas.ProductBase:
     with Session(engine) as session:
@@ -117,7 +119,8 @@ def add_product(product: schemas.ProductBase) -> schemas.ProductBase:
 @app.put("/products/{product_id}",
          description="Modifier un produit existant",
          response_description="Produit mis à jour",
-         responses={404: {"model": ErrorMessage}},
+         responses={404: {"model": ErrorMessage,
+                          "description": "Produit introuvable"}},
          )
 def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas.ProductBase:
     with Session(engine) as session:
@@ -136,7 +139,7 @@ def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas
         if rows_affected == 0:
             # no row was changed
             raise HTTPException(status_code=404,
-                                detail="Le produit à mettre à jour n'existe pas")
+                                detail="Produit introuvable")
 
         # Do not forget to save changes in the database
         session.commit()
@@ -147,7 +150,8 @@ def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas
             description="Supprimer un produit",
             status_code=204,
             response_description="Produit supprimé",
-            responses={404: {"model": ErrorMessage}},
+            responses={404: {"model": ErrorMessage,
+                             "description": "Produit introuvable"}},
             )
 def delete_product(product_id: int):
     with Session(engine) as session:
@@ -160,7 +164,7 @@ def delete_product(product_id: int):
         if rows_affected == 0:
             # no row was changed
             raise HTTPException(status_code=404,
-                                detail="Le produit à supprimer n'existe pas")
+                                detail="Produit introuvable")
 
         # Do not forget to save changes in the database
         session.commit()
@@ -199,14 +203,14 @@ def get_all_users(name: str = "", email: str = "") -> List[schemas.User]:
                 return session.execute(query).scalars().all()
         # manage error in case no user was found
         except exc.NoResultFound:
-            raise HTTPException(status_code=404,
-                                detail="No user found")
+            return {}
 
 
 @app.get("/admin/users/{user_id}",
          description="Retourne un objet JSON contenant les détails d'un utilisateur spécifique",
          response_description="	Détails du utilisateur",
-         responses={404: {"model": ErrorMessage}},
+         responses={404: {"model": ErrorMessage,
+                          "description": "Utilisateur introuvable"}},
          )
 def get_user_by_id(user_id: int) -> schemas.User:
     with Session(engine) as session:
@@ -220,7 +224,7 @@ def get_user_by_id(user_id: int) -> schemas.User:
         # manage error in case no user was found
         except exc.NoResultFound:
             raise HTTPException(status_code=404,
-                                detail=f"No user with id {user_id} found")
+                                detail="Utilisateur introuvable")
     return user
 
 
@@ -230,7 +234,8 @@ def get_user_by_id(user_id: int) -> schemas.User:
           # since this operation is a creation, return 201 instead of 200
           status_code=201,
           response_description="Utilisateur ajouté",
-          responses={409: {"model": ErrorMessage}},
+          responses={409: {"model": ErrorMessage,
+                           "description": "Utilisateur déjà existant"}},
           )
 def add_user(user: schemas.UserBase) -> schemas.UserBase:
     with Session(engine) as session:
@@ -264,7 +269,8 @@ def add_user(user: schemas.UserBase) -> schemas.UserBase:
 @app.put("/admin/users/{user_id}",
          description="Modifier un utilisateur existant",
          response_description="Utilisateur mis à jour",
-         responses={404: {"model": ErrorMessage}},
+         responses={404: {"model": ErrorMessage,
+                          "description": "Utilisateur introuvable"}},
          )
 def modify_user(user_id: int, new_user: schemas.UserBase) -> schemas.UserBase:
     with Session(engine) as session:
@@ -281,7 +287,7 @@ def modify_user(user_id: int, new_user: schemas.UserBase) -> schemas.UserBase:
         rows_affected = session.execute(query).rowcount
         if rows_affected == 0:
             raise HTTPException(status_code=404,
-                                detail="L'utilisateur à mettre à jour n'existe pas")
+                                detail="Utilisateur introuvable")
 
         # Do not forget to save changes in the database
         session.commit()
@@ -292,7 +298,8 @@ def modify_user(user_id: int, new_user: schemas.UserBase) -> schemas.UserBase:
             description="Supprimer un utilisateur",
             status_code=204,
             response_description="Utilisateur supprimé",
-            responses={404: {"model": ErrorMessage}},
+            responses={404: {"model": ErrorMessage,
+                             "description": "Utilisateur introuvable"}},
             )
 def delete_user(user_id: int):
     with Session(engine) as session:
@@ -305,7 +312,7 @@ def delete_user(user_id: int):
         if rows_affected == 0:
             # no row was changed
             raise HTTPException(status_code=404,
-                                detail="L'utilisateur à supprimer n'existe pas")
+                                detail="Utilisateur introuvable")
 
         # Do not forget to save changes in the database
         session.commit()
@@ -320,7 +327,7 @@ Define all endpoints relative to orders below
           description="Retourne un tableau JSON contenant les commandes avec leurs détails",
           response_description="Liste des commandes",
           )
-async def get_all_orders() -> List[schemas.Order]:
+def get_all_orders() -> List[schemas.Order]:
     with Session(engine) as session:
         query = select(models.Order)
         orders = session.execute(query).scalars().all()
@@ -345,7 +352,7 @@ def get_order_by_id(order_id: int) -> schemas.Order:
         # manage error in case no order was found
         except exc.NoResultFound:
             raise HTTPException(status_code=404,
-                                detail=f"No order with id {order_id} found")
+                                detail="Commande introuvable")
     return order
 
 
@@ -460,7 +467,7 @@ def modify_order(order_id: int, new_order: schemas.OrderBase) -> schemas.OrderBa
             rows_affected = session.execute(query).rowcount
             if rows_affected == 0:
                 raise HTTPException(status_code=404,
-                                    detail="L'ordre à mettre à jour n'existe pas")
+                                    detail="Commande introuvable")
             # Do not forget to save changes in the database
             session.commit()
         """
@@ -511,7 +518,7 @@ def delete_order(order_id: int):
             session.execute(query)
         except exc.NoResultFound:
             raise HTTPException(status_code=404,
-                                detail="L'ordre à supprimer n'existe pas")
+                                detail="Commande introuvable")
         else:
             """ Delete lines corresponding to the order to delete in the orderlines table """
             # WARNING: the update of the orderlines table should be made BEFORE
