@@ -7,7 +7,7 @@ POST http://127.0.0.1:8000/users/
     {
         "name": "Marc Durand",
         "email": "marc.durand@example.com",
-        "address": "45 Avenue des Champs-Élysées",
+        "address": "45 Avenue des Champs-Elysees",
         "password": "mypassword789"
     } 
 
