@@ -3,5 +3,6 @@ COPY with_db/ app/
 COPY requirements.txt app/
 RUN pip install -r app/requirements.txt
 EXPOSE 80
-CMD ["ls", "/app"]
-#  CMD ["fastapi", "dev", "app/main.py"]
+# check that .env file is copied
+# CMD ["ls", "-a", "/app"]
+CMD ["fastapi", "dev", "app/main.py"]

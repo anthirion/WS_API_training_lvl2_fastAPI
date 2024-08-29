@@ -89,8 +89,8 @@ class Order(Base):
         Defines how the product will be displayed
         """
         return f"Order(id={self.id}, userId='{self.userId}'" \
-            f"total={self.total}, status='{
-                self.status}', items='{self.items}')"
+            f"total={self.total}, status='{self.status}', "\
+            f"items='{self.items}')"
 
 
 class OrderLine(Base):
