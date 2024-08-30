@@ -76,7 +76,7 @@ def add_product(product: Product) -> Product:
                             detail="Produit déjà existant")
 
 
-@app.put("/products",
+@app.put("/products/{product_id}",
          description="Modifier un produit existant",
          response_description="Produit mis à jour",
          responses={404: {"model": ErrorMessage,
