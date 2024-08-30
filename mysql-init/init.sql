@@ -1,14 +1,14 @@
 -- init.sql
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    product_name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     category VARCHAR(255) NOT NULL,
     stock INT NOT NULL
 );
 
-INSERT INTO products (name, description, price, category, stock) VALUES
+INSERT INTO products (product_name, description, price, category, stock) VALUES
 ("Smartwatch Alpha", "Une montre intelligente avec des fonctionnalites avancees de suivi de la sante.", 199.99, "Electronique", 150),
 ("Cafe Gourmet", "Un melange exquis de grains de cafe biologiques provenant des meilleures plantations.", 15.50, "Alimentation", 300),
 ("Chaise de Bureau Ergonomique", "Chaise de bureau avec soutien lombaire ajustable et accoudoirs confortables.", 129.99, "Mobilier", 75),
@@ -17,13 +17,13 @@ INSERT INTO products (name, description, price, category, stock) VALUES
 
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    user_name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL
 );
 
-INSERT INTO users (name, email, address, password) VALUES
+INSERT INTO users (user_name, email, address, password) VALUES
 ("Alice", "alice@example.com", "123 Apple St Wonderland", "password123"),
 ("Bob", "bob@example.com", "456 Orange Ave Fruitland", "bobspassword"),
 ("Charlie", "charlie@example.com", "789 Banana Blvd Tropicland", "charliepass"),

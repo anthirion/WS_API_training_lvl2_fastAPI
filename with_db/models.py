@@ -20,8 +20,8 @@ class Product(Base):
 
     # define product attributes
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                      nullable=False)
+    product_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
+                                              nullable=False)
     description: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                              nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
@@ -33,7 +33,7 @@ class Product(Base):
         """
         Defines how the product will be displayed
         """
-        return f"Product(id={self.id}, name='{self.name}', " \
+        return f"Product(id={self.id}, name='{self.product_name}', " \
             f"description='{self.description}', " \
             f"price='{self.price}', category='{self.category}', "\
             f"stock='{self.stock}')"
@@ -45,8 +45,8 @@ class User(Base):
 
     # define product attributes
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                      nullable=False)
+    user_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
+                                           nullable=False)
     email: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                        nullable=False)
     address: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
@@ -58,7 +58,7 @@ class User(Base):
         """
         Defines how the product will be displayed
         """
-        return f"User(id={self.id}, name='{self.name}', email='{self.email}', " \
+        return f"User(id={self.id}, name='{self.user_name}', email='{self.email}', " \
             f"address='{self.address}', password='{self.password}')"
 
 
@@ -116,7 +116,7 @@ class OrderLine(Base):
         """
         Defines how the product will be displayed
         """
-        return f"OrderLine(id='{id}', " \
+        return f"OrderLine(id='{self.id}', " \
             f"productId = {self.productId}, " \
             f"productQuantity = '{self.productQuantity}', " \
             f"orderId = '{self.orderId}')"

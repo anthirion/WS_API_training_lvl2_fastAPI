@@ -18,7 +18,7 @@ class ProductBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    name: str = ""
+    product_name: str = ""
     description: str = ""
     price: float = 0.0
     category: str = ""
@@ -39,7 +39,7 @@ class UserBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    name: str = ""
+    user_name: str = ""
     email: str = ""
     address: str = ""
     password: str = ""

@@ -14,7 +14,7 @@ class ProductBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    name: str
+    product_name: str
     description: str
     price: float
     category: str
@@ -34,7 +34,7 @@ class Product(ProductBase):
         Adds an id to the given product
         """
         return Product(id=id_,
-                       name=product.name,
+                       product_name=product.product_name,
                        description=product.description,
                        price=product.price,
                        category=product.category,
@@ -48,7 +48,7 @@ class UserBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    name: str
+    user_name: str
     email: str
     address: str
     password: str
@@ -67,7 +67,7 @@ class User(UserBase):
         Adds an id to the given user
         """
         return User(id=id_,
-                    name=user.name,
+                    user_name=user.user_name,
                     email=user.email,
                     address=user.address,
                     password=user.password,
@@ -87,7 +87,7 @@ class Item(Product):
         Adds an id to the given order
         """
         return Item(id=product.id,
-                    name=product.name,
+                    product_name=product.product_name,
                     description=product.description,
                     price=product.price,
                     category=product.category,

@@ -80,8 +80,8 @@ all_orders = [
         id=1,
         userId=1,
         items=[
-            Item.add_quantity(all_products[1], 1),
-            Item.add_quantity(all_products[3], 3),
+            Item.add_ordered_quantity(all_products[1], 1),
+            Item.add_ordered_quantity(all_products[3], 3),
         ],
         total=45.97,
         status="Completed"
@@ -90,7 +90,7 @@ all_orders = [
         id=2,
         userId=2,
         items=[
-            Item.add_quantity(all_products[2], 2),
+            Item.add_ordered_quantity(all_products[2], 2),
         ],
         total=23.97,
         status="Pending"
@@ -99,7 +99,7 @@ all_orders = [
         id=3,
         userId=3,
         items=[
-            Item.add_quantity(all_products[4], 1),
+            Item.add_ordered_quantity(all_products[4], 1),
         ],
         total=299.99,
         status="Shipped"
@@ -108,7 +108,7 @@ all_orders = [
         id=4,
         userId=1,
         items=[
-            Item.add_quantity(all_products[0], 3),
+            Item.add_ordered_quantity(all_products[0], 3),
         ],
         total=17.45,
         status="Cancelled"
@@ -117,8 +117,8 @@ all_orders = [
         id=5,
         userId=2,
         items=[
-            Item.add_quantity(all_products[0], 3),
-            Item.add_quantity(all_products[3], 2),
+            Item.add_ordered_quantity(all_products[0], 3),
+            Item.add_ordered_quantity(all_products[3], 2),
         ],
         total=76.98,
         status="Processing"

@@ -27,22 +27,22 @@ def welcome():
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          response_description="	Liste des produits",
          )
-def get_all_products(name: str = "", category: str = "") -> List[schemas.Product]:
+def get_all_products(product_name: str = "", product_category: str = "") -> List[schemas.Product]:
     # start a session to make requests to the database
     with Session(engine) as session:
         try:
-            if name:
+            if product_name:
                 """ Retrieve all elements of name "name" if the name parameter is declared  """
                 query = (
                     select(models.Product)
-                    .where(models.Product.name == name)
+                    .where(models.Product.product_name == product_name)
                 )
                 return [session.execute(query).scalar_one()]
-            elif category:
+            elif product_category:
                 """ Retrieve all elements of category "category" if the category parameter is declared  """
                 query = (
                     select(models.Product)
-                    .where(models.Product.category == category)
+                    .where(models.Product.category == product_category)
                 )
                 return [session.execute(query).scalar_one()]
             else:
@@ -95,7 +95,7 @@ def add_product(product: schemas.ProductBase) -> schemas.ProductBase:
             """
             query = (
                 select(models.Product)
-                .where(models.Product.name == product.name)
+                .where(models.Product.product_name == product.product_name)
             )
             # WARNING: KEEP the .scalar_one() to raise the exception
             session.execute(query).scalar_one()
@@ -104,7 +104,7 @@ def add_product(product: schemas.ProductBase) -> schemas.ProductBase:
         except exc.NoResultFound:
             """ Add the product to the database  """
             # create a product model compatible with SQLAlchemy using the models module
-            db_product = models.Product(name=product.name,
+            db_product = models.Product(product_name=product.product_name,
                                         description=product.description,
                                         price=product.price,
                                         category=product.category,
@@ -128,7 +128,7 @@ def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas
         query = (
             update(models.Product)
             .where(models.Product.id == product_id)
-            .values(name=new_product.name,
+            .values(product_name=new_product.product_name,
                     description=new_product.description,
                     price=new_product.price,
                     category=new_product.category,
@@ -179,15 +179,15 @@ Define all endpoints relative to users below
          description="Retourne un tableau JSON contenant les utilisateurs avec leurs détails",
          response_description="	Liste des utilisateurs",
          )
-def get_all_users(name: str = "", email: str = "") -> List[schemas.User]:
+def get_all_users(user_name: str = "", email: str = "") -> List[schemas.User]:
     # start a session to make requests to the database
     with Session(engine) as session:
         try:
-            if name:
+            if user_name:
                 """ Retrieve all elements of name "name" if the name parameter is declared  """
                 query = (
                     select(models.User)
-                    .where(models.User.name == name)
+                    .where(models.User.user_name == user_name)
                 )
                 return [session.execute(query).scalar_one()]
             elif email:
@@ -246,7 +246,7 @@ def add_user(user: schemas.UserBase) -> schemas.UserBase:
             """
             query = (
                 select(models.User)
-                .where(models.User.name == user.name)
+                .where(models.User.user_name == user.user_name)
             )
             # WARNING: KEEP the .scalar_one() to raise the exception
             session.execute(query).scalar_one()
@@ -255,7 +255,7 @@ def add_user(user: schemas.UserBase) -> schemas.UserBase:
         except exc.NoResultFound:
             """ Add the user to the database  """
             # create a user model compatible with SQLAlchemy using the models module
-            db_user = models.User(name=user.name,
+            db_user = models.User(user_name=user.user_name,
                                   email=user.email,
                                   address=user.address,
                                   password=user.password,
@@ -278,7 +278,7 @@ def modify_user(user_id: int, new_user: schemas.UserBase) -> schemas.UserBase:
         query = (
             update(models.User)
             .where(models.User.id == user_id)
-            .values(name=new_user.name,
+            .values(user_name=new_user.user_name,
                     email=new_user.email,
                     address=new_user.address,
                     password=new_user.password,
