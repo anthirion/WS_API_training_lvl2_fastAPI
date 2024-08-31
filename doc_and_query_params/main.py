@@ -14,7 +14,7 @@ app = FastAPI()
 
 
 @app.get("/")
-def welcome():
+async def welcome():
     return "Welcome to the API training"
 
 # the parameters of the operation decorators are for documentation purpose only
@@ -27,7 +27,7 @@ def welcome():
          )
 # Declare query parameters for name and category only (makes more sense)
 # WARNING: Do NOT add quotes for query parameters -> products?category=Alimentation
-def get_all_products(name: str = "", category: str = "") -> List[Product]:
+async def get_all_products(name: str = "", category: str = "") -> List[Product]:
     if name:
         """ Retrieve all products of name "name" if the name parameter is declared  """
         return [product for product in all_products
@@ -44,12 +44,12 @@ def get_all_products(name: str = "", category: str = "") -> List[Product]:
 @app.get("/products/{product_id}",
          description="Retourne un objet JSON contenant les détails d'un produit spécifique",
          response_description="	Détails du produit",
-         # responses enables you to define additional responses code and message
-         # the default code responses are 200 and 422
+         # responses enables you to async define additional responses code and message
+         # the async default code responses are 200 and 422
          responses={404: {"model": ErrorMessage,
                           "description": "Produit introuvable"}},
          )
-def get_product_by_id(product_id: int) -> Product:
+async def get_product_by_id(product_id: int) -> Product:
     for product in all_products:
         if product.id == product_id:
             return product
@@ -60,13 +60,13 @@ def get_product_by_id(product_id: int) -> Product:
 @app.post("/products",
           description="Ajouter un nouveau produit",
           response_description="Produit ajouté",
-          # status code defines the status code to return when no error occured
+          # status code async defines the status code to return when no error occured
           # since this operation is a creation, return 201 instead of 200
           status_code=201,
           responses={409: {"model": ErrorMessage,
                            "description": "Produit déjà existant"}},
           )
-def add_product(product: Product) -> Product:
+async def add_product(product: Product) -> Product:
     """ Check that the product is not already in the database   """
     if product not in all_products:
         all_products.append(product)
@@ -82,7 +82,7 @@ def add_product(product: Product) -> Product:
          responses={404: {"model": ErrorMessage,
                           "description": "Produit introuvable"}},
          )
-def modify_product(product_id: int, new_product: ProductBase) -> Product:
+async def modify_product(product_id: int, new_product: ProductBase) -> Product:
     """ Search the given product in the database with its id  """
     for i, product in enumerate(all_products):
         if product.id == product_id:
@@ -101,7 +101,7 @@ def modify_product(product_id: int, new_product: ProductBase) -> Product:
             responses={404: {"model": ErrorMessage,
                              "description": "Produit introuvable"}},
             )
-def delete_product(product_id: int):
+async def delete_product(product_id: int):
     """ Search the given product in the database with its id  """
     found = False
     for i, product in enumerate(all_products):
@@ -122,7 +122,7 @@ Define all endpoints relative to user below
          description="Retourne un tableau JSON contenant les utilisateurs avec leurs détails",
          response_description="	Liste des utilisateurs",
          )
-def get_all_users(name: str = "", email: str = "") -> List[User]:
+async def get_all_users(name: str = "", email: str = "") -> List[User]:
     if name:
         """ Retrieve all users of name "name" if the name parameter is declared  """
         return [user for user in all_users
@@ -142,7 +142,7 @@ def get_all_users(name: str = "", email: str = "") -> List[User]:
          responses={404: {"model": ErrorMessage,
                           "description": "Utilisateur introuvable"}},
          )
-def get_user_by_id(user_id: int) -> User:
+async def get_user_by_id(user_id: int) -> User:
     for user in all_users:
         if user.id == user_id:
             return user
@@ -157,7 +157,7 @@ def get_user_by_id(user_id: int) -> User:
           responses={409: {"model": ErrorMessage,
                            "description": "Utilisateur déjà existant"}},
           )
-def add_user(user: User) -> User:
+async def add_user(user: User) -> User:
     """ Check that the user is not already in the database   """
     if user not in all_users:
         all_users.append(user)
@@ -173,7 +173,7 @@ def add_user(user: User) -> User:
          responses={404: {"model": ErrorMessage,
                           "description": "Utilisateur introuvable"}},
          )
-def modify_user(user_id: int, new_user: UserBase) -> User:
+async def modify_user(user_id: int, new_user: UserBase) -> User:
     """ Search the given user in the database with its id  """
     for i, user in enumerate(all_users):
         if user.id == user_id:
@@ -192,7 +192,7 @@ def modify_user(user_id: int, new_user: UserBase) -> User:
             responses={404: {"model": ErrorMessage,
                              "description": "Utilisateur introuvable"}},
             )
-def delete_user(user_id: int):
+async def delete_user(user_id: int):
     """ Search the given user in the database with its id  """
     found = False
     for i, user in enumerate(all_users):
@@ -213,7 +213,7 @@ Define all endpoints relative to orders below
          description="Retourne un tableau JSON contenant les commandes avec leurs détails",
          response_description="	Liste des commandes",
          )
-def get_all_orders() -> List[Order]:
+async def get_all_orders() -> List[Order]:
     return all_orders
 
 
@@ -223,7 +223,7 @@ def get_all_orders() -> List[Order]:
          responses={404: {"model": ErrorMessage,
                           "description": "Commande introuvable"}},
          )
-def get_order_by_id(order_id: int) -> Order:
+async def get_order_by_id(order_id: int) -> Order:
     for order in all_orders:
         if order.id == order_id:
             return order
@@ -240,7 +240,7 @@ def get_order_by_id(order_id: int) -> Order:
                      400: {"model": ErrorMessage,
                            "description": "Commande incorrecte"}},
           )
-def add_order(order: Order) -> Order:
+async def add_order(order: Order) -> Order:
     """ Check that the order is correct and is not already in the database   """
     if order not in all_orders:
         if order.is_correct(all_products) is False:
@@ -262,7 +262,7 @@ def add_order(order: Order) -> Order:
                     400: {"model": ErrorMessage,
                           "description": "Commande incorrecte"}},
          )
-def modify_order(order_id: int, new_order: OrderBase) -> Order:
+async def modify_order(order_id: int, new_order: OrderBase) -> Order:
     """ Search the given order in the database with its id  """
     for i, order in enumerate(all_orders):
         if order.id == order_id:
@@ -281,7 +281,7 @@ def modify_order(order_id: int, new_order: OrderBase) -> Order:
             responses={404: {"model": ErrorMessage,
                              "description": "Commande introuvable"}},
             )
-def delete_order(order_id: int):
+async def delete_order(order_id: int):
     """ Search the given order in the database with its id  """
     found = False
     for i, order in enumerate(all_orders):

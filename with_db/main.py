@@ -19,7 +19,7 @@ Define all endpoints relative to products below
 
 
 @app.get("/")
-def welcome():
+async def welcome():
     return "Welcome to the API training"
 
 
@@ -27,7 +27,7 @@ def welcome():
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          response_description="	Liste des produits",
          )
-def get_all_products(product_name: str = "", product_category: str = "") -> List[schemas.Product]:
+async def get_all_products(product_name: str = "", product_category: str = "") -> List[schemas.Product]:
     # start a session to make requests to the database
     with Session(engine) as session:
         try:
@@ -61,7 +61,7 @@ def get_all_products(product_name: str = "", product_category: str = "") -> List
          responses={404: {"model": ErrorMessage,
                           "description": "Produit introuvable"}},
          )
-def get_product_by_id(product_id: int) -> schemas.Product:
+async def get_product_by_id(product_id: int) -> schemas.Product:
     with Session(engine) as session:
         try:
             """ Search the product in the database with its id  """
@@ -79,14 +79,14 @@ def get_product_by_id(product_id: int) -> schemas.Product:
 
 @app.post("/products",
           description="Ajouter un nouveau produit",
-          # status code defines the status code to return when no error occured
+          # status code async defines the status code to return when no error occured
           # since this operation is a creation, return 201 instead of 200
           status_code=201,
           response_description="Produit ajouté",
           responses={409: {"model": ErrorMessage,
                            "description": "Produit déjà existant"}},
           )
-def add_product(product: schemas.ProductBase) -> schemas.ProductBase:
+async def add_product(product: schemas.ProductBase) -> schemas.ProductBase:
     with Session(engine) as session:
         try:
             """
@@ -122,7 +122,7 @@ def add_product(product: schemas.ProductBase) -> schemas.ProductBase:
          responses={404: {"model": ErrorMessage,
                           "description": "Produit introuvable"}},
          )
-def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas.ProductBase:
+async def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas.ProductBase:
     with Session(engine) as session:
         """ Search the given product in the database with its name  """
         query = (
@@ -153,7 +153,7 @@ def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas
             responses={404: {"model": ErrorMessage,
                              "description": "Produit introuvable"}},
             )
-def delete_product(product_id: int):
+async def delete_product(product_id: int):
     with Session(engine) as session:
         """ Search the given product in the database with its name  """
         query = (
@@ -179,7 +179,7 @@ Define all endpoints relative to users below
          description="Retourne un tableau JSON contenant les utilisateurs avec leurs détails",
          response_description="	Liste des utilisateurs",
          )
-def get_all_users(user_name: str = "", email: str = "") -> List[schemas.User]:
+async def get_all_users(user_name: str = "", email: str = "") -> List[schemas.User]:
     # start a session to make requests to the database
     with Session(engine) as session:
         try:
@@ -212,7 +212,7 @@ def get_all_users(user_name: str = "", email: str = "") -> List[schemas.User]:
          responses={404: {"model": ErrorMessage,
                           "description": "Utilisateur introuvable"}},
          )
-def get_user_by_id(user_id: int) -> schemas.User:
+async def get_user_by_id(user_id: int) -> schemas.User:
     with Session(engine) as session:
         try:
             """ Search the user in the database with its id  """
@@ -230,14 +230,14 @@ def get_user_by_id(user_id: int) -> schemas.User:
 
 @app.post("/users",
           description="Ajouter un nouveau utilisateur",
-          # status code defines the status code to return when no error occured
+          # status code async defines the status code to return when no error occured
           # since this operation is a creation, return 201 instead of 200
           status_code=201,
           response_description="Utilisateur ajouté",
           responses={409: {"model": ErrorMessage,
                            "description": "Utilisateur déjà existant"}},
           )
-def add_user(user: schemas.UserBase) -> schemas.UserBase:
+async def add_user(user: schemas.UserBase) -> schemas.UserBase:
     with Session(engine) as session:
         try:
             """
@@ -272,7 +272,7 @@ def add_user(user: schemas.UserBase) -> schemas.UserBase:
          responses={404: {"model": ErrorMessage,
                           "description": "Utilisateur introuvable"}},
          )
-def modify_user(user_id: int, new_user: schemas.UserBase) -> schemas.UserBase:
+async def modify_user(user_id: int, new_user: schemas.UserBase) -> schemas.UserBase:
     with Session(engine) as session:
         """ Search the given user in the database with its id  """
         query = (
@@ -301,7 +301,7 @@ def modify_user(user_id: int, new_user: schemas.UserBase) -> schemas.UserBase:
             responses={404: {"model": ErrorMessage,
                              "description": "Utilisateur introuvable"}},
             )
-def delete_user(user_id: int):
+async def delete_user(user_id: int):
     with Session(engine) as session:
         """ Search the given user in the database with its name  """
         query = (
@@ -327,7 +327,7 @@ Define all endpoints relative to orders below
           description="Retourne un tableau JSON contenant les commandes avec leurs détails",
           response_description="Liste des commandes",
           )
-def get_all_orders() -> List[schemas.Order]:
+async def get_all_orders() -> List[schemas.Order]:
     with Session(engine) as session:
         query = select(models.Order)
         orders = session.execute(query).scalars().all()
@@ -340,7 +340,7 @@ def get_all_orders() -> List[schemas.Order]:
           responses={404: {"model": ErrorMessage,
                            "description": "Commande introuvable"}},
           )
-def get_order_by_id(order_id: int) -> schemas.Order:
+async def get_order_by_id(order_id: int) -> schemas.Order:
     with Session(engine) as session:
         try:
             """ Search the order in the database with its id  """
@@ -365,7 +365,7 @@ def get_order_by_id(order_id: int) -> schemas.Order:
                       400: {"model": ErrorMessage,
                             "description": "Commande incorrecte"}},
           )
-def add_order(order: schemas.OrderBase) -> schemas.OrderBase:
+async def add_order(order: schemas.OrderBase) -> schemas.OrderBase:
     with Session(engine) as session:
         try:
             """
@@ -449,7 +449,7 @@ def add_order(order: schemas.OrderBase) -> schemas.OrderBase:
                      400: {"model": ErrorMessage,
                            "description": "Commande incorrecte"}},
           )
-def modify_order(order_id: int, new_order: schemas.OrderBase) -> schemas.OrderBase:
+async def modify_order(order_id: int, new_order: schemas.OrderBase) -> schemas.OrderBase:
     try:
         # check that the provided order is correct
         assert new_order.amount_is_correct()
@@ -507,7 +507,7 @@ def modify_order(order_id: int, new_order: schemas.OrderBase) -> schemas.OrderBa
              responses={404: {"model": ErrorMessage,
                               "description": "Commande introuvable"}},
              )
-def delete_order(order_id: int):
+async def delete_order(order_id: int):
     with Session(engine) as session:
         try:
             """ Check that the order to delete exists """

@@ -13,7 +13,7 @@ app = FastAPI()
 
 
 @app.get("/")
-def welcome():
+async def welcome():
     return "Welcome to the API training"
 
 
@@ -23,12 +23,12 @@ Define all endpoints relative to product below
 
 
 @app.get("/products")
-def get_all_products() -> List[Product]:
+async def get_all_products() -> List[Product]:
     return all_products
 
 
 @app.get("/products/{product_id}")
-def get_product_by_id(product_id: int) -> Product:
+async def get_product_by_id(product_id: int) -> Product:
     for product in all_products:
         if product.id == product_id:
             return product
@@ -37,7 +37,7 @@ def get_product_by_id(product_id: int) -> Product:
 
 
 @app.post("/products")
-def add_product(product: Product) -> Product:
+async def add_product(product: Product) -> Product:
     """ Check that the product is not already in the database   """
     if product not in all_products:
         all_products.append(product)
@@ -48,7 +48,7 @@ def add_product(product: Product) -> Product:
 
 
 @app.put("/products/{product_id}")
-def modify_product(product_id: int, new_product: ProductBase) -> Product:
+async def modify_product(product_id: int, new_product: ProductBase) -> Product:
     """ Search the given product in the database with its id  """
     for i, product in enumerate(all_products):
         if product.id == product_id:
@@ -61,7 +61,7 @@ def modify_product(product_id: int, new_product: ProductBase) -> Product:
 
 
 @app.delete("/products/{product_id}")
-def delete_product(product_id: int):
+async def delete_product(product_id: int):
     """ Search the given product in the database with its id  """
     found = False
     for i, product in enumerate(all_products):
@@ -79,12 +79,12 @@ Define all endpoints relative to user below
 
 
 @app.get("/admin/users")
-def get_all_users() -> List[User]:
+async def get_all_users() -> List[User]:
     return all_users
 
 
 @app.get("/admin/users/{user_id}")
-def get_user_by_id(user_id: int) -> User:
+async def get_user_by_id(user_id: int) -> User:
     for user in all_users:
         if user.id == user_id:
             return user
@@ -93,7 +93,7 @@ def get_user_by_id(user_id: int) -> User:
 
 
 @app.post("/users")
-def add_user(user: User) -> User:
+async def add_user(user: User) -> User:
     """ Check that the user is not already in the database   """
     if user not in all_users:
         all_users.append(user)
@@ -104,7 +104,7 @@ def add_user(user: User) -> User:
 
 
 @app.put("/admin/users/{user_id}")
-def modify_user(user_id: int, new_user: UserBase) -> User:
+async def modify_user(user_id: int, new_user: UserBase) -> User:
     """ Search the given user in the database with its id  """
     for i, user in enumerate(all_users):
         if user.id == user_id:
@@ -117,7 +117,7 @@ def modify_user(user_id: int, new_user: UserBase) -> User:
 
 
 @app.delete("/admin/users/{user_id}")
-def delete_user(user_id: int):
+async def delete_user(user_id: int):
     """ Search the given user in the database with its id  """
     found = False
     for i, user in enumerate(all_users):
@@ -135,12 +135,12 @@ Define all endpoints relative to orders below
 
 
 @app.get("/admin/orders")
-def get_all_orders() -> List[Order]:
+async def get_all_orders() -> List[Order]:
     return all_orders
 
 
 @app.get("/admin/orders/{order_id}")
-def get_order_by_id(order_id: int) -> Order:
+async def get_order_by_id(order_id: int) -> Order:
     for order in all_orders:
         if order.id == order_id:
             return order
@@ -149,7 +149,7 @@ def get_order_by_id(order_id: int) -> Order:
 
 
 @app.post("/orders")
-def add_order(order: Order) -> Order:
+async def add_order(order: Order) -> Order:
     """ Check that the order is correct and is not already in the database   """
     if order not in all_orders:
         if order.is_correct(all_products) is False:
@@ -164,7 +164,7 @@ def add_order(order: Order) -> Order:
 
 
 @app.put("/admin/orders/{order_id}")
-def modify_order(order_id: int, new_order: OrderBase) -> Order:
+async def modify_order(order_id: int, new_order: OrderBase) -> Order:
     """ Search the given order in the database with its id  """
     if new_order.is_correct(all_products) is True:
         for i, order in enumerate(all_orders):
@@ -181,7 +181,7 @@ def modify_order(order_id: int, new_order: OrderBase) -> Order:
 
 
 @app.delete("/admin/orders/{order_id}")
-def delete_order(order_id: int):
+async def delete_order(order_id: int):
     """ Search the given order in the database with its id  """
     found = False
     for i, order in enumerate(all_orders):
