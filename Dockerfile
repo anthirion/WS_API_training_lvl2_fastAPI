@@ -1,5 +1,5 @@
 FROM python:3.12
-COPY with_db_container/ app/
+COPY containerized_app/ app/
 COPY requirements.txt app/
 COPY start_api_server.sh app/
 RUN pip install -r app/requirements.txt

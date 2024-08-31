@@ -16,7 +16,7 @@ services:
     develop:
       watch:
         - action: sync+restart
-          path: with_db_container/
+          path: containerized_app/
           target: /app/
   shopdb:
     image: mysql:9
