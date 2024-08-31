@@ -12,6 +12,12 @@ services:
       - "8000:8000"
     networks:
       - mynetwork
+    # automatically restart the image after a change in the code
+    develop:
+      watch:
+        - action: sync+restart
+          path: with_db_container/
+          target: /app/
   shopdb:
     image: mysql:9
     container_name: db
