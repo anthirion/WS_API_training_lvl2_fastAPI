@@ -20,23 +20,14 @@ class Product(Base):
 
     # define product attributes
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    product_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                              nullable=False)
+    productName: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
+                                             nullable=False)
     description: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                              nullable=False)
     price: Mapped[float] = mapped_column(Float, nullable=False)
     category: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                           nullable=False)
     stock: Mapped[int] = mapped_column(Integer, nullable=False)
-
-    def __repr__(self):
-        """
-        Defines how the product will be displayed
-        """
-        return f"Product(id={self.id}, name='{self.product_name}', " \
-            f"description='{self.description}', " \
-            f"price='{self.price}', category='{self.category}', "\
-            f"stock='{self.stock}')"
 
 
 class User(Base):
@@ -45,21 +36,14 @@ class User(Base):
 
     # define product attributes
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    user_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                           nullable=False)
+    username: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
+                                          nullable=False)
     email: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                        nullable=False)
     address: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                          nullable=False)
     password: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                           nullable=False)
-
-    def __repr__(self):
-        """
-        Defines how the product will be displayed
-        """
-        return f"User(id={self.id}, name='{self.user_name}', email='{self.email}', " \
-            f"address='{self.address}', password='{self.password}')"
 
 
 class Order(Base):
@@ -81,16 +65,8 @@ class Order(Base):
             "userId": self.userId,
             "items": self.items,
             "total": self.total,
-            "status": self.status,
+            "status": self.status
         }
-
-    def __repr__(self):
-        """
-        Defines how the product will be displayed
-        """
-        return f"Order(id={self.id}, userId='{self.userId}'" \
-            f"total={self.total}, status='{self.status}', "\
-            f"items='{self.items}')"
 
 
 class OrderLine(Base):
@@ -99,8 +75,9 @@ class OrderLine(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     productId: Mapped[int] = mapped_column(Integer, ForeignKey("products.id"))
-    productQuantity: Mapped[int] = mapped_column(Integer)
+    orderedQuantity: Mapped[int] = mapped_column(Integer)
     orderId: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"))
+    unitPrice: Mapped[float] = mapped_column(Float)
 
     order: Mapped["Order"] = relationship(back_populates="items")
 
@@ -108,15 +85,7 @@ class OrderLine(Base):
         return {
             "id": self.id,
             "productId": self.productId,
-            "productQuantity": self.productQuantity,
+            "orderedQuantity": self.orderedQuantity,
             "orderId": self.orderId,
+            "unitPrice": self.unitPrice
         }
-
-    def __repr__(self):
-        """
-        Defines how the product will be displayed
-        """
-        return f"OrderLine(id='{self.id}', " \
-            f"productId = {self.productId}, " \
-            f"productQuantity = '{self.productQuantity}', " \
-            f"orderId = '{self.orderId}')"

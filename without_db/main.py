@@ -27,45 +27,47 @@ async def get_all_products() -> List[Product]:
     return all_products
 
 
-@app.get("/products/{product_id}")
-async def get_product_by_id(product_id: int) -> Product:
+@app.get("/products/{productId}")
+async def get_product_by_id(productId: int) -> Product:
     for product in all_products:
-        if product.id == product_id:
+        if product.id == productId:
             return product
     # if no product is found, raise an error
     raise HTTPException(status_code=404, detail="Produit introuvable")
 
 
 @app.post("/products")
-async def add_product(product: Product) -> Product:
+async def add_product(new_product: ProductBase) -> Product:
     """ Check that the product is not already in the database   """
-    if product not in all_products:
-        all_products.append(product)
-        return product
+    if new_product not in all_products:
+        max_id = max([product.id for product in all_products])
+        new_product = Product.add_id(new_product, max_id+1)
+        all_products.append(new_product)
+        return new_product
     else:
-        raise HTTPException(status_code=404,
+        raise HTTPException(status_code=409,
                             detail="Produit déjà existant")
 
 
-@app.put("/products/{product_id}")
-async def modify_product(product_id: int, new_product: ProductBase) -> Product:
+@app.put("/products/{productId}")
+async def modify_product(productId: int, new_product: ProductBase) -> Product:
     """ Search the given product in the database with its id  """
     for i, product in enumerate(all_products):
-        if product.id == product_id:
+        if product.id == productId:
             # add the id in the URL to the given product
-            new_product_with_id = Product.add_id(new_product, product_id)
+            new_product_with_id = Product.add_id(new_product, productId)
             all_products[i] = new_product_with_id
             return new_product_with_id
     raise HTTPException(status_code=404,
                         detail="Produit introuvable")
 
 
-@app.delete("/products/{product_id}")
-async def delete_product(product_id: int):
+@app.delete("/products/{productId}")
+async def delete_product(productId: int):
     """ Search the given product in the database with its id  """
     found = False
     for i, product in enumerate(all_products):
-        if product.id == product_id:
+        if product.id == productId:
             del all_products[i]
             found = True
     if not found:
@@ -93,13 +95,15 @@ async def get_user_by_id(user_id: int) -> User:
 
 
 @app.post("/users")
-async def add_user(user: User) -> User:
+async def add_user(new_user: UserBase) -> User:
     """ Check that the user is not already in the database   """
-    if user not in all_users:
-        all_users.append(user)
-        return user
+    if new_user not in all_users:
+        max_id = max([user.id for user in all_users])
+        new_user = User.add_id(new_user, max_id+1)
+        all_users.append(new_user)
+        return new_user
     else:
-        raise HTTPException(status_code=404,
+        raise HTTPException(status_code=409,
                             detail="Utilisateur déjà existant")
 
 
@@ -149,17 +153,19 @@ async def get_order_by_id(order_id: int) -> Order:
 
 
 @app.post("/orders")
-async def add_order(order: Order) -> Order:
+async def add_order(new_order: OrderBase) -> Order:
     """ Check that the order is correct and is not already in the database   """
-    if order not in all_orders:
-        if order.is_correct(all_products) is False:
+    if new_order not in all_orders:
+        if new_order.is_correct(all_products) is False:
             raise HTTPException(status_code=400,
                                 detail="Commande incorrecte")
         else:
-            all_orders.append(order)
-            return order
+            max_id = max([order.id for order in all_orders])
+            new_order = Order.add_id(new_order, max_id+1)
+            all_orders.append(new_order)
+            return new_order
     else:
-        raise HTTPException(status_code=404,
+        raise HTTPException(status_code=409,
                             detail="Commande déjà existante")
 
 

@@ -18,7 +18,7 @@ class ProductBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    product_name: str = ""
+    productName: str = ""
     description: str = ""
     price: float = 0.0
     category: str = ""
@@ -39,7 +39,7 @@ class UserBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    user_name: str = ""
+    username: str = ""
     email: str = ""
     address: str = ""
     password: str = ""
@@ -55,12 +55,29 @@ class User(UserBase):
 
 class OrderLineBase(BaseModel):
     productId: int
-    productQuantity: int = 0
+    orderedQuantity: int = 0
+    unitPrice: float
+
+    def to_dict(self):
+        return {
+            "productId": self.productId,
+            "orderedQuantity": self.orderedQuantity,
+            "unitPrice": self.unitPrice,
+        }
 
 
 class OrderLine(OrderLineBase):
     id: int
     orderId: int
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "productId": self.productId,
+            "orderedQuantity": self.orderedQuantity,
+            "unitPrice": self.unitPrice,
+            "orderId": self.orderId
+        }
 
 
 class OrderBase(BaseModel):
@@ -91,9 +108,8 @@ class OrderBase(BaseModel):
                 # we consider that the execution of the query cannot fail
                 # because our database contains correct product ids
                 product = session.execute(query).scalar_one()
-                price = product.price * item.productQuantity
+                price = product.price * item.orderedQuantity
                 amount += price
-        print("AMOUNT: ", amount)
         # WARNING: make sure you round up the amount to avoid approximation errors
         return round(amount, 2) == self.total
 
@@ -104,6 +120,15 @@ class Order(OrderBase):
     excluding PUT.
     """
     id: int
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "userId": self.userId,
+            "items": self.items,
+            "total": self.total,
+            "status": self.status
+        }
 
 
 """

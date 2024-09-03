@@ -21,25 +21,37 @@ Body:
         "userId": 1,
         "items": [
             {
-                "id": 1,
-                "name": "Smartwatch Alpha",
-                "description": "Une montre intelligente avec des fonctionnalites avancees de suivi de la sante.",
-                "price": 199.99,
-                "category": "Electronique",
-                "stock": 150,
-                "quantity": 1
+                "productId": 1,
+                "orderedQuantity": 1,
+                "unitPrice": 199.99
             },
             {
-                "id": 4,
-                "name": "Sac a Dos de Randonnee",
-                "description": "Sac a dos durable et spacieux avec plusieurs compartiments pour le trekking.",
-                "price": 89.95,
-                "category": "Sport et Plein Air",
-                "stock": 200,
-                "quantity": 1
+                "productId": 4,
+                "orderedQuantity": 1,
+                "unitPrice": 89.95
             }
         ],
         "total": 289.94,
+        "status": "Completed"
+    }
+
+POST http://127.0.0.1:8000/orders/
+Body:
+    {
+        "userId": 3,
+        "items": [
+            {
+                "productId": 1,
+                "orderedQuantity": 2,
+                "unitPrice": 199.99
+            },
+            {
+                "productId": 4,
+                "orderedQuantity": 1,
+                "unitPrice": 89.95
+            }
+        ],
+        "total": 489.93,
         "status": "Completed"
     }
 
@@ -49,47 +61,17 @@ Body:
         "userId": 1,
         "items": [
             {
-                "id": 1,
-                "name": "Smartwatch Alpha",
-                "description": "Une montre intelligente avec des fonctionnalites avancees de suivi de la sante.",
-                "price": 199.99,
-                "category": "Electronique",
-                "stock": 150,
-                "quantity": 1
+                "productId": 1,
+                "orderedQuantity": 1,
+                "unitPrice": 199.99
             },
             {
-                "id": 4,
-                "name": "Sac a Dos de Randonnee",
-                "description": "Sac a dos durable et spacieux avec plusieurs compartiments pour le trekking.",
-                "price": 89.95,
-                "category": "Sport et Plein Air",
-                "stock": 200,
-                "quantity": 2
+                "productId": 4,
+                "orderedQuantity": 2,
+                "unitPrice": 89.95
             }
         ],
         "total": 379.89,
         "status": "Completed"
     }
 
-
-"""
-WITHOUT DB
-"""
-# Endpoints orders
-POST http://127.0.0.1:8000/orders/
-Body:
-    {
-        "userId": 3,
-        "items": [
-            {
-                "productId": 1,
-                "productQuantity": 2
-            },
-            {
-                "productId": 4,
-                "productQuantity": 1
-            }
-        ],
-        "total": 489.93,
-        "status": "Completed"
-    }

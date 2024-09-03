@@ -14,7 +14,7 @@ class ProductBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    product_name: str
+    productName: str
     description: str
     price: float
     category: str
@@ -34,7 +34,7 @@ class Product(ProductBase):
         Adds an id to the given product
         """
         return Product(id=id_,
-                       product_name=product.product_name,
+                       productName=product.productName,
                        description=product.description,
                        price=product.price,
                        category=product.category,
@@ -48,7 +48,7 @@ class UserBase(BaseModel):
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
-    user_name: str
+    username: str
     email: str
     address: str
     password: str
@@ -67,33 +67,21 @@ class User(UserBase):
         Adds an id to the given user
         """
         return User(id=id_,
-                    user_name=user.user_name,
+                    username=user.username,
                     email=user.email,
                     address=user.address,
                     password=user.password,
                     )
 
 
-class Item(Product):
+class Item(BaseModel):
     """
     This class represents an ordered product in an order. It has all the attributes of a product,
     plus an ordered quantity
     """
-    ordered_quantity: int
-
-    @staticmethod
-    def add_ordered_quantity(product: Product, ordered_quantity_: int):
-        """
-        Adds an id to the given order
-        """
-        return Item(id=product.id,
-                    product_name=product.product_name,
-                    description=product.description,
-                    price=product.price,
-                    category=product.category,
-                    stock=product.stock,
-                    ordered_quantity=ordered_quantity_,
-                    )
+    productId: int
+    orderedQuantity: int
+    unitPrice: float
 
 
 class OrderBase(BaseModel):
@@ -111,7 +99,7 @@ class OrderBase(BaseModel):
         """
         Check that the order is correct, that is:
         - the userId exists in the list of users
-        - the products in the order exist (the id is correct)
+        - the products in the order exists (the id is correct)
         - the stock of the product is bigger than the ordered quantity
         - the total amount of the order is correct (equals to the price
         of the products multiplied by the quantity)
@@ -122,15 +110,15 @@ class OrderBase(BaseModel):
             for item in self.items:
                 # check that the products in the order exist
                 # Note: the name, description, etc are not checked
-                assert item.id in {product.id for product in products}
+                assert item.productId in {product.id for product in products}
                 # check that the products in the order are available
-                product = products[item.id]
-                assert item.ordered_quantity <= product.stock
+                product = products[item.productId]
+                assert item.orderedQuantity <= product.stock
                 # update the product's stock
-                product.stock -= item.ordered_quantity
-                order_amount += item.price * item.ordered_quantity
+                product.stock -= item.orderedQuantity
+                order_amount += item.unitPrice * item.orderedQuantity
             # check that the total amount of the order is correct
-            assert order_amount == self.total
+            assert round(order_amount, 2) == self.total
             # check that the status is correct
             assert self.status in allowed_status
             return True
