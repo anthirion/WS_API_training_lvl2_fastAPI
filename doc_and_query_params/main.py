@@ -235,7 +235,7 @@ async def get_order_by_id(order_id: int) -> Order:
     raise HTTPException(status_code=404, detail="Commande introuvable")
 
 
-@app.post("/orders",
+@app.post("/admin/orders",
           description="Ajouter une nouvelle commande",
           response_description="Commande ajoutée",
           status_code=201,

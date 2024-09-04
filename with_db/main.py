@@ -402,7 +402,7 @@ async def get_order_by_id(order_id: int) -> schemas.Order:
     return order
 
 
-@app.post("/orders",
+@app.post("/admin/orders",
           description="Ajouter une nouvelle commande",
           response_description="Commande ajoutée",
           status_code=201,

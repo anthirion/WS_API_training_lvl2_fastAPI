@@ -152,7 +152,7 @@ async def get_order_by_id(order_id: int) -> Order:
     raise HTTPException(status_code=404, detail="Commande introuvable")
 
 
-@app.post("/orders")
+@app.post("/admin/orders")
 async def add_order(new_order: OrderBase) -> Order:
     """ Check that the order is correct and is not already in the database   """
     if new_order not in all_orders:

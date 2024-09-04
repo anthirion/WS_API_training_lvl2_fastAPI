@@ -80,16 +80,23 @@ class OrderLine(OrderLineBase):
         }
 
 
-class OrderBase(BaseModel):
+class OrderForUser(BaseModel):
+    """
+    A base class used for adding order in the cart of one user (POST /orders).
+    The userId is not necessary because the user is already authenticated
+    """
+    items: List[OrderLineBase] = []
+    total: float
+    status: str
+
+
+class OrderBase(OrderForUser):
     """
     A base class defining base order attributes. It defines all attributes except id.
     This class is used for operations that do not need id (the product provided in the body
     of a PUT operation do not have id)
     """
     userId: int
-    items: List[OrderLineBase] = []
-    total: float
-    status: str
 
     def amount_is_correct(self) -> bool:
         """
