@@ -8,7 +8,7 @@ from typing import List, Annotated
 from . import models, schemas
 from .schemas import ErrorMessage
 from .db import engine
-from .authentification import check_token
+from .authentification import get_user_from_token
 
 
 """
@@ -378,6 +378,21 @@ Define all endpoints relative to orders below
 """
 
 
+@ app.get("/orders",
+          description="Retourne un tableau JSON contenant les commandes d'un utilisateur",
+          response_description="Liste des commandes",
+          )
+async def get_user_orders(token: Annotated[str, Depends(oauth2_scheme)]) -> List[schemas.Order]:
+    user = get_user_from_token(token)
+    with Session(engine) as session:
+        query = (
+            select(models.Order)
+            .where(models.Order.userId == user.id)
+        )
+        orders = session.execute(query).scalars().all()
+        return [order.to_dict() for order in orders]
+
+
 @ app.get("/admin/orders",
           description="Retourne un tableau JSON contenant les commandes avec leurs détails",
           response_description="Liste des commandes",
@@ -413,6 +428,99 @@ async def get_order_by_id(token: Annotated[str, Depends(oauth2_scheme)],
 
 
 @app.post("/orders",
+          description="Ajouter une nouvelle commande dans le panier d'un utilisateur",
+          response_description="Commande ajoutée",
+          status_code=201,
+          responses={409: {"model": ErrorMessage,
+                           "description": "Commande déjà existante"},
+                      400: {"model": ErrorMessage,
+                            "description": "Commande incorrecte"}},
+          )
+async def add_order_for_user(token: Annotated[str, Depends(oauth2_scheme)],
+                             new_order: schemas.OrderForUser) -> schemas.Order:
+    user = get_user_from_token(token)
+    with Session(engine) as session:
+        try:
+            """
+            Check that the order is not already in the database
+            2 orders are considered identical if they have the same user, total and status
+            """
+            query = (
+                select(models.Order)
+                .where(models.Order.userId == user.id,
+                       models.Order.total == new_order.total,
+                       models.Order.status == new_order.status,
+                       )
+            )
+            # WARNING: KEEP the .scalar_one() to raise the exception
+            session.execute(query).scalar_one()
+            raise HTTPException(status_code=409,
+                                detail="Commande déjà existante")
+        except exc.NoResultFound:
+            """ The order is not in the db  """
+            try:
+                assert new_order.amount_is_correct()
+                assert new_order.status in schemas.allowed_status
+                for item in new_order.items:
+                    assert item.orderedQuantity > 0
+                    """ Update the stock of the product in the products table """
+                    # update the stock of the ordered product
+                    query = (
+                        select(models.Product)
+                        .where(models.Product.id == item.productId)
+                    )
+                    product = session.execute(query).scalar_one()
+                    new_stock = product.stock - item.orderedQuantity
+                    assert new_stock >= 0
+                    # update the product's stock
+                    query = (
+                        update(models.Product)
+                        .where(models.Product.id == item.productId)
+                        .values(stock=new_stock)
+                    )
+                    session.execute(query)
+                    session.commit()
+
+                """  Add a new row in the orders table   """
+                query = (
+                    insert(models.Order)
+                    .values(userId=user.id,
+                            total=new_order.total,
+                            status=new_order.status,
+                            )
+                )
+                session.execute(query)
+                session.commit()
+                """ Retrieve the order and its id in the database  """
+                query = (
+                    select(models.Order)
+                    .where(models.Order.userId == user.id,
+                           #    models.Order.total == new_order.total,
+                           models.Order.status == new_order.status,
+                           )
+                )
+                db_order = session.execute(query).scalar_one()
+                """  Add rows corresponding to the items in the orderlines table   """
+                # WARNING: the update of the orderlines table should be made AFTER
+                # the update of the orders table to respect DB integrity
+                for item in new_order.items:
+                    query = (
+                        insert(models.OrderLine)
+                        .values(productId=item.productId,
+                                orderedQuantity=item.orderedQuantity,
+                                orderId=db_order.id,
+                                unitPrice=item.unitPrice,
+                                )
+                    )
+                    session.execute(query)
+                    session.commit()
+                return db_order.to_dict()
+            except (AssertionError):
+                raise HTTPException(status_code=400,
+                                    detail="Commande incorrecte")
+
+
+@app.post("/admin/orders",
           description="Ajouter une nouvelle commande",
           response_description="Commande ajoutée",
           status_code=201,
