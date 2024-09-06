@@ -1,0 +1,9 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: shopdb
+spec:
+  template:
+    spec:
+      containers:
+      - image: mysql:9

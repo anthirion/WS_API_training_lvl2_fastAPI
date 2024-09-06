@@ -1,0 +1,70 @@
+// Cloud run
+gcloud run deploy apiserver \
+  --image docker.io/anthirion/shopapi \
+  --port 80 \
+  --platform managed \
+  --region europe-west1 \
+  --allow-unauthenticated
+
+gcloud run deploy shopdb \
+  --image docker.io/mysql:9 \
+  --port 3306 \
+  --platform managed \
+  --region europe-west1 \
+  --allow-unauthenticated
+
+gcloud beta run services update shopdb \
+--add-volume name=shop_api_config,type=cloud-storage,bucket=shop_api_config, readonly=true \
+--add-volume-mount volume=shop_api_config,mount-path=/mnt/shop_api_config
+
+/* Compute engine */
+/* ****************************** */
+// Créer une VM
+gcloud compute instances create shop-api-vm \
+ --project=wavestone-cto-labapparchi \
+ --zone=europe-west1-d \
+ --machine-type=n1-standard-1 \
+ --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=default \
+ --maintenance-policy=MIGRATE \
+ --provisioning-model=STANDARD \
+ --service-account=47352517072-compute@developer.gserviceaccount.com \
+ --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/trace.append \
+ --tags=http-server,https-server \
+ --create-disk=auto-delete=yes,boot=yes,device-name=shop-api-vm,image=projects/ubuntu-os-cloud/global/images/ubuntu-2004-focal-v20240830,mode=rw,size=10,type=pd-balanced \
+ --no-shielded-secure-boot \
+ --shielded-vtpm \
+ --shielded-integrity-monitoring \
+ --labels=goog-ec-src=vm_add-gcloud \
+ --reservation-affinity=any
+    
+// Vérifiez que Compute Engine a bien créé la VM
+gcloud compute instances list
+
+// Commandes à taper à la création de la VM
+sudo apt-get update
+sudop apt-get upgrade -y
+sudo apt install git-all -y
+git clone https://github.com/anthirion/WS_API_training_lvl2_fastAPI.git
+// Installer docker
+sudo apt  install docker.io -y
+// Installer docker compose
+sudo apt  install docker-compose -y
+
+
+// Ouvrir le port 80
+gcloud compute firewall-rules create allow-http \
+    --network default \
+    --allow tcp:80 \
+    --source-ranges 0.0.0.0/0 \
+    --direction ingress \
+    --priority 1000 \
+    --description "Allow HTTP traffic on port 80"
+
+// Ouvrir le port 8000
+gcloud compute firewall-rules create allow-port-8000 \
+    --network default \
+    --allow tcp:8000 \
+    --source-ranges 0.0.0.0/0 \
+    --direction ingress \
+    --priority 1000 \
+    --description "Allow HTTP traffic on port 8000"
