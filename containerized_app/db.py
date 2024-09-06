@@ -7,6 +7,7 @@ from dotenv import dotenv_values
 from .models import Base
 
 db_config = dotenv_values("app/.env")
+# db_config = dotenv_values(".env")     # for test purpose
 
 DATABASE_URL = (
     f"mysql://"
