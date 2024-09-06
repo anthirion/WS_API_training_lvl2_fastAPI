@@ -13,11 +13,11 @@ services:
     networks:
       - mynetwork
     # automatically restart the image after a change in the code
-    develop:
-      watch:
-        - action: sync+restart
-          path: containerized_app/
-          target: /app/
+    # develop:
+    #   watch:
+    #     - action: sync+restart
+    #       path: containerized_app/
+    #       target: /app/
   shopdb:
     image: mysql:9
     container_name: db
