@@ -4,3 +4,5 @@ fast_api_venv
 infra/.*
 infra/terraform.*
 infra/variables.tf
+infra/inventory.ini
+infra/vars.yml

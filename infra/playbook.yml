@@ -1,0 +1,40 @@
+---
+- name: MySQL configuration
+- hosts: dbserver
+  become: yes           # Pour exécuter les commandes avec sudo
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Installer MySQL server
+      apt:
+        name: mysql-server
+        state: present
+        update_cache: yes
+
+    - name: Assurer que MySQL est démarré et activé au démarrage
+      service:
+        name: mysql
+        state: started
+        enabled: true
+
+    - name: Sécuriser MySQL en configurant un mot de passe root
+      mysql_user:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        host_all: yes
+        state: present
+        priv: "*.*:ALL,GRANT"
+  
+    - name: Copier le script de configuration init.sql sur la VM
+      copy:
+        src: ../mysql-init/init.sql
+        dest: /init.sql
+        # Rendre le script exécutable
+        mode: u+x,g=r,o=r
+
+    - name: Exécuter le script SQL pour initialiser la DB
+      command: mysql -u root -p{{ mysql_root_password }} {{ mysql_database }} < /init.sql
+      args:
+        warn: false  # Pour éviter les avertissements d'Ansible
