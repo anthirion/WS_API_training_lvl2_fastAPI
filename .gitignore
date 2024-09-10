@@ -1,3 +1,6 @@
 __pycache__
 fast_api_venv
 .env
+infra/.*
+infra/terraform.*
+infra/variables.tf
