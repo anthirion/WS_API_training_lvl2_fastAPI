@@ -1,4 +1,7 @@
 -- init.sql
+CREATE DATABASE IF NOT EXISTS api_training;
+USE api_training;
+
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     productName VARCHAR(255) NOT NULL,

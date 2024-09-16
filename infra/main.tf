@@ -14,6 +14,7 @@ provider "google" {
 }
 
 resource "google_compute_network" "vpc_network" {
+  project = var.project
   name = "private-network"
 }
 
@@ -34,22 +35,20 @@ resource "google_compute_network" "vpc_network" {
 #     # access_config parameter gives the VM an external IP address, making it accessible over
 #     # the internet
 #     # TO REMOVE
-#     access_config {
-#     }
+#     access_config {}
 #   }
 # }
 
-resource "google_compute_instance" "vm_mysql" {
-  name          =   "db"
+resource "google_compute_instance" "mysql_vm" {
+  name          =   "db-server"
   machine_type  =   "e2-micro"
   zone          =   var.zone
 
   boot_disk {
-    # auto_delete = "true"
+    device_name = "db-server"
     initialize_params {
-      image = "debian-cloud/debian-11"
-      # Taille du disque en Go
-      # size  = 20
+      image = "debian-cloud/debian-12"
+      type = "pd-balanced"
     }
   }
 
@@ -57,25 +56,53 @@ resource "google_compute_instance" "vm_mysql" {
     network = google_compute_network.vpc_network.name
     # access_config parameter gives the VM an external IP address, making it accessible over
     # the internet
-    access_config {
-    }
+    access_config {}
   }
 
-  # Tags pour identifier les règles de firewall à appliquer
-  tags = ["db-server"]
+  metadata = {
+    "ssh-keys" = "anthirion: ${var.public_key}"
+  }
+
 }
 
-# Règle de firewall pour autoriser les connexions externes à MySQL (port 3306)
+# Règle de firewall autorisant le protocole ICMP (pour les ping) sur
+# toutes les machines du VPC private-network
+resource "google_compute_firewall" "allow-icmp" {
+  name    = "allow-icmp"
+  network = google_compute_network.vpc_network.name
+  direction = "INGRESS"
+
+  allow {
+    protocol = "icmp"
+  }
+
+  source_ranges = ["0.0.0.0/0"]  # Autorise l'accès depuis n'importe quelle adresse IP
+}
+
+# Règle de firewall pour autoriser SSH sur toutes les machines du VPC private-network
+resource "google_compute_firewall" "allow-ssh" {
+  name    = "allow-ssh"
+  network = google_compute_network.vpc_network.name
+  direction = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+
+  source_ranges = ["0.0.0.0/0"]
+}
+
+# Règle de firewall pour autoriser SQL sur toutes les machines du VPC private-network
 resource "google_compute_firewall" "allow-sql" {
-  name    = "allow-port-3306"
-  network = "default"
+  name    = "allow-sql"
+  network = google_compute_network.vpc_network.name
+  direction = "INGRESS"
 
   allow {
     protocol = "tcp"
     ports    = ["3306"]
   }
 
-  source_ranges = ["0.0.0.0/0"]  # Autorise l'accès depuis toutes les adresses IP (à ajuster pour plus de sécurité)
-
-  target_tags = ["db-server"]  # Appliqué aux instances avec le tag "db-server"
+  source_ranges = ["0.0.0.0/0"]
 }
