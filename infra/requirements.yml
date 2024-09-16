@@ -1,0 +1,6 @@
+---
+- src: geerlingguy.mysql  
+  name: mysql                     
+
+# Pour installer les rôles décrits dans ce fichier, lancer la commande :
+# ansible-galaxy install -r requirements.yml

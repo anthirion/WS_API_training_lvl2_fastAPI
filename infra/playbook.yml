@@ -1,40 +1,34 @@
 ---
 - name: MySQL configuration
-- hosts: dbserver
-  become: yes           # Pour exécuter les commandes avec sudo
+  hosts: dbserver
+  become: true
 
+  # le role suivant permet d'installer et de configuer MySQL
+  roles:
+    - role: geerlingguy.mysql
+      become: true
+  
   vars_files:
-    - vars.yml
+    - geerlingguy.mysql/defaults/main.yml
 
   tasks:
-    - name: Installer MySQL server
+    - name: Mettre à jour la liste des paquets apt
       apt:
-        name: mysql-server
-        state: present
         update_cache: yes
 
-    - name: Assurer que MySQL est démarré et activé au démarrage
+    - name: S'assurer que MySQL est démarré et activé au démarrage
       service:
         name: mysql
         state: started
         enabled: true
 
-    - name: Sécuriser MySQL en configurant un mot de passe root
-      mysql_user:
-        login_user: root
-        login_password: "{{ mysql_root_password }}"
-        host_all: yes
-        state: present
-        priv: "*.*:ALL,GRANT"
-  
-    - name: Copier le script de configuration init.sql sur la VM
+    - name: Copier le script de configuration de la DB
       copy:
         src: ../mysql-init/init.sql
         dest: /init.sql
         # Rendre le script exécutable
-        mode: u+x,g=r,o=r
+        mode: "u+x,g=r,o=r"
 
     - name: Exécuter le script SQL pour initialiser la DB
-      command: mysql -u root -p{{ mysql_root_password }} {{ mysql_database }} < /init.sql
-      args:
-        warn: false  # Pour éviter les avertissements d'Ansible
+      ansible.builtin.shell: |
+        mysql -u root -p{{ mysql_root_password }} < /init.sql
