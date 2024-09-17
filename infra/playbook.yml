@@ -4,7 +4,7 @@
   hosts: dbserver
   become: true
 
-  # le role suivant permet d'installer et de configuer MySQL
+  # Le role suivant installe et configue MySQL
   roles:
     - role: geerlingguy.mysql
       become: true
@@ -38,27 +38,30 @@
 # Deuxième play sur le serveur API
 - name: API server configuration
   hosts: apiserver
+  become: true
 
   tasks:
-    - name: Copier les fichiers sources dans /app
+    - name: Mettre à jour la liste des paquets apt
+      apt:
+        update_cache: yes
+
+    - name: Copier les fichiers sources dans app
       ansible.builtin.copy:
         src: "{{ item }}"
-        dest: ~/app/
+        dest: /home/anthirion/app/
         mode: u=rw,g=r,o=r
       with_fileglob:
         - "../final_app/*.py"
 
-    - name: Copier le fichier d'environnement dans /app
+    - name: Copier les autres fichiers de configuration dans app
       ansible.builtin.copy:
-          src:  ../final_app/.env
-          dest: ~/app/.env
+          src:  "{{ item }}"
+          dest: /home/anthirion/app/
           mode: u=rw,g=r,o=r
-
-    - name: Copier le fichier des requirements dans /app
-      ansible.builtin.copy:
-          src: ../requirements.txt
-          dest: ~/app/requirements.txt
-          mode: u=rw,g=r,o=r
+      with_items:
+        - "../final_app/.env"
+        - "../requirements.txt"
+        - "./create_venv.sh"
 
     - name: Installer Python 3
       apt:
@@ -83,15 +86,14 @@
 
     - name: Créer et activer un environnement virtuel
       ansible.builtin.shell: |
-        python3 -m venv ~/app/fastapi_venv
-        source ~/app/fastapi_venv/bin/activate
-
-    - name: Installer toutes les dépendances du fichier requirements.txt
-      ansible.builtin.shell: |
-        pip install -r ~/app/requirements.txt
-      become: true
+        chmod +x /home/anthirion/app/create_venv.sh && /home/anthirion/app/create_venv.sh
+      
+    - name: Installer les dépendances avec les privilèges root
+      ansible.builtin.pip:
+        requirements: /home/anthirion/app/requirements.txt
+        virtualenv: /home/anthirion/app/fastapi_venv
 
     # - name: Lancer le serveur
     #   ansible.builtin.shell: |
-    #     fastapi run ~/app/main.py
+    #     fastapi run /home/anthirion/app/main.py
     #   become: true
