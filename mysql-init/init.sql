@@ -13,12 +13,18 @@ CREATE TABLE IF NOT EXISTS products (
     stock INT NOT NULL
 );
 
-INSERT IGNORE INTO products (productName, description, price, category, stock) VALUES
-("Smartwatch Alpha", "Une montre intelligente avec des fonctionnalites avancees de suivi de la sante.", 199.99, "Electronique", 150),
-("Cafe Gourmet", "Un melange exquis de grains de cafe biologiques provenant des meilleures plantations.", 15.50, "Alimentation", 300),
-("Chaise de Bureau Ergonomique", "Chaise de bureau avec soutien lombaire ajustable et accoudoirs confortables.", 129.99, "Mobilier", 75),
-("Sac a Dos de Randonnee", "Sac a dos durable et spacieux avec plusieurs compartiments pour le trekking.", 89.95, "Sport et Plein Air", 200),
-("Serum Anti-age", "Serum haut de gamme pour reduire les rides et ameliorer la texture de la peau.", 49.99, "Beaute", 500);
+-- insérer des données uniquement si la table est vide
+INSERT INTO products (productName, description, price, category, stock)
+SELECT "Smartwatch Alpha", "Une montre intelligente avec des fonctionnalites avancees de suivi de la sante.", 199.99, "Electronique", 150
+UNION ALL
+SELECT "Cafe Gourmet", "Un melange exquis de grains de cafe biologiques provenant des meilleures plantations.", 15.50, "Alimentation", 300
+UNION ALL
+SELECT "Chaise de Bureau Ergonomique", "Chaise de bureau avec soutien lombaire ajustable et accoudoirs confortables.", 129.99, "Mobilier", 75
+UNION ALL
+SELECT "Sac a Dos de Randonnee", "Sac a dos durable et spacieux avec plusieurs compartiments pour le trekking.", 89.95, "Sport et Plein Air", 200
+UNION ALL
+SELECT "Serum Anti-age", "Serum haut de gamme pour reduire les rides et ameliorer la texture de la peau.", 49.99, "Beaute", 500
+WHERE (SELECT COUNT(*) FROM products) = 0;
 
 ----------------------------------------------------------------
 -- Table USERS
@@ -30,12 +36,18 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL
 );
 
-INSERT IGNORE INTO users (username, email, address, password) VALUES
-("Alice", "alice@example.com", "123 Apple St Wonderland", "password123"),
-("Bob", "bob@example.com", "456 Orange Ave Fruitland", "bobspassword"),
-("Charlie", "charlie@example.com", "789 Banana Blvd Tropicland", "charliepass"),
-("Diana", "diana@example.com", "321 Grape Rd Vineyard", "dianasecret"),
-("Eve", "eve@example.com", "654 Peach Ln Orchard", "evepassword");
+-- insérer des données uniquement si la table est vide
+INSERT INTO users (username, email, address, password)
+SELECT "Alice", "alice@example.com", "123 Apple St Wonderland", "password123"
+UNION ALL
+SELECT "Bob", "bob@example.com", "456 Orange Ave Fruitland", "bobspassword"
+UNION ALL
+SELECT "Charlie", "charlie@example.com", "789 Banana Blvd Tropicland", "charliepass"
+UNION ALL
+SELECT "Diana", "diana@example.com", "321 Grape Rd Vineyard", "dianasecret"
+UNION ALL
+SELECT "Eve", "eve@example.com", "654 Peach Ln Orchard", "evepassword"
+WHERE (SELECT COUNT(*) FROM users) = 0;
 
 ----------------------------------------------------------------
 -- Table ORDERS
@@ -47,12 +59,18 @@ CREATE TABLE IF NOT EXISTS orders (
     FOREIGN KEY (userId) REFERENCES users(id)
 );
 
-INSERT IGNORE INTO orders (userId, total, status) VALUES
-(1, 45.97, "Completed"),
-(2, 23.97, "Pending"),
-(3, 299.99, "Shipped"),
-(1, 17.45, "Cancelled"),
-(2, 76.98, "Processing");
+-- insérer des données uniquement si la table est vide
+INSERT INTO orders (userId, total, status)
+SELECT 1, 45.97, "Completed"
+UNION ALL
+SELECT 2, 23.97, "Pending"
+UNION ALL
+SELECT 3, 299.99, "Shipped"
+UNION ALL
+SELECT 1, 17.45, "Cancelled"
+UNION ALL
+SELECT 2, 76.98, "Processing"
+WHERE (SELECT COUNT(*) FROM orders) = 0;
 
 ----------------------------------------------------------------
 -- Table ORDERLINES
@@ -66,11 +84,19 @@ CREATE TABLE IF NOT EXISTS orderlines (
     FOREIGN KEY (orderId) REFERENCES orders(id)
 );
 
-INSERT IGNORE INTO orderlines (productId, orderedQuantity, orderId, unitPrice) VALUES
-(2, 1, 1, 199.99),
-(4, 3, 1, 129.99),
-(3, 2, 2, 15.50),
-(5, 1, 3, 199.99),
-(1, 3, 4, 129.99),
-(1, 3, 5, 129.99),
-(4, 2, 5, 15.50);
+-- insérer des données uniquement si la table est vide
+INSERT INTO orderlines (productId, orderedQuantity, orderId, unitPrice)
+SELECT 2, 1, 1, 199.99
+UNION ALL
+SELECT 4, 3, 1, 129.99
+UNION ALL
+SELECT 3, 2, 2, 15.50
+UNION ALL
+SELECT 5, 1, 3, 199.99
+UNION ALL
+SELECT 1, 3, 4, 129.99
+UNION ALL
+SELECT 1, 3, 5, 129.99
+UNION ALL
+SELECT 4, 2, 5, 15.50
+WHERE (SELECT COUNT(*) FROM orderlines) = 0;
