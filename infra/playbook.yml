@@ -1,5 +1,6 @@
 ---
-- name: MySQL configuration
+# Premier play sur la db
+- name: MySQL installation and configuration
   hosts: dbserver
   become: true
 
@@ -7,7 +8,7 @@
   roles:
     - role: geerlingguy.mysql
       become: true
-  
+
   vars_files:
     - geerlingguy.mysql/defaults/main.yml
 
@@ -32,3 +33,65 @@
     - name: Exécuter le script SQL pour initialiser la DB
       ansible.builtin.shell: |
         mysql -u root -p{{ mysql_root_password }} < /init.sql
+
+
+# Deuxième play sur le serveur API
+- name: API server configuration
+  hosts: apiserver
+
+  tasks:
+    - name: Copier les fichiers sources dans /app
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: ~/app/
+        mode: u=rw,g=r,o=r
+      with_fileglob:
+        - "../final_app/*.py"
+
+    - name: Copier le fichier d'environnement dans /app
+      ansible.builtin.copy:
+          src:  ../final_app/.env
+          dest: ~/app/.env
+          mode: u=rw,g=r,o=r
+
+    - name: Copier le fichier des requirements dans /app
+      ansible.builtin.copy:
+          src: ../requirements.txt
+          dest: ~/app/requirements.txt
+          mode: u=rw,g=r,o=r
+
+    - name: Installer Python 3
+      apt:
+        name: python3
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Installer le module venv de python
+      apt:
+          name: python3-venv
+          state: present
+          update_cache: true
+      become: true
+
+    - name: Installer pip
+      apt:
+        name: python3-pip
+        state: present
+        update_cache: true
+      become: true
+
+    - name: Créer et activer un environnement virtuel
+      ansible.builtin.shell: |
+        python3 -m venv ~/app/fastapi_venv
+        source ~/app/fastapi_venv/bin/activate
+
+    - name: Installer toutes les dépendances du fichier requirements.txt
+      ansible.builtin.shell: |
+        pip install -r ~/app/requirements.txt
+      become: true
+
+    # - name: Lancer le serveur
+    #   ansible.builtin.shell: |
+    #     fastapi run ~/app/main.py
+    #   become: true

@@ -18,26 +18,32 @@ resource "google_compute_network" "vpc_network" {
   name = "private-network"
 }
 
-# resource "google_compute_instance" "vm_api_server" {
-#   name          =  "api-server"
-#   machine_type  =  "e2-micro"
-#   zone          =  var.zone
+resource "google_compute_instance" "vm_api_server" {
+  name          =  "api-server"
+  machine_type  =  "e2-micro"
+  zone          =  var.zone
 
-#   boot_disk {
-#     initialize_params {
-#       # disk optimized for containers
-#       image = "cos-cloud/cos-stable"
-#     }
-#   }
+  boot_disk {
+    device_name = "api-server"
+    initialize_params {
+      # disk optimized for containers
+      # image = "cos-cloud/cos-stable"
+      image = "debian-cloud/debian-12"
+      type = "pd-balanced"
+    }
+  }
 
-#   network_interface {
-#     network = google_compute_network.vpc_network.name
-#     # access_config parameter gives the VM an external IP address, making it accessible over
-#     # the internet
-#     # TO REMOVE
-#     access_config {}
-#   }
-# }
+  network_interface {
+    network = google_compute_network.vpc_network.name
+    # access_config parameter gives the VM an external IP address, making it accessible over
+    # the internet
+    access_config {}
+  }
+
+  metadata = {
+    "ssh-keys" = "anthirion: ${var.public_key}"
+  }
+}
 
 resource "google_compute_instance" "mysql_vm" {
   name          =   "db-server"

@@ -1,4 +1,4 @@
-# This file regroups all the depencies
+# This file regroups all the depencies needed for app
 fastapi==0.111.1
 pydantic==2.8.2
 starlette==0.37.2
