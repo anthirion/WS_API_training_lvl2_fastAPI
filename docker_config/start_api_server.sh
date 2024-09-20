@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# GREEN='\033[0;32m'
-# NC='\033[0m' # No Color
-
 # wait until db container is up and a connection can be created
 # the --strict argument executes the echo command only if the server is up
 ./wait-for-it/wait-for-it.sh db:3306 --strict -- echo "DB SERVER IS UP"
