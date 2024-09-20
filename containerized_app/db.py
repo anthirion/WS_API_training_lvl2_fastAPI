@@ -9,12 +9,13 @@ from .models import Base
 db_config = dotenv_values("app/.env")
 # db_config = dotenv_values(".env")     # for test purpose
 
-DATABASE_URL = (
-    f"mysql://"
-    f"{db_config["USER"]}:{db_config["PSWD"]}"
-    f"@{db_config["HOST"]}:{db_config["PORT"]}"
-    f"/{db_config["NAME"]}"
-)
+user = db_config["USER"]
+pswd = db_config["PSWD"]
+host = db_config["HOST"]
+port = db_config["PORT"]
+name = db_config["NAME"]
+
+DATABASE_URL = f"mysql://{user}:{pswd}@{host}:{port}/{name}"
 
 engine = create_engine(DATABASE_URL)
 # create the table and the schema
