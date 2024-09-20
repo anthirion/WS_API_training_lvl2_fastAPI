@@ -20,13 +20,6 @@
       ansible.builtin.apt:
         update_cache: true
 
-    # déjà fait dans le rôle
-    # - name: S'assurer que MySQL démarre au démarrage
-    #   ansible.builtin.service:
-    #     name: mysql
-    #     enabled: true
-    #     state: started
-    
     - name: Autoriser les connexions MySQL depuis n'importe quelle machine
       ansible.builtin.lineinfile:
         path: /etc/mysql/mariadb.conf.d/50-server.cnf
@@ -34,18 +27,6 @@
         line: 'bind-address = 0.0.0.0'
         backup: true
       notify: Restart MySQL
-
-    # - name: >
-    #     Créer un nouvel utilisateur et lui donner tous les droits sur la
-    #     bdd api_training
-    #   ansible.builtin.mysql_user:
-    #     name: "{{ mysql_user_name }}"
-    #     password: "{{ mysql_user_password }}"
-    #     host: "%"
-    #     priv: "{{ db_name }}.*:ALL"
-    #     state: present      
-    #   notify: Restart MySQL
-    
 
     - name: Copier le script de configuration de la DB
       ansible.builtin.copy:
@@ -72,13 +53,6 @@
   hosts: apiserver
   become: true
   tags: api_server_config
-
-  # for debug purposes
-  # TO REMOVE
-  # roles:
-  #   - role: geerlingguy.mysql
-  #     become: true
-  #     tags: install_mysql_on_api_server 
 
   tasks:
     - name: Installer tous les utilitaires nécessaires
