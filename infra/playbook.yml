@@ -25,7 +25,6 @@
         path: /etc/mysql/mariadb.conf.d/50-server.cnf
         regexp: '^bind-address\s*='
         line: 'bind-address = 0.0.0.0'
-        backup: true
       notify: Restart MySQL
 
     - name: Copier le script de configuration de la DB
@@ -79,8 +78,13 @@
         - "../final_app/.env"
         - "../requirements.txt"
         - "./create_venv.sh"
-        - "./start_api_server.sh"
       tags: code_updated
+
+    - name: Mettre à jour l'adresse IP du serveur DB dans le .env
+      ansible.builtin.lineinfile:
+        path: /home/anthirion/app/.env
+        regexp: '^HOST='
+        line: "HOST = {{ hostvars['db-server']['ansible_host'] }}"
 
     - name: Créer et activer un environnement virtuel
       ansible.builtin.shell: |
@@ -96,7 +100,8 @@
         requirements: /home/anthirion/app/requirements.txt
         virtualenv: /home/anthirion/app/fastapi_venv
 
-    # - name: Lancer le serveur
-    #   ansible.builtin.shell: |
-    #     chmod +x /home/anthirion/app/start_api_server.sh && /home/anthirion/app/start_api_server.sh
-    #   tags: code_updated
+# impossible de démarrer le serveur automatiquement, le faire à la main avec les étapes suivantes :
+# 1. Se connecter au serveur api-server en ssh
+# 2. cd app
+# 3. source fastapi_venv/bin/activate
+# 4. fastapi run main.py
