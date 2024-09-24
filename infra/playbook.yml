@@ -1,5 +1,5 @@
 ---
-# Premier play sur la db
+# Play sur la db
 - name: MySQL installation and configuration
   hosts: dbserver
   become: true
@@ -47,7 +47,7 @@
 
 
 
-# Deuxième play sur le serveur API
+# Play sur le serveur API
 - name: API server configuration
   hosts: apiserver
   become: true
@@ -105,3 +105,46 @@
 # 2. cd app
 # 3. source fastapi_venv/bin/activate
 # 4. fastapi run main.py
+
+# Play sur la gateway
+- name: Gateway configuration
+  hosts: gatewayserver
+  become: true
+  tags: gateway_config
+  vars:
+    image_name: "custom_krakend"
+    container_name: "api_gateway"
+
+  tasks:
+    - name: Copier le contenu du répertoire krakend sur le serveur distant
+      ansible.builtin.copy:
+        src: ./krakend
+        dest: /home/anthirion
+        mode: u=rw,g=r,o=rx
+
+    - name: >
+        Construire l'image Docker de la gateway à partir du Dockerfile uniquement
+        si l'image n'est pas déjà construite et si l'argument rebuild est faux.
+      community.docker.docker_image:
+        name: "{{ image_name }}"
+        tag: latest
+        source: build
+        build:
+          path: krakend/
+        state: present
+
+    - name: Démarrer un conteneur Docker à partir de l'image construite
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        image: "{{ image_name }}:latest"
+        state: started
+        ports:
+          - "80:8080"                          
+
+    
+    # - name: >
+    #     Démarrer un conteneur Docker à partir de l'image construite
+    #     uniquement si le conteneur n'a pas déjà été lancé
+    #   ansible.builtin.shell: |
+    #     "docker run -it -p 80:8080 -v $PWD:/krakend/ devopsfaith/krakend"
+

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://www.krakend.io/schema/v2.7/krakend.json",
+  "version": 3,
+  "endpoints": [
+    {
+      "endpoint": "/catfact",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/fact",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://catfact.ninja"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    }
+  ],
+  "output_encoding": "json"
+}

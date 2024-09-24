@@ -13,6 +13,8 @@ provider "google" {
   region      = var.region
 }
 
+############################# VM #############################
+
 resource "google_compute_network" "vpc_network" {
   project = var.project
   name    = "private-network"
@@ -26,8 +28,6 @@ resource "google_compute_instance" "vm_api_server" {
   boot_disk {
     device_name = "api-server"
     initialize_params {
-      # disk optimized for containers
-      # image = "cos-cloud/cos-stable"
       image = "debian-cloud/debian-12"
       type  = "pd-balanced"
     }
@@ -75,6 +75,38 @@ resource "google_compute_instance" "mysql_vm" {
   tags = ["db-server"]
 
 }
+
+resource "google_compute_instance" "vm_gateway" {
+  name         = "gateway"
+  machine_type = "e2-micro"
+  zone         = var.zone
+
+  boot_disk {
+    device_name = "gateway"
+    initialize_params {
+      # disk optimized for containers
+      image = "cos-cloud/cos-stable"
+      # image = "debian-cloud/debian-12"
+      # type  = "pd-balanced"
+    }
+  }
+
+  network_interface {
+    network = google_compute_network.vpc_network.name
+    # access_config parameter gives the VM an external IP address, making it accessible over
+    # the internet
+    access_config {}
+  }
+
+  metadata = {
+    "ssh-keys" = "anthirion: ${var.public_key}"
+  }
+
+  tags = ["gateway"]
+
+}
+
+############################# Règles FW #############################
 
 # Règle de firewall autorisant le protocole ICMP (pour les ping) sur
 # toutes les machines du VPC private-network
@@ -129,6 +161,7 @@ resource "google_compute_firewall" "allow-egress-sql" {
     protocol = "tcp"
     ports    = ["3306"]
   }
+
 }
 
 # Règle de firewall pour autoriser les requêtes HTTP entrantes
@@ -139,7 +172,7 @@ resource "google_compute_firewall" "allow-ingress-http" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "8000"]
+    ports    = ["80", "443", "8000"]
   }
 
   source_ranges = ["0.0.0.0/0"]
@@ -154,6 +187,9 @@ resource "google_compute_firewall" "allow-egress-http" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "8000"]
+    ports    = ["80", "443", "8000"]
   }
+
+  # target_tags = ["gateway"]
+
 }

@@ -1,0 +1,44 @@
+{
+  "$schema": "https://www.krakend.io/schema/v2.7/krakend.json",
+  "version": 3,
+  "endpoints": [
+    {
+      "endpoint": "/catfact",
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["http://34.133.233.146/catfact"],
+            "jwk_url": "https://dev-3uj7yx4jt8xm3gws.eu.auth0.com/.well-known/jwks.json",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/fact",
+          "encoding": "json",
+          "sd": "static",
+          "method": "GET",
+          "host": [
+            "http://catfact.ninja"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "EIyFauPKRylYhpo6SZQ2WnH5OZTrIAV4",
+                    "client_secret": "EDZQ4VAtVuIZ2bzzKZrhNsvZT-iJ6Jr1M49PYQAOXH4fAQL0rhaPoeBaHzD-9gfP",
+                    "token_url": "https://dev-3uj7yx4jt8xm3gws.eu.auth0.com/oauth/token",
+                    "endpoint_params": {
+                      "client_id": ["EIyFauPKRylYhpo6SZQ2WnH5OZTrIAV4"],
+                      "client_secret": ["EDZQ4VAtVuIZ2bzzKZrhNsvZT-iJ6Jr1M49PYQAOXH4fAQL0rhaPoeBaHzD-9gfP"],
+                      "audience": ["http://34.133.233.146/catfact"]
+                    }
+                }
+            }
+        }
+      ]
+    }
+  ],
+  "output_encoding": "json"
+}
