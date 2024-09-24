@@ -52,29 +52,32 @@
   hosts: apiserver
   become: true
   tags: api_server_config
-  vars:
-    image_name: shopapi
-    container_name: apiserver
 
   tasks:
+    - name: Installer tous les utilitaires nécessaires
+      ansible.builtin.apt:
+        name: ["python3", "python3-venv", "python3-pip"]
+        state: present
+        update_cache: true
+
     - name: Copier les fichiers sources dans app
       ansible.builtin.copy:
         src: "{{ item }}"
         dest: /home/anthirion/app/
         mode: u=rw,g=r,o=r
       with_fileglob:
-        - "../containerized_app/*.py"
+        - "../final_app/*.py"
       tags: code_updated
 
-    - name: Copier les fichiers de configuration dans app
+    - name: Copier les autres fichiers de configuration dans app
       ansible.builtin.copy:
           src:  "{{ item }}"
           dest: /home/anthirion/app/
           mode: u=rw,g=r,o=r
       with_items:
-        - ../containerized_app/.env
-        - ../containerized_app/Dockerfile
-        - ../requirements.txt
+        - "../final_app/.env"
+        - "../requirements.txt"
+        - "./create_venv.sh"
       tags: code_updated
 
     - name: Mettre à jour l'adresse IP du serveur DB dans le .env
@@ -83,26 +86,25 @@
         regexp: '^HOST='
         line: "HOST = {{ hostvars['db-server']['ansible_host'] }}"
 
-    - name: >
-        Construire l'image Docker de l'API serveur à partir du Dockerfile
-        NB: si l'image existe déjà, elle n'est pas reconstruite (comportement par défaut)
-      community.docker.docker_image:
-        name: "{{ image_name }}"
-        tag: latest
-        source: build
-        build:
-          path: /home/anthirion/app/
-        state: present
+    - name: Créer et activer un environnement virtuel
+      ansible.builtin.shell: |
+        chmod +x /home/anthirion/app/create_venv.sh && /home/anthirion/app/create_venv.sh
+      tags: code_updated
 
-    - name: Démarrer un conteneur Docker à partir de l'image construite
-      community.docker.docker_container:
-        name: "{{ container_name }}"
-        image: "{{ image_name }}:latest"
-        state: started
-        ports:
-          # signification: port_hote:port_conteneur
-          - "80:8000"
+    - name: Installation de packages pour résoudre l'erreur de dépendance à l'installation de mysql-client
+      ansible.builtin.apt:
+        name: ['pkg-config', 'python3-dev', 'default-libmysqlclient-dev', 'build-essential']
+    
+    - name: Installer les dépendances de l'app
+      ansible.builtin.pip:
+        requirements: /home/anthirion/app/requirements.txt
+        virtualenv: /home/anthirion/app/fastapi_venv
 
+# impossible de démarrer le serveur automatiquement, le faire à la main avec les étapes suivantes :
+# 1. Se connecter au serveur api-server en ssh
+# 2. cd app
+# 3. source fastapi_venv/bin/activate
+# 4. fastapi run main.py
 
 # Play sur la gateway
 - name: Gateway configuration
@@ -112,6 +114,7 @@
   vars:
     image_name: "custom_krakend"
     container_name: "api_gateway"
+    rebuild: false
 
   tasks:
     - name: Copier le contenu du répertoire krakend sur le serveur distant
@@ -121,8 +124,8 @@
         mode: u=rw,g=r,o=rx
 
     - name: >
-        Construire l'image Docker de la gateway à partir du Dockerfile
-        NB: si l'image existe déjà, elle n'est pas reconstruite (comportement par défaut)
+        Construire l'image Docker de la gateway à partir du Dockerfile uniquement
+        si l'image n'est pas déjà construite et si l'argument rebuild est faux.
       community.docker.docker_image:
         name: "{{ image_name }}"
         tag: latest
@@ -130,12 +133,21 @@
         build:
           path: krakend/
         state: present
+      when: rebuild == true
 
-    - name: Démarrer un conteneur Docker à partir de l'image construite
-      community.docker.docker_container:
-        name: "{{ container_name }}"
-        image: "{{ image_name }}:latest"
-        state: started
-        ports:
-          # signification: port_hote:port_conteneur
-          - "80:8080"                          
+    # - name: Démarrer un conteneur Docker à partir de l'image construite
+    #   community.docker.docker_container:
+    #     name: "{{ container_name }}"
+    #     image: "{{ image_name }}:latest"
+    #     state: started
+    #     ports:
+    #       # signification: port_hote:port_conteneur
+    #       - "80:8080"                          
+
+    
+    # - name: >
+    #     Démarrer un conteneur Docker à partir de l'image construite
+    #     uniquement si le conteneur n'a pas déjà été lancé
+    #   ansible.builtin.shell: |
+    #     "docker run -it -p 80:8080 -v $PWD:/krakend/ devopsfaith/krakend"
+
