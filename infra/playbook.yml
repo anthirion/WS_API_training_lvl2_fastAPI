@@ -145,6 +145,13 @@
         dest: /home/anthirion
         mode: u=rw,g=r,o=rx
 
+    - name: Remplacer localhost par l'adresse IP du serveur API dans krakend.json
+      ansible.builtin.replace:
+        path: /home/anthirion/krakend/krakend.json
+        regexp: '"host":\s*\[\s*"http://127\.0\.0\.1"\s*\]'
+        replace: '"host": ["http://{{ hostvars["api-server"]["ansible_host"] }}"]'
+
+
     - name: Arreter le conteneur qui s'exécute si rebuild est vrai
       community.docker.docker_container:
         name: "{{ container_name }}"
