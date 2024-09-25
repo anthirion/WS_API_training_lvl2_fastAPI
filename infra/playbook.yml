@@ -55,6 +55,7 @@
   vars:
     image_name: shopapi
     container_name: apiserver
+    rebuild: false  # changer la valeur de la variable avec l'option --extra-vars
 
   tasks:
     - name: Copier les fichiers sources dans app
@@ -82,10 +83,28 @@
         path: /home/anthirion/app/.env
         regexp: '^HOST='
         line: "HOST = {{ hostvars['db-server']['ansible_host'] }}"
+      tags: code_updated
+    
+    - name: Arreter le conteneur qui s'exécute si rebuild est vrai
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: stopped
+      when: rebuild | bool == true
+      tags: code_updated
+
+    - name: Supprimer l'image Docker si rebuild est vrai
+      community.docker.docker_image:
+        name: "{{ image_name }}"
+        tag: latest
+        state: absent
+        # forcer la suppression de l'image
+        force_absent: true
+      when: rebuild | bool == true
+      tags: code_updated
 
     - name: >
         Construire l'image Docker de l'API serveur à partir du Dockerfile
-        NB: si l'image existe déjà, elle n'est pas reconstruite (comportement par défaut)
+        NB: Par défaut, si l'image existe déjà, elle n'est pas reconstruite
       community.docker.docker_image:
         name: "{{ image_name }}"
         tag: latest
@@ -93,6 +112,7 @@
         build:
           path: /home/anthirion/app/
         state: present
+      tags: code_updated
 
     - name: Démarrer un conteneur Docker à partir de l'image construite
       community.docker.docker_container:
@@ -102,6 +122,10 @@
         ports:
           # signification: port_hote:port_conteneur
           - "80:8000"
+      tags: code_updated
+
+## Pour voir les appels API effectués et leur réponse, afficher les logs:
+## docker logs <container_name> (à taper dans la VM)
 
 
 # Play sur la gateway
@@ -112,6 +136,7 @@
   vars:
     image_name: "custom_krakend"
     container_name: "api_gateway"
+    rebuild: false  # changer la valeur de la variable avec l'option --extra-vars
 
   tasks:
     - name: Copier le contenu du répertoire krakend sur le serveur distant
@@ -120,9 +145,24 @@
         dest: /home/anthirion
         mode: u=rw,g=r,o=rx
 
+    - name: Arreter le conteneur qui s'exécute si rebuild est vrai
+      community.docker.docker_container:
+        name: "{{ container_name }}"
+        state: stopped
+      when: rebuild | bool == true
+
+    - name: Supprimer l'image Docker si rebuild est vrai
+      community.docker.docker_image:
+        name: "{{ image_name }}"
+        tag: latest
+        state: absent
+        # forcer la suppression de l'image
+        force_absent: true
+      when: rebuild | bool == true
+
     - name: >
         Construire l'image Docker de la gateway à partir du Dockerfile
-        NB: si l'image existe déjà, elle n'est pas reconstruite (comportement par défaut)
+        NB: Par défaut, si l'image existe déjà, elle n'est pas reconstruite
       community.docker.docker_image:
         name: "{{ image_name }}"
         tag: latest
@@ -138,4 +178,11 @@
         state: started
         ports:
           # signification: port_hote:port_conteneur
-          - "80:8080"                          
+          - "80:8080"    
+
+## Pour voir les appels API effectués et leur réponse, afficher les logs:
+## docker logs <container_name> (à taper dans la VM)
+
+## [ATTENTION] Par défaut, KrakenD n'accepte que les json objects
+## Si le backend renvoie un ARRAY de json, il faut le spécifier dans le fichier
+## de configuration de KrakenD, par la ligne "is_collection = true"
