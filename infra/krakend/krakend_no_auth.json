@@ -3,19 +3,16 @@
   "version": 3,
   "endpoints": [
     {
-      "endpoint": "/catfact",
+      "endpoint": "/products",
       "method": "GET",
-      "output_encoding": "json",
       "backend": [
         {
-          "url_pattern": "/fact",
-          "encoding": "json",
-          "sd": "static",
+          "url_pattern": "/products",
           "method": "GET",
+          "is_collection": true,
           "host": [
-            "http://catfact.ninja"
-          ],
-          "disable_host_sanitize": false
+            "http://35.240.85.24"
+          ]
         }
       ]
     }

@@ -57,7 +57,6 @@ resource "google_compute_instance" "mysql_vm" {
     device_name = "db-server"
     initialize_params {
       image = "debian-cloud/debian-12"
-      type  = "pd-balanced"
     }
   }
 
@@ -86,8 +85,6 @@ resource "google_compute_instance" "vm_gateway" {
     initialize_params {
       # disk optimized for containers
       image = "cos-cloud/cos-stable"
-      # image = "debian-cloud/debian-12"
-      # type  = "pd-balanced"
     }
   }
 
@@ -148,7 +145,6 @@ resource "google_compute_firewall" "allow-ingress-sql" {
   }
 
   source_ranges = ["0.0.0.0/0"]
-  # source_tags = ["db-server"] # Appliquer cette règle uniquement à la VM DB
 }
 
 # Règle de firewall pour autoriser les requêtes SQL sortantes
@@ -172,11 +168,10 @@ resource "google_compute_firewall" "allow-ingress-http" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "443", "8000"]
+    ports    = ["80", "443"]
   }
 
   source_ranges = ["0.0.0.0/0"]
-  # source_tags = ["api-server"]
 }
 
 # Règle de firewall pour autoriser les requêtes HTTP sortantes
@@ -187,9 +182,7 @@ resource "google_compute_firewall" "allow-egress-http" {
 
   allow {
     protocol = "tcp"
-    ports    = ["80", "443", "8000"]
+    ports    = ["80", "443"]
   }
-
-  # target_tags = ["gateway"]
 
 }

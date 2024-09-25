@@ -3,39 +3,54 @@
   "version": 3,
   "endpoints": [
     {
-      "endpoint": "/catfact",
+      "endpoint": "/",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/",
+          "method": "GET",
+          "encoding": "string",
+          "host": [
+            "http://35.240.85.24"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "backend": [
+        {
+          "url_pattern": "/products",
+          "method": "GET",
+          "is_collection": true,
+          "host": [
+            "http://35.240.85.24"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users",
       "method": "GET",
       "output_encoding": "json",
       "extra_config": {
         "auth/validator": {
             "alg": "RS256",
-            "audience": ["http://34.133.233.146/catfact"],
             "jwk_url": "https://dev-3uj7yx4jt8xm3gws.eu.auth0.com/.well-known/jwks.json",
             "cache": true
         }
       },
       "backend": [
         {
-          "url_pattern": "/fact",
+          "url_pattern": "/admin/users",
           "encoding": "json",
-          "sd": "static",
           "method": "GET",
+          "is_collection": true,
           "host": [
-            "http://catfact.ninja"
+            "http://35.240.85.24"
           ],
-          "disable_host_sanitize": false,
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "EIyFauPKRylYhpo6SZQ2WnH5OZTrIAV4",
-                    "client_secret": "EDZQ4VAtVuIZ2bzzKZrhNsvZT-iJ6Jr1M49PYQAOXH4fAQL0rhaPoeBaHzD-9gfP",
-                    "token_url": "https://dev-3uj7yx4jt8xm3gws.eu.auth0.com/oauth/token",
-                    "endpoint_params": {
-                      "client_id": ["EIyFauPKRylYhpo6SZQ2WnH5OZTrIAV4"],
-                      "client_secret": ["EDZQ4VAtVuIZ2bzzKZrhNsvZT-iJ6Jr1M49PYQAOXH4fAQL0rhaPoeBaHzD-9gfP"],
-                      "audience": ["http://34.133.233.146/catfact"]
-                    }
-                }
-            }
+          "disable_host_sanitize": false
         }
       ]
     }
