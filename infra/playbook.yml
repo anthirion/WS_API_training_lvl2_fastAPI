@@ -104,7 +104,7 @@
 
     - name: >
         Construire l'image Docker de l'API serveur à partir du Dockerfile
-        NB: Par défaut, si l'image existe déjà, elle n'est pas reconstruite
+        Par défaut, si l'image existe déjà, elle n'est pas reconstruite
       community.docker.docker_image:
         name: "{{ image_name }}"
         tag: latest
@@ -138,19 +138,26 @@
     container_name: "api_gateway"
     rebuild: false  # changer la valeur de la variable avec l'option --extra-vars
 
+  vars_files:
+    - secrets.yml
+
   tasks:
-    - name: Copier le contenu du répertoire krakend sur le serveur distant
+    - name: Copier le Dockerfile du répertoire krakend sur le serveur distant
       ansible.builtin.copy:
-        src: ./krakend
-        dest: /home/anthirion
+        src: ./krakend/Dockerfile
+        dest: /home/anthirion/krakend/
         mode: u=rw,g=r,o=rx
+
+    - name: Générer le fichier krakend.json à partir du template
+      ansible.builtin.template:
+        src: ./krakend/krakend.json.j2
+        dest: /home/anthirion/krakend/krakend.json
 
     - name: Remplacer localhost par l'adresse IP du serveur API dans krakend.json
       ansible.builtin.replace:
         path: /home/anthirion/krakend/krakend.json
         regexp: '"host":\s*\[\s*"http://127\.0\.0\.1"\s*\]'
         replace: '"host": ["http://{{ hostvars["api-server"]["ansible_host"] }}"]'
-
 
     - name: Arreter le conteneur qui s'exécute si rebuild est vrai
       community.docker.docker_container:
@@ -169,13 +176,13 @@
 
     - name: >
         Construire l'image Docker de la gateway à partir du Dockerfile
-        NB: Par défaut, si l'image existe déjà, elle n'est pas reconstruite
+        Par défaut, si l'image existe déjà, elle n'est pas reconstruite
       community.docker.docker_image:
         name: "{{ image_name }}"
         tag: latest
         source: build
         build:
-          path: krakend/
+          path: /home/anthirion/krakend
         state: present
 
     - name: Démarrer un conteneur Docker à partir de l'image construite
@@ -190,6 +197,6 @@
 ## Pour voir les appels API effectués et leur réponse, afficher les logs:
 ## docker logs <container_name> (à taper dans la VM)
 
-## [ATTENTION] Par défaut, KrakenD n'accepte que les json objects
+## [ATTENTION] Par défaut, KrakenD n'accepte que les objets json
 ## Si le backend renvoie un ARRAY de json, il faut le spécifier dans le fichier
 ## de configuration de KrakenD, par la ligne "is_collection = true"

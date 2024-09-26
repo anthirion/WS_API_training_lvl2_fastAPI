@@ -1,0 +1,533 @@
+{
+  "$schema": "https://www.krakend.io/schema/v2.7/krakend.json",
+  "version": 3,
+  "endpoints": [
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/",
+          "method": "GET",
+          "encoding": "string",
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/products",
+          "method": "GET",
+          "encoding": "json",
+          "is_collection": true,
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/products/{productId}",
+      "method": "GET",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/products/{productId}",
+          "method": "GET",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/products",
+      "method": "POST",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/products",
+          "method": "POST",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/products/{productId}",
+      "method": "PUT",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/products/{productId}",
+          "method": "PUT",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/products/{productId}",
+      "method": "DELETE",
+      "output_encoding": "json",
+      "backend": [
+        {
+          "url_pattern": "/products/{productId}",
+          "method": "DELETE",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users",
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/users",
+          "method": "GET",
+          "encoding": "json",
+          "is_collection": true,
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users/{user_id}",
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/users/{user_id}",
+          "method": "GET",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users",
+      "method": "POST",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/users",
+          "method": "POST",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users/{user_id}",
+      "method": "PUT",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/users/{user_id}",
+          "method": "PUT",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users/{user_id}",
+      "method": "DELETE",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/users/{user_id}",
+          "method": "DELETE",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/orders",
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/orders",
+          "method": "GET",
+          "encoding": "json",
+          "is_collection": true,
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders",
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/orders",
+          "method": "GET",
+          "encoding": "json",
+          "is_collection": true,
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders/{order_id}",
+      "method": "GET",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/orders/{order_id}",
+          "method": "GET",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/orders",
+      "method": "POST",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/orders",
+          "method": "POST",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders",
+      "method": "POST",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/orders",
+          "method": "POST",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders/{order_id}",
+      "method": "PUT",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/orders/{order_id}",
+          "method": "PUT",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders/{order_id}",
+      "method": "DELETE",
+      "output_encoding": "json",
+      "extra_config": {
+        "auth/validator": {
+            "alg": "RS256",
+            "audience": ["{{ audience }}"],
+            "jwk_url": "{{ jwk_url }}",
+            "cache": true
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/admin/orders/{order_id}",
+          "method": "DELETE",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+                "auth/client-credentials": {
+                    "client_id": "{{ client_id }}",
+                    "client_secret": "{{ client_secret }}",
+                    "token_url": "{{ token_url }}",
+                    "endpoint_params": {
+                      "client_id": ["{{ client_id }}"],
+                      "client_secret": ["{{ client_secret }}"],
+                      "audience": ["{{ audience }}"]
+                    }
+                }
+            }
+        }
+      ]
+    }
+  ],
+  "output_encoding": "json"
+}
