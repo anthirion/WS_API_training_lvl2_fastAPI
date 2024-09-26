@@ -6,4 +6,6 @@ infra/terraform.*
 infra/variables.tf
 infra/inventory.ini
 infra/vars.yml
+infra/secrets.yml
 infra/roles/
+infra/krakend/krakend.json
