@@ -50,11 +50,8 @@ async def get_all_products(name: str = "", category: str = "") -> List[Product]:
                           "description": "Produit introuvable"}},
          )
 async def get_product_by_id(productId: int) -> Product:
-    for product in all_products:
-        if product.id == productId:
-            return product
-    # if no product is found, raise an error
-    raise HTTPException(status_code=404, detail="Produit introuvable")
+    # TODO
+    pass
 
 
 @app.post("/products",
@@ -67,15 +64,8 @@ async def get_product_by_id(productId: int) -> Product:
                            "description": "Produit déjà existant"}},
           )
 async def add_product(new_product: ProductBase) -> Product:
-    """ Check that the product is not already in the database   """
-    if new_product not in all_products:
-        max_id = max([product.id for product in all_products])
-        new_product = Product.add_id(new_product, max_id+1)
-        all_products.append(new_product)
-        return new_product
-    else:
-        raise HTTPException(status_code=409,
-                            detail="Produit déjà existant")
+    # TODO
+    pass
 
 
 @app.put("/products/{productId}",

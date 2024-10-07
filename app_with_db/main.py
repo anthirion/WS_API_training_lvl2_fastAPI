@@ -63,19 +63,8 @@ async def get_all_products(productName: str = "", product_category: str = "") ->
                           "description": "Produit introuvable"}},
          )
 async def get_product_by_id(productId: int) -> schemas.Product:
-    with Session(engine) as session:
-        try:
-            """ Search the product in the database with its id  """
-            query = (
-                select(models.Product)
-                .where(models.Product.id == productId)
-            )
-            product = session.execute(query).scalar_one()
-        # manage error in case no product was found
-        except exc.NoResultFound:
-            raise HTTPException(status_code=404,
-                                detail="Produit introuvable")
-    return product
+    # TODO
+    pass
 
 
 @app.post("/products",
@@ -88,47 +77,8 @@ async def get_product_by_id(productId: int) -> schemas.Product:
                            "description": "Produit déjà existant"}},
           )
 async def add_product(new_product: schemas.ProductBase) -> schemas.Product:
-    with Session(engine) as session:
-        try:
-            """
-            Check that the product is not already in the database
-            """
-            query = (
-                select(models.Product)
-                .where(models.Product.productName == new_product.productName,
-                       models.Product.description == new_product.description,
-                       models.Product.price == new_product.price,
-                       models.Product.category == new_product.category,
-                       models.Product.stock == new_product.stock,
-                       )
-            )
-            # WARNING: KEEP the .scalar_one() to raise the exception
-            session.execute(query).scalar_one()
-            raise HTTPException(status_code=409,
-                                detail="Produit déjà existant")
-        except exc.NoResultFound:
-            """ Add the product to the database  """
-            # create a product model compatible with SQLAlchemy using the models module
-            db_product = models.Product(productName=new_product.productName,
-                                        description=new_product.description,
-                                        price=new_product.price,
-                                        category=new_product.category,
-                                        stock=new_product.stock,
-                                        )
-            session.add(db_product)
-            # commit to register in the database
-            session.commit()
-            """ Retrieve the product and its id in the database  """
-            query = (
-                select(models.Product)
-                .where(models.Product.productName == new_product.productName,
-                       models.Product.description == new_product.description,
-                       models.Product.price == new_product.price,
-                       models.Product.category == new_product.category,
-                       models.Product.stock == new_product.stock,
-                       )
-            )
-            return session.execute(query).scalar_one()
+    # TODO
+    pass
 
 
 @app.put("/products/{productId}",
