@@ -55,14 +55,7 @@
         retourné par le backend
         Pour un endpoint POST, le status code sera 201 au lieu de 200  #}
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/products",
@@ -71,18 +64,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -90,14 +72,7 @@
       "endpoint": "/products/{productId}",
       "method": "PUT",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/products/{productId}",
@@ -106,18 +81,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -125,14 +89,7 @@
       "endpoint": "/products/{productId}",
       "method": "DELETE",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/products/{productId}",
@@ -141,18 +98,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -160,14 +106,7 @@
       "endpoint": "/admin/users",
       "method": "GET",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/admin/users",
@@ -177,18 +116,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -196,14 +124,7 @@
       "endpoint": "/admin/users/{user_id}",
       "method": "GET",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/admin/users/{user_id}",
@@ -212,18 +133,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -246,14 +156,7 @@
       "endpoint": "/admin/users/{user_id}",
       "method": "PUT",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/admin/users/{user_id}",
@@ -262,18 +165,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -281,14 +173,7 @@
       "endpoint": "/admin/users/{user_id}",
       "method": "DELETE",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/admin/users/{user_id}",
@@ -297,18 +182,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -316,14 +190,7 @@
       "endpoint": "/admin/orders",
       "method": "GET",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/admin/orders",
@@ -333,18 +200,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -352,14 +208,7 @@
       "endpoint": "/admin/orders/{order_id}",
       "method": "GET",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/admin/orders/{order_id}",
@@ -368,18 +217,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -387,14 +225,7 @@
       "endpoint": "/admin/orders",
       "method": "POST",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/admin/orders",
@@ -403,18 +234,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -422,14 +242,7 @@
       "endpoint": "/admin/orders/{order_id}",
       "method": "PUT",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/admin/orders/{order_id}",
@@ -438,18 +251,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     },
@@ -457,14 +259,7 @@
       "endpoint": "/admin/orders/{order_id}",
       "method": "DELETE",
       "output_encoding": "no-op",
-      "extra_config": {
-        "auth/validator": {
-            "alg": "RS256",
-            "audience": ["{{ audience }}"],
-            "jwk_url": "{{ jwk_url }}",
-            "cache": true
-        }
-      },
+      "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
           "url_pattern": "/admin/orders/{order_id}",
@@ -473,18 +268,7 @@
           "host": [
             "http://127.0.0.1"
           ],
-          "extra_config": {
-                "auth/client-credentials": {
-                    "client_id": "{{ client_id }}",
-                    "client_secret": "{{ client_secret }}",
-                    "token_url": "{{ token_url }}",
-                    "endpoint_params": {
-                      "client_id": ["{{ client_id }}"],
-                      "client_secret": ["{{ client_secret }}"],
-                      "audience": ["{{ audience }}"]
-                    }
-                }
-            }
+          "extra_config": {{ backend_config | to_json }}
         }
       ]
     }
