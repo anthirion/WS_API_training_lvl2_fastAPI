@@ -9,6 +9,8 @@ from . import models, schemas
 from .schemas import ErrorMessage
 from .db import engine
 
+from .authentification import check_token
+
 
 """
 Start the api server and configure authentification
@@ -91,6 +93,7 @@ async def get_product_by_id(productId: int) -> schemas.Product:
           )
 async def add_product(token: Annotated[str, Depends(oauth2_scheme)],
                       new_product: schemas.ProductBase) -> schemas.Product:
+    check_token(token)
     with Session(engine) as session:
         try:
             """
@@ -142,6 +145,7 @@ async def add_product(token: Annotated[str, Depends(oauth2_scheme)],
          )
 async def modify_product(token: Annotated[str, Depends(oauth2_scheme)],
                          productId: int, new_product: schemas.ProductBase) -> schemas.Product:
+    check_token(token)
     with Session(engine) as session:
         """ Search the given product in the database with its name  """
         query = (
@@ -183,6 +187,7 @@ async def modify_product(token: Annotated[str, Depends(oauth2_scheme)],
             )
 async def delete_product(productId: int,
                          token: Annotated[str, Depends(oauth2_scheme)]):
+    check_token(token)
     with Session(engine) as session:
         """ Search the given product in the database with its name  """
         query = (
@@ -210,6 +215,7 @@ Define all endpoints relative to users below
          )
 async def get_all_users(token: Annotated[str, Depends(oauth2_scheme)],
                         username: str = "", email: str = "") -> List[schemas.User]:
+    check_token(token)
     # start a session to make requests to the database
     with Session(engine) as session:
         try:
@@ -244,6 +250,7 @@ async def get_all_users(token: Annotated[str, Depends(oauth2_scheme)],
          )
 async def get_user_by_id(token: Annotated[str, Depends(oauth2_scheme)],
                          user_id: int) -> schemas.User:
+    check_token(token)
     with Session(engine) as session:
         try:
             """ Search the user in the database with its id  """
@@ -318,6 +325,7 @@ async def add_user(new_user: schemas.UserBase) -> schemas.User:
          )
 async def modify_user(token: Annotated[str, Depends(oauth2_scheme)],
                       user_id: int, new_user: schemas.UserBase) -> schemas.User:
+    check_token(token)
     with Session(engine) as session:
         """ Search the given user in the database with its id  """
         query = (
@@ -356,6 +364,7 @@ async def modify_user(token: Annotated[str, Depends(oauth2_scheme)],
                              "description": "Utilisateur introuvable"}},
             )
 async def delete_user(token: Annotated[str, Depends(oauth2_scheme)], user_id: int):
+    check_token(token)
     with Session(engine) as session:
         """ Search the given user in the database with its name  """
         query = (
@@ -382,6 +391,7 @@ Define all endpoints relative to orders below
           response_description="Liste des commandes",
           )
 async def get_all_orders(token: Annotated[str, Depends(oauth2_scheme)]) -> List[schemas.Order]:
+    check_token(token)
     with Session(engine) as session:
         query = select(models.Order)
         orders = session.execute(query).scalars().all()
@@ -396,6 +406,7 @@ async def get_all_orders(token: Annotated[str, Depends(oauth2_scheme)]) -> List[
           )
 async def get_order_by_id(token: Annotated[str, Depends(oauth2_scheme)],
                           order_id: int) -> schemas.Order:
+    check_token(token)
     with Session(engine) as session:
         try:
             """ Search the order in the database with its id  """
@@ -422,6 +433,7 @@ async def get_order_by_id(token: Annotated[str, Depends(oauth2_scheme)],
           )
 async def add_order(token: Annotated[str, Depends(oauth2_scheme)],
                     new_order: schemas.OrderBase) -> schemas.Order:
+    check_token(token)
     with Session(engine) as session:
         try:
             """
@@ -513,6 +525,7 @@ async def add_order(token: Annotated[str, Depends(oauth2_scheme)],
           )
 async def modify_order(token: Annotated[str, Depends(oauth2_scheme)],
                        order_id: int, new_order: schemas.OrderBase) -> schemas.Order:
+    check_token(token)
     with Session(engine) as session:
         try:
             # check that the provided order is correct
@@ -579,6 +592,7 @@ async def modify_order(token: Annotated[str, Depends(oauth2_scheme)],
                               "description": "Commande introuvable"}},
              )
 async def delete_order(token: Annotated[str, Depends(oauth2_scheme)], order_id: int):
+    check_token(token)
     with Session(engine) as session:
         try:
             """ Check that the order to delete exists """
