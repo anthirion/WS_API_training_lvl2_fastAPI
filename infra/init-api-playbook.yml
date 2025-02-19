@@ -82,7 +82,7 @@
       ansible.builtin.lineinfile:
         path: /home/anthirion/app/.env
         regexp: '^HOST='
-        line: "HOST = {{ hostvars['db-server']['ansible_host'] }}"
+        line: "HOST={{ hostvars['db-server']['ansible_host'] }}"
       tags: code_updated
     
     - name: Arreter le conteneur qui s'exécute si rebuild est vrai
