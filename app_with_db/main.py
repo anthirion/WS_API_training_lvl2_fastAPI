@@ -1,7 +1,7 @@
 # imports for API operation
 from fastapi import FastAPI, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import select, insert, update, delete, exc
+from sqlalchemy import select, insert, update, delete, exc, func
 from typing import List
 
 from . import models, schemas
@@ -109,7 +109,10 @@ async def add_product(new_product: schemas.ProductBase) -> schemas.Product:
     except exc.NoResultFound:
       """ Add the product to the database  """
       # create a product model compatible with SQLAlchemy using the models module
-      db_product = models.Product(productName=new_product.productName,
+      max_id_query = select(func.max(models.Product.id))
+      max_id = session.execute(max_id_query).scalar_one()
+      db_product = models.Product(id=max_id + 1,
+                                  productName=new_product.productName,
                                   description=new_product.description,
                                   price=new_product.price,
                                   category=new_product.category,
@@ -283,7 +286,10 @@ async def add_user(new_user: schemas.UserBase) -> schemas.User:
     except exc.NoResultFound:
       """ Add the user to the database  """
       # create a user model compatible with SQLAlchemy using the models module
-      db_user = models.User(username=new_user.username,
+      max_id_query = select(func.max(models.User.id))
+      max_id = session.execute(max_id_query).scalar_one()
+      db_user = models.User(id=max_id + 1,
+                            username=new_user.username,
                             email=new_user.email,
                             address=new_user.address,
                             password=new_user.password,
@@ -455,9 +461,12 @@ async def add_order(new_order: schemas.OrderBase) -> schemas.Order:
           session.commit()
 
         """  Add a new row in the orders table   """
+        max_id_query = select(func.max(models.Order.id))
+        max_id = session.execute(max_id_query).scalar_one()
         query = (
             insert(models.Order)
-            .values(userId=new_order.userId,
+            .values(id=max_id + 1,
+                    userId=new_order.userId,
                     total=new_order.total,
                     status=new_order.status,
                     )
@@ -477,9 +486,12 @@ async def add_order(new_order: schemas.OrderBase) -> schemas.Order:
         # WARNING: the update of the orderlines table should be made AFTER
         # the update of the orders table to respect DB integrity
         for item in new_order.items:
+          max_id_query = select(func.max(models.OrderLine.id))
+          max_id = session.execute(max_id_query).scalar_one()
           query = (
               insert(models.OrderLine)
-              .values(productId=item.productId,
+              .values(id=max_id + 1,
+                      productId=item.productId,
                       orderedQuantity=item.orderedQuantity,
                       orderId=db_order.id,
                       unitPrice=item.unitPrice,
@@ -535,9 +547,12 @@ async def modify_order(order_id: int, new_order: schemas.OrderBase) -> schemas.O
       session.commit()
 
       for item in new_order.items:
+        max_id_query = select(func.max(models.OrderLine.id))
+        max_id = session.execute(max_id_query).scalar_one()
         query = (
             insert(models.OrderLine)
-            .values(productId=item.productId,
+            .values(id=max_id + 1,
+                    productId=item.productId,
                     orderedQuantity=item.orderedQuantity,
                     orderId=order_id,
                     unitPrice=item.unitPrice,
