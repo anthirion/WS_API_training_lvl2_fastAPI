@@ -15,7 +15,7 @@ app = FastAPI()
 
 @app.get("/")
 async def welcome():
-    return "Welcome to the API training"
+  return "Welcome to the API training"
 
 # the parameters of the operation decorators are for documentation purpose only
 
@@ -28,17 +28,17 @@ async def welcome():
 # Declare query parameters for name and category only (makes more sense)
 # WARNING: Do NOT add quotes for query parameters -> products?category=Alimentation
 async def get_all_products(name: str = "", category: str = "") -> List[Product]:
-    if name:
-        """ Retrieve all products of name "name" if the name parameter is declared  """
-        return [product for product in all_products
-                if product.name == name]
-    elif category:
-        """ Retrieve all products of category "category" if the category parameter is declared  """
-        return [product for product in all_products
-                if product.category == category]
-    else:
-        """ Retrieve all products if no parameter is declared  """
-        return all_products
+  if name:
+    """ Retrieve all products of name "name" if the name parameter is declared  """
+    return [product for product in all_products
+            if product.name == name]
+  elif category:
+    """ Retrieve all products of category "category" if the category parameter is declared  """
+    return [product for product in all_products
+            if product.category == category]
+  else:
+    """ Retrieve all products if no parameter is declared  """
+    return all_products
 
 
 @app.get("/products/{productId}",
@@ -50,8 +50,11 @@ async def get_all_products(name: str = "", category: str = "") -> List[Product]:
                           "description": "Produit introuvable"}},
          )
 async def get_product_by_id(productId: int) -> Product:
-    # TODO
-    pass
+  for product in all_products:
+    if product.id == productId:
+      return product
+  # if no product is found, raise an error
+  raise HTTPException(status_code=404, detail="Produit introuvable")
 
 
 @app.post("/products",
@@ -64,8 +67,15 @@ async def get_product_by_id(productId: int) -> Product:
                            "description": "Produit déjà existant"}},
           )
 async def add_product(new_product: ProductBase) -> Product:
-    # TODO
-    pass
+  """ Check that the product is not already in the database   """
+  if new_product not in all_products:
+    max_id = max([product.id for product in all_products])
+    new_product = Product.add_id(new_product, max_id + 1)
+    all_products.append(new_product)
+    return new_product
+  else:
+    raise HTTPException(status_code=409,
+                        detail="Produit déjà existant")
 
 
 @app.put("/products/{productId}",
@@ -75,15 +85,15 @@ async def add_product(new_product: ProductBase) -> Product:
                           "description": "Produit introuvable"}},
          )
 async def modify_product(productId: int, new_product: ProductBase) -> Product:
-    """ Search the given product in the database with its id  """
-    for i, product in enumerate(all_products):
-        if product.id == productId:
-            # add the id in the URL to the given product
-            new_product_with_id = Product.add_id(new_product, productId)
-            all_products[i] = new_product_with_id
-            return new_product_with_id
-    raise HTTPException(status_code=404,
-                        detail="Produit introuvable")
+  """ Search the given product in the database with its id  """
+  for i, product in enumerate(all_products):
+    if product.id == productId:
+      # add the id in the URL to the given product
+      new_product_with_id = Product.add_id(new_product, productId)
+      all_products[i] = new_product_with_id
+      return new_product_with_id
+  raise HTTPException(status_code=404,
+                      detail="Produit introuvable")
 
 
 @app.delete("/products/{productId}",
@@ -94,15 +104,15 @@ async def modify_product(productId: int, new_product: ProductBase) -> Product:
                              "description": "Produit introuvable"}},
             )
 async def delete_product(productId: int):
-    """ Search the given product in the database with its id  """
-    found = False
-    for i, product in enumerate(all_products):
-        if product.id == productId:
-            del all_products[i]
-            found = True
-    if not found:
-        raise HTTPException(status_code=404,
-                            detail="Produit introuvable")
+  """ Search the given product in the database with its id  """
+  found = False
+  for i, product in enumerate(all_products):
+    if product.id == productId:
+      del all_products[i]
+      found = True
+  if not found:
+    raise HTTPException(status_code=404,
+                        detail="Produit introuvable")
 
 
 """
@@ -115,17 +125,17 @@ Define all endpoints relative to user below
          response_description="	Liste des utilisateurs",
          )
 async def get_all_users(name: str = "", email: str = "") -> List[User]:
-    if name:
-        """ Retrieve all users of name "name" if the name parameter is declared  """
-        return [user for user in all_users
-                if user.name == name]
-    elif email:
-        """ Retrieve all users of email "email" if the email parameter is declared  """
-        return [user for user in all_users
-                if user.email == email]
-    else:
-        """ Retrieve all users if no parameter is declared  """
-        return all_users
+  if name:
+    """ Retrieve all users of name "name" if the name parameter is declared  """
+    return [user for user in all_users
+            if user.name == name]
+  elif email:
+    """ Retrieve all users of email "email" if the email parameter is declared  """
+    return [user for user in all_users
+            if user.email == email]
+  else:
+    """ Retrieve all users if no parameter is declared  """
+    return all_users
 
 
 @app.get("/admin/users/{user_id}",
@@ -135,11 +145,11 @@ async def get_all_users(name: str = "", email: str = "") -> List[User]:
                           "description": "Utilisateur introuvable"}},
          )
 async def get_user_by_id(user_id: int) -> User:
-    for user in all_users:
-        if user.id == user_id:
-            return user
-    # if no user is found, raise an error
-    raise HTTPException(status_code=404, detail="Utilisateur introuvable")
+  for user in all_users:
+    if user.id == user_id:
+      return user
+  # if no user is found, raise an error
+  raise HTTPException(status_code=404, detail="Utilisateur introuvable")
 
 
 @app.post("/users",
@@ -150,15 +160,15 @@ async def get_user_by_id(user_id: int) -> User:
                            "description": "Utilisateur déjà existant"}},
           )
 async def add_user(new_user: UserBase) -> User:
-    """ Check that the user is not already in the database   """
-    if new_user not in all_users:
-        max_id = max([user.id for user in all_users])
-        new_user = User.add_id(new_user, max_id+1)
-        all_users.append(new_user)
-        return new_user
-    else:
-        raise HTTPException(status_code=409,
-                            detail="Utilisateur déjà existant")
+  """ Check that the user is not already in the database   """
+  if new_user not in all_users:
+    max_id = max([user.id for user in all_users])
+    new_user = User.add_id(new_user, max_id + 1)
+    all_users.append(new_user)
+    return new_user
+  else:
+    raise HTTPException(status_code=409,
+                        detail="Utilisateur déjà existant")
 
 
 @app.put("/admin/users/{user_id}",
@@ -168,15 +178,15 @@ async def add_user(new_user: UserBase) -> User:
                           "description": "Utilisateur introuvable"}},
          )
 async def modify_user(user_id: int, new_user: UserBase) -> User:
-    """ Search the given user in the database with its id  """
-    for i, user in enumerate(all_users):
-        if user.id == user_id:
-            # add the id in the URL to the given user
-            new_user_with_id = User.add_id(new_user, user_id)
-            all_users[i] = new_user_with_id
-            return new_user_with_id
-    raise HTTPException(status_code=404,
-                        detail="Utilisateur introuvable")
+  """ Search the given user in the database with its id  """
+  for i, user in enumerate(all_users):
+    if user.id == user_id:
+      # add the id in the URL to the given user
+      new_user_with_id = User.add_id(new_user, user_id)
+      all_users[i] = new_user_with_id
+      return new_user_with_id
+  raise HTTPException(status_code=404,
+                      detail="Utilisateur introuvable")
 
 
 @app.delete("/admin/users/{user_id}",
@@ -187,15 +197,15 @@ async def modify_user(user_id: int, new_user: UserBase) -> User:
                              "description": "Utilisateur introuvable"}},
             )
 async def delete_user(user_id: int):
-    """ Search the given user in the database with its id  """
-    found = False
-    for i, user in enumerate(all_users):
-        if user.id == user_id:
-            del all_users[i]
-            found = True
-    if not found:
-        raise HTTPException(status_code=404,
-                            detail="Utilisateur introuvable")
+  """ Search the given user in the database with its id  """
+  found = False
+  for i, user in enumerate(all_users):
+    if user.id == user_id:
+      del all_users[i]
+      found = True
+  if not found:
+    raise HTTPException(status_code=404,
+                        detail="Utilisateur introuvable")
 
 
 """
@@ -208,7 +218,7 @@ Define all endpoints relative to orders below
          response_description="	Liste des commandes",
          )
 async def get_all_orders() -> List[Order]:
-    return all_orders
+  return all_orders
 
 
 @app.get("/admin/orders/{order_id}",
@@ -218,11 +228,11 @@ async def get_all_orders() -> List[Order]:
                           "description": "Commande introuvable"}},
          )
 async def get_order_by_id(order_id: int) -> Order:
-    for order in all_orders:
-        if order.id == order_id:
-            return order
-    # if no order is found, raise an error
-    raise HTTPException(status_code=404, detail="Commande introuvable")
+  for order in all_orders:
+    if order.id == order_id:
+      return order
+  # if no order is found, raise an error
+  raise HTTPException(status_code=404, detail="Commande introuvable")
 
 
 @app.post("/admin/orders",
@@ -235,19 +245,19 @@ async def get_order_by_id(order_id: int) -> Order:
                            "description": "Commande incorrecte"}},
           )
 async def add_order(new_order: OrderBase) -> Order:
-    """ Check that the order is correct and is not already in the database   """
-    if new_order not in all_orders:
-        if new_order.is_correct(all_products) is False:
-            raise HTTPException(status_code=400,
-                                detail="Commande incorrecte")
-        else:
-            max_id = max([order.id for order in all_orders])
-            new_order = Order.add_id(new_order, max_id+1)
-            all_orders.append(new_order)
-            return new_order
+  """ Check that the order is correct and is not already in the database   """
+  if new_order not in all_orders:
+    if new_order.is_correct(all_products) is False:
+      raise HTTPException(status_code=400,
+                          detail="Commande incorrecte")
     else:
-        raise HTTPException(status_code=409,
-                            detail="Commande déjà existante")
+      max_id = max([order.id for order in all_orders])
+      new_order = Order.add_id(new_order, max_id + 1)
+      all_orders.append(new_order)
+      return new_order
+  else:
+    raise HTTPException(status_code=409,
+                        detail="Commande déjà existante")
 
 
 @app.put("/admin/orders/{order_id}",
@@ -259,15 +269,15 @@ async def add_order(new_order: OrderBase) -> Order:
                           "description": "Commande incorrecte"}},
          )
 async def modify_order(order_id: int, new_order: OrderBase) -> Order:
-    """ Search the given order in the database with its id  """
-    for i, order in enumerate(all_orders):
-        if order.id == order_id:
-            # add the id in the URL to the given order
-            new_order_with_id = Order.add_id(new_order, order_id)
-            all_orders[i] = new_order_with_id
-            return new_order_with_id
-    raise HTTPException(status_code=404,
-                        detail="Commande introuvable")
+  """ Search the given order in the database with its id  """
+  for i, order in enumerate(all_orders):
+    if order.id == order_id:
+      # add the id in the URL to the given order
+      new_order_with_id = Order.add_id(new_order, order_id)
+      all_orders[i] = new_order_with_id
+      return new_order_with_id
+  raise HTTPException(status_code=404,
+                      detail="Commande introuvable")
 
 
 @app.delete("/admin/orders/{order_id}",
@@ -278,12 +288,12 @@ async def modify_order(order_id: int, new_order: OrderBase) -> Order:
                              "description": "Commande introuvable"}},
             )
 async def delete_order(order_id: int):
-    """ Search the given order in the database with its id  """
-    found = False
-    for i, order in enumerate(all_orders):
-        if order.id == order_id:
-            del all_orders[i]
-            found = True
-    if not found:
-        raise HTTPException(status_code=404,
-                            detail="Commande introuvable")
+  """ Search the given order in the database with its id  """
+  found = False
+  for i, order in enumerate(all_orders):
+    if order.id == order_id:
+      del all_orders[i]
+      found = True
+  if not found:
+    raise HTTPException(status_code=404,
+                        detail="Commande introuvable")
