@@ -18,11 +18,8 @@ class ProductBase(BaseModel):
   This class is used for operations that do not need id (the product provided in the body
   of a PUT operation do not have id)
   """
-  productName: str = ""
-  description: str = ""
-  price: float = 0.0
-  category: str = ""
-  stock: int = 0
+  # TODO
+  pass
 
 
 class Product(ProductBase):
@@ -30,7 +27,8 @@ class Product(ProductBase):
   This class adds the id attribute to the ProductBase class. It is useful for all operations
   excluding PUT.
   """
-  id: int
+  # TODO
+  pass
 
 
 class UserBase(BaseModel):
