@@ -4,12 +4,15 @@ import threading
 server_ip = "34.79.191.125"
 url = f"http://{server_ip}/products"
 
+request_timeout = 5   # in seconds
+num_threads = 10
+threads = []
+
 
 def send_request():
   while True:
     try:
-      # fails if the request lasts more than 5 seconds
-      response = requests.get(url, timeout=5)
+      response = requests.get(url, timeout=request_timeout)
     except requests.exceptions.RequestException as e:
       print("La gateway est tombée")
       print("Erreur: ", e)
@@ -17,9 +20,7 @@ def send_request():
 
 
 # Make API calls with several threads
-# It will not be long until the timeout is reached
-num_threads = 10
-threads = []
+# It will not take long until the timeout is reached
 
 for _ in range(num_threads):
   try:
