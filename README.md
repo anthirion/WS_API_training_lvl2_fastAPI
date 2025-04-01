@@ -41,3 +41,30 @@ Sans modification de votre part, les credentials sont les suivants:
 ```
 
 5. [VERIFIATION] Si vous taper dans le navigateur l'url _GatewayIP/products_ (où l'adresse ip de la gateway est à récupérer sur la console gcp), vous devriez voir s'afficher la liste des produits enregistrée dans la bdd
+
+### Démo de charge (partie throttling)
+
+Cette démo a pour but de montrer un test de charge avec l'outil **Locust**.
+
+0. Si nécessaire, installer locust avec pip (pip3 install locust)
+
+1. Commenter les configurations de throttling (rate limiting et circuit breaker) puis relancer la configuration de la gateway avec le tag gateway_config
+
+2. Depuis le dossier load_testing, lancer la commande suivante:
+
+```
+    locust -f load_test.py -H http://{gateway_ip}
+```
+
+où l'ip de la gateway doit être récupérée depuis la console gcp
+
+3. Entrer les valeurs suivantes dans l'interface graphique de Locust:
+
+- number of users: 1000
+- ramp up: 10 users per second
+
+4. Afficher les graphiques pour que ce soit plus visuel (onglet Charts en haut à gauche)
+
+Renouveler l'expérience en décommentant les paramètres de throttling dans la configuration de la gateway
+
+**Conclusion de la démo**:
