@@ -139,7 +139,7 @@
     rebuild: false  # changer la valeur de la variable avec l'option --extra-vars
 
   vars_files:
-    - secrets.yml
+    - gateway-secrets.yml
 
   tasks:
     - name: Copier le Dockerfile du répertoire krakend sur le serveur distant
