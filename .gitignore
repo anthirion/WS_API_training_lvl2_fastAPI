@@ -3,9 +3,5 @@ fast_api_venv
 .env
 infra/.*
 infra/terraform.*
-infra/variables.tf
-infra/inventory.ini
-infra/vars.yml
-infra/secrets.yml
+infra/gateway-secrets.yml
 infra/roles/
-infra/krakend/krakend.json
