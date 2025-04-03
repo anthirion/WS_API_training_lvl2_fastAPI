@@ -19,6 +19,6 @@ class MaliciousUser(HttpUser):
 # locust -f load_test.py -H http://{host_ip}
 
 # For the demo, apply the following configuration params:
-# number of users: 1000
+# number of users: 600
 # ramp up: 10 users per second
 # On se rend compte que le serveur ne tombe pas mais le temps de réponse devient très important (inacceptable)
