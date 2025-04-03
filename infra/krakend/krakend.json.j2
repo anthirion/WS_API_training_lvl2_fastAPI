@@ -3,12 +3,12 @@
   "version": 3,
   "endpoints": [
     {
-      "endpoint": "/",
+      "endpoint": "/api/v1/",
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/",
+          "url_pattern": "/api/v1/",
           "method": "GET",
           "encoding": "string",
           "host": [
@@ -18,12 +18,12 @@
       ]
     },
     {
-      "endpoint": "/products",
+      "endpoint": "/api/v1/products",
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/products",
+          "url_pattern": "/api/v1/products",
           "method": "GET",
           "encoding": "json",
           "is_collection": true,
@@ -34,12 +34,12 @@
       ]
     },
     {
-      "endpoint": "/products/{productId}",
+      "endpoint": "/api/v1/products/{productId}",
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/products/{productId}",
+          "url_pattern": "/api/v1/products/{productId}",
           "method": "GET",
           "encoding": "json",
           "host": [
@@ -49,7 +49,7 @@
       ]
     },
     {
-      "endpoint": "/products",
+      "endpoint": "/api/v1/products",
       "method": "POST",
       {# "no-op" indique à la gateway de retourner le status code
         retourné par le backend
@@ -58,7 +58,7 @@
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/products",
+          "url_pattern": "/api/v1/products",
           "method": "POST",
           "encoding": "json",
           "host": [
@@ -69,13 +69,13 @@
       ]
     },
     {
-      "endpoint": "/products/{productId}",
+      "endpoint": "/api/v1/products/{productId}",
       "method": "PUT",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/products/{productId}",
+          "url_pattern": "/api/v1/products/{productId}",
           "method": "PUT",
           "encoding": "json",
           "host": [
@@ -86,13 +86,13 @@
       ]
     },
     {
-      "endpoint": "/products/{productId}",
+      "endpoint": "/api/v1/products/{productId}",
       "method": "DELETE",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/products/{productId}",
+          "url_pattern": "/api/v1/products/{productId}",
           "method": "DELETE",
           "encoding": "json",
           "host": [
@@ -103,13 +103,13 @@
       ]
     },
     {
-      "endpoint": "/admin/users",
+      "endpoint": "/api/v1/admin/users",
       "method": "GET",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/admin/users",
+          "url_pattern": "/api/v1/admin/users",
           "method": "GET",
           "encoding": "json",
           "is_collection": true,
@@ -121,13 +121,13 @@
       ]
     },
     {
-      "endpoint": "/admin/users/{user_id}",
+      "endpoint": "/api/v1/admin/users/{user_id}",
       "method": "GET",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/admin/users/{user_id}",
+          "url_pattern": "/api/v1/admin/users/{user_id}",
           "method": "GET",
           "encoding": "json",
           "host": [
@@ -138,12 +138,12 @@
       ]
     },
     {
-      "endpoint": "/users",
+      "endpoint": "/api/v1/users",
       "method": "POST",
       "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/users",
+          "url_pattern": "/api/v1/users",
           "method": "POST",
           "encoding": "json",
           "host": [
@@ -153,13 +153,13 @@
       ]
     },
     {
-      "endpoint": "/admin/users/{user_id}",
+      "endpoint": "/api/v1/admin/users/{user_id}",
       "method": "PUT",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/admin/users/{user_id}",
+          "url_pattern": "/api/v1/admin/users/{user_id}",
           "method": "PUT",
           "encoding": "json",
           "host": [
@@ -170,13 +170,13 @@
       ]
     },
     {
-      "endpoint": "/admin/users/{user_id}",
+      "endpoint": "/api/v1/admin/users/{user_id}",
       "method": "DELETE",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/admin/users/{user_id}",
+          "url_pattern": "/api/v1/admin/users/{user_id}",
           "method": "DELETE",
           "encoding": "json",
           "host": [
@@ -187,13 +187,13 @@
       ]
     },
     {
-      "endpoint": "/admin/orders",
+      "endpoint": "/api/v1/admin/orders",
       "method": "GET",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/admin/orders",
+          "url_pattern": "/api/v1/admin/orders",
           "method": "GET",
           "encoding": "json",
           "is_collection": true,
@@ -205,13 +205,13 @@
       ]
     },
     {
-      "endpoint": "/admin/orders/{order_id}",
+      "endpoint": "/api/v1/admin/orders/{order_id}",
       "method": "GET",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/admin/orders/{order_id}",
+          "url_pattern": "/api/v1/admin/orders/{order_id}",
           "method": "GET",
           "encoding": "json",
           "host": [
@@ -222,13 +222,13 @@
       ]
     },
     {
-      "endpoint": "/admin/orders",
+      "endpoint": "/api/v1/admin/orders",
       "method": "POST",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/admin/orders",
+          "url_pattern": "/api/v1/admin/orders",
           "method": "POST",
           "encoding": "json",
           "host": [
@@ -239,13 +239,13 @@
       ]
     },
     {
-      "endpoint": "/admin/orders/{order_id}",
+      "endpoint": "/api/v1/admin/orders/{order_id}",
       "method": "PUT",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/admin/orders/{order_id}",
+          "url_pattern": "/api/v1/admin/orders/{order_id}",
           "method": "PUT",
           "encoding": "json",
           "host": [
@@ -256,13 +256,13 @@
       ]
     },
     {
-      "endpoint": "/admin/orders/{order_id}",
+      "endpoint": "/api/v1/admin/orders/{order_id}",
       "method": "DELETE",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/admin/orders/{order_id}",
+          "url_pattern": "/api/v1/admin/orders/{order_id}",
           "method": "DELETE",
           "encoding": "json",
           "host": [
