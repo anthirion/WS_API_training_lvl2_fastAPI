@@ -12,7 +12,7 @@ from .resources import all_products, all_users, all_orders
 app = FastAPI()
 
 
-@app.get("/")
+@app.get("/api/v1/")
 async def welcome():
   return "Welcome to the API training"
 
@@ -22,12 +22,12 @@ Define all endpoints relative to product below
 """
 
 
-@app.get("/products")
+@app.get("/api/v1/products")
 async def get_all_products() -> List[Product]:
   return all_products
 
 
-@app.get("/products/{productId}")
+@app.get("/api/v1/products/{productId}")
 async def get_product_by_id(productId: int) -> Product:
   for product in all_products:
     if product.id == productId:
@@ -36,7 +36,7 @@ async def get_product_by_id(productId: int) -> Product:
   raise HTTPException(status_code=404, detail="Produit introuvable")
 
 
-@app.post("/products")
+@app.post("/api/v1/products")
 async def add_product(new_product: ProductBase) -> Product:
   """ Check that the product is not already in the database   """
   if new_product not in all_products:
@@ -49,7 +49,7 @@ async def add_product(new_product: ProductBase) -> Product:
                         detail="Produit déjà existant")
 
 
-@app.put("/products/{productId}")
+@app.put("/api/v1/products/{productId}")
 async def modify_product(productId: int, new_product: ProductBase) -> Product:
   """ Search the given product in the database with its id  """
   for i, product in enumerate(all_products):
@@ -62,7 +62,7 @@ async def modify_product(productId: int, new_product: ProductBase) -> Product:
                       detail="Produit introuvable")
 
 
-@app.delete("/products/{productId}")
+@app.delete("/api/v1/products/{productId}")
 async def delete_product(productId: int):
   """ Search the given product in the database with its id  """
   found = False
@@ -80,12 +80,12 @@ Define all endpoints relative to user below
 """
 
 
-@app.get("/admin/users")
+@app.get("/api/v1/admin/users")
 async def get_all_users() -> List[User]:
   return all_users
 
 
-@app.get("/admin/users/{user_id}")
+@app.get("/api/v1/admin/users/{user_id}")
 async def get_user_by_id(user_id: int) -> User:
   for user in all_users:
     if user.id == user_id:
@@ -94,7 +94,7 @@ async def get_user_by_id(user_id: int) -> User:
   raise HTTPException(status_code=404, detail="Utilisateur introuvable")
 
 
-@app.post("/users")
+@app.post("/api/v1/users")
 async def add_user(new_user: UserBase) -> User:
   """ Check that the user is not already in the database   """
   if new_user not in all_users:
@@ -107,7 +107,7 @@ async def add_user(new_user: UserBase) -> User:
                         detail="Utilisateur déjà existant")
 
 
-@app.put("/admin/users/{user_id}")
+@app.put("/api/v1/admin/users/{user_id}")
 async def modify_user(user_id: int, new_user: UserBase) -> User:
   """ Search the given user in the database with its id  """
   for i, user in enumerate(all_users):
@@ -120,7 +120,7 @@ async def modify_user(user_id: int, new_user: UserBase) -> User:
                       detail="Utilisateur introuvable")
 
 
-@app.delete("/admin/users/{user_id}")
+@app.delete("/api/v1/admin/users/{user_id}")
 async def delete_user(user_id: int):
   """ Search the given user in the database with its id  """
   found = False
@@ -138,12 +138,12 @@ Define all endpoints relative to orders below
 """
 
 
-@app.get("/admin/orders")
+@app.get("/api/v1/admin/orders")
 async def get_all_orders() -> List[Order]:
   return all_orders
 
 
-@app.get("/admin/orders/{order_id}")
+@app.get("/api/v1/admin/orders/{order_id}")
 async def get_order_by_id(order_id: int) -> Order:
   for order in all_orders:
     if order.id == order_id:
@@ -152,7 +152,7 @@ async def get_order_by_id(order_id: int) -> Order:
   raise HTTPException(status_code=404, detail="Commande introuvable")
 
 
-@app.post("/admin/orders")
+@app.post("/api/v1/admin/orders")
 async def add_order(new_order: OrderBase) -> Order:
   """ Check that the order is correct and is not already in the database   """
   if new_order not in all_orders:
@@ -169,7 +169,7 @@ async def add_order(new_order: OrderBase) -> Order:
                         detail="Commande déjà existante")
 
 
-@app.put("/admin/orders/{order_id}")
+@app.put("/api/v1/admin/orders/{order_id}")
 async def modify_order(order_id: int, new_order: OrderBase) -> Order:
   """ Search the given order in the database with its id  """
   if new_order.is_correct(all_products) is True:
@@ -186,7 +186,7 @@ async def modify_order(order_id: int, new_order: OrderBase) -> Order:
                       detail="Commande introuvable")
 
 
-@app.delete("/admin/orders/{order_id}")
+@app.delete("/api/v1/admin/orders/{order_id}")
 async def delete_order(order_id: int):
   """ Search the given order in the database with its id  """
   found = False

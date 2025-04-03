@@ -19,12 +19,12 @@ Define all endpoints relative to products below
 """
 
 
-@app.get("/")
+@app.get("/api/v1/")
 async def welcome():
   return "Welcome to the API training"
 
 
-@app.get("/products",
+@app.get("/api/v1/products",
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          response_description="	Liste des produits",
          )
@@ -56,7 +56,7 @@ async def get_all_products(productName: str = "", product_category: str = "") ->
       return {}
 
 
-@app.get("/products/{productId}",
+@app.get("/api/v1/products/{productId}",
          description="Retourne un objet JSON contenant les détails d'un produit spécifique",
          response_description="	Détails du produit",
          responses={404: {"model": ErrorMessage,
@@ -78,7 +78,7 @@ async def get_product_by_id(productId: int) -> schemas.Product:
   return product
 
 
-@app.post("/products",
+@app.post("/api/v1/products",
           description="Ajouter un nouveau produit",
           # status code async defines the status code to return when no error occured
           # since this operation is a creation, return 201 instead of 200
@@ -134,7 +134,7 @@ async def add_product(new_product: schemas.ProductBase) -> schemas.Product:
       return session.execute(query).scalar_one()
 
 
-@app.put("/products/{productId}",
+@app.put("/api/v1/products/{productId}",
          description="Modifier un produit existant",
          response_description="Produit mis à jour",
          responses={404: {"model": ErrorMessage,
@@ -173,7 +173,7 @@ async def modify_product(productId: int, new_product: schemas.ProductBase) -> sc
     return session.execute(query).scalar_one()
 
 
-@app.delete("/products/{productId}",
+@app.delete("/api/v1/products/{productId}",
             description="Supprimer un produit",
             status_code=204,
             response_description="Produit supprimé",
@@ -202,7 +202,7 @@ Define all endpoints relative to users below
 """
 
 
-@app.get("/admin/users",
+@app.get("/api/v1/admin/users",
          description="Retourne un tableau JSON contenant les utilisateurs avec leurs détails",
          response_description="	Liste des utilisateurs",
          )
@@ -233,7 +233,7 @@ async def get_all_users(username: str = "", email: str = "") -> List[schemas.Use
       return {}
 
 
-@app.get("/admin/users/{user_id}",
+@app.get("/api/v1/admin/users/{user_id}",
          description="Retourne un objet JSON contenant les détails d'un utilisateur spécifique",
          response_description="	Détails du utilisateur",
          responses={404: {"model": ErrorMessage,
@@ -255,7 +255,7 @@ async def get_user_by_id(user_id: int) -> schemas.User:
   return user
 
 
-@app.post("/users",
+@app.post("/api/v1/users",
           description="Ajouter un nouveau utilisateur",
           # status code async defines the status code to return when no error occured
           # since this operation is a creation, return 201 instead of 200
@@ -309,7 +309,7 @@ async def add_user(new_user: schemas.UserBase) -> schemas.User:
       return session.execute(query).scalar_one()
 
 
-@app.put("/admin/users/{user_id}",
+@app.put("/api/v1/admin/users/{user_id}",
          description="Modifier un utilisateur existant",
          response_description="Utilisateur mis à jour",
          responses={404: {"model": ErrorMessage,
@@ -346,7 +346,7 @@ async def modify_user(user_id: int, new_user: schemas.UserBase) -> schemas.User:
     return session.execute(query).scalar_one()
 
 
-@app.delete("/admin/users/{user_id}",
+@app.delete("/api/v1/admin/users/{user_id}",
             description="Supprimer un utilisateur",
             status_code=204,
             response_description="Utilisateur supprimé",
@@ -375,7 +375,7 @@ Define all endpoints relative to orders below
 """
 
 
-@app.get("/admin/orders",
+@app.get("/api/v1/admin/orders",
          description="Retourne un tableau JSON contenant les commandes avec leurs détails",
          response_description="Liste des commandes",
          )
@@ -386,7 +386,7 @@ async def get_all_orders() -> List[schemas.Order]:
     return [order.to_dict() for order in orders]
 
 
-@app.get("/admin/orders/{order_id}",
+@app.get("/api/v1/admin/orders/{order_id}",
          description="Retourne un objet JSON contenant les détails d'une commande spécifique",
          response_description="	Détails de la commande",
          responses={404: {"model": ErrorMessage,
@@ -408,7 +408,7 @@ async def get_order_by_id(order_id: int) -> schemas.Order:
   return order
 
 
-@app.post("/admin/orders",
+@app.post("/api/v1/admin/orders",
           description="Ajouter une nouvelle commande",
           response_description="Commande ajoutée",
           status_code=201,
@@ -505,7 +505,7 @@ async def add_order(new_order: schemas.OrderBase) -> schemas.Order:
                             detail="Commande incorrecte")
 
 
-@app.put("/admin/orders/{order_id}",
+@app.put("/api/v1/admin/orders/{order_id}",
          description="Modifier une commande existante",
          response_description="Commande mise à jour",
          responses={404: {"model": ErrorMessage,
@@ -575,7 +575,7 @@ async def modify_order(order_id: int, new_order: schemas.OrderBase) -> schemas.O
                           detail="Commande incorrecte")
 
 
-@app.delete("/admin/orders/{order_id}",
+@app.delete("/api/v1/admin/orders/{order_id}",
             description="Supprimer une commande",
             response_description="Commande supprimée",
             status_code=204,
