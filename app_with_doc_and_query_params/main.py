@@ -13,14 +13,14 @@ from .schemas import (
 app = FastAPI()
 
 
-@app.get("/api/v1/")
+@app.get("/")
 async def welcome():
   return "Welcome to the API training"
 
 # the parameters of the operation decorators are for documentation purpose only
 
 
-@app.get("/api/v1/products",
+@app.get("/products",
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          # response_description is the description to display when no error occured (code 200)
          response_description="	Liste des produits",
@@ -41,7 +41,7 @@ async def get_all_products(name: str = "", category: str = "") -> List[Product]:
     return all_products
 
 
-@app.get("/api/v1/products/{productId}",
+@app.get("/products/{productId}",
          description="Retourne un objet JSON contenant les détails d'un produit spécifique",
          response_description="	Détails du produit",
          # responses enables you to async define additional responses code and message
@@ -57,7 +57,7 @@ async def get_product_by_id(productId: int) -> Product:
   raise HTTPException(status_code=404, detail="Produit introuvable")
 
 
-@app.post("/api/v1/products",
+@app.post("/products",
           description="Ajouter un nouveau produit",
           response_description="Produit ajouté",
           # status code async defines the status code to return when no error occured
@@ -78,7 +78,7 @@ async def add_product(new_product: ProductBase) -> Product:
                         detail="Produit déjà existant")
 
 
-@app.put("/api/v1/products/{productId}",
+@app.put("/products/{productId}",
          description="Modifier un produit existant",
          response_description="Produit mis à jour",
          responses={404: {"model": ErrorMessage,
@@ -96,7 +96,7 @@ async def modify_product(productId: int, new_product: ProductBase) -> Product:
                       detail="Produit introuvable")
 
 
-@app.delete("/api/v1/products/{productId}",
+@app.delete("/products/{productId}",
             description="Supprimer un produit",
             response_description="Produit supprimé",
             status_code=204,
@@ -120,7 +120,7 @@ Define all endpoints relative to user below
 """
 
 
-@app.get("/api/v1/admin/users",
+@app.get("/admin/users",
          description="Retourne un tableau JSON contenant les utilisateurs avec leurs détails",
          response_description="	Liste des utilisateurs",
          )
@@ -138,7 +138,7 @@ async def get_all_users(name: str = "", email: str = "") -> List[User]:
     return all_users
 
 
-@app.get("/api/v1/admin/users/{user_id}",
+@app.get("/admin/users/{user_id}",
          description="Retourne un objet JSON contenant les détails d'un utilisateur spécifique",
          response_description="	Détails de l'utilisateur",
          responses={404: {"model": ErrorMessage,
@@ -152,7 +152,7 @@ async def get_user_by_id(user_id: int) -> User:
   raise HTTPException(status_code=404, detail="Utilisateur introuvable")
 
 
-@app.post("/api/v1/users",
+@app.post("/users",
           description="Ajouter un nouveau utilisateur",
           response_description="Utilisateur ajouté",
           status_code=201,
@@ -171,7 +171,7 @@ async def add_user(new_user: UserBase) -> User:
                         detail="Utilisateur déjà existant")
 
 
-@app.put("/api/v1/admin/users/{user_id}",
+@app.put("/admin/users/{user_id}",
          description="Modifier un utilisateur existant",
          response_description="Utilisateur mis à jour",
          responses={404: {"model": ErrorMessage,
@@ -189,7 +189,7 @@ async def modify_user(user_id: int, new_user: UserBase) -> User:
                       detail="Utilisateur introuvable")
 
 
-@app.delete("/api/v1/admin/users/{user_id}",
+@app.delete("/admin/users/{user_id}",
             description="Supprimer un utilisateur",
             response_description="Utilisateur supprimé",
             status_code=204,
@@ -213,7 +213,7 @@ Define all endpoints relative to orders below
 """
 
 
-@app.get("/api/v1/admin/orders",
+@app.get("/admin/orders",
          description="Retourne un tableau JSON contenant les commandes avec leurs détails",
          response_description="	Liste des commandes",
          )
@@ -221,7 +221,7 @@ async def get_all_orders() -> List[Order]:
   return all_orders
 
 
-@app.get("/api/v1/admin/orders/{order_id}",
+@app.get("/admin/orders/{order_id}",
          description="Retourne un objet JSON contenant les détails d'une commande spécifique",
          response_description="	Détails de la commande",
          responses={404: {"model": ErrorMessage,
@@ -235,7 +235,7 @@ async def get_order_by_id(order_id: int) -> Order:
   raise HTTPException(status_code=404, detail="Commande introuvable")
 
 
-@app.post("/api/v1/admin/orders",
+@app.post("/admin/orders",
           description="Ajouter une nouvelle commande",
           response_description="Commande ajoutée",
           status_code=201,
@@ -260,7 +260,7 @@ async def add_order(new_order: OrderBase) -> Order:
                         detail="Commande déjà existante")
 
 
-@app.put("/api/v1/admin/orders/{order_id}",
+@app.put("/admin/orders/{order_id}",
          description="Modifier une commande existante",
          response_description="Commande mise à jour",
          responses={404: {"model": ErrorMessage,
@@ -280,7 +280,7 @@ async def modify_order(order_id: int, new_order: OrderBase) -> Order:
                       detail="Commande introuvable")
 
 
-@app.delete("/api/v1/admin/orders/{order_id}",
+@app.delete("/admin/orders/{order_id}",
             description="Supprimer une commande",
             response_description="Commande supprimée",
             status_code=204,
