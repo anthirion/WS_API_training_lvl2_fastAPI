@@ -34,12 +34,12 @@
       ]
     },
     {
-      "endpoint": "/products/{productId}",
+      "endpoint": "/products/{product_id}",
       "method": "GET",
       "output_encoding": "no-op",
       "backend": [
         {
-          "url_pattern": "/products/{productId}",
+          "url_pattern": "/products/{product_id}",
           "method": "GET",
           "encoding": "json",
           "host": [
@@ -69,13 +69,13 @@
       ]
     },
     {
-      "endpoint": "/products/{productId}",
+      "endpoint": "/products/{product_id}",
       "method": "PUT",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/products/{productId}",
+          "url_pattern": "/products/{product_id}",
           "method": "PUT",
           "encoding": "json",
           "host": [
@@ -86,13 +86,13 @@
       ]
     },
     {
-      "endpoint": "/products/{productId}",
+      "endpoint": "/products/{product_id}",
       "method": "DELETE",
       "output_encoding": "no-op",
       "extra_config": {{ endpoint_config | to_json }},
       "backend": [
         {
-          "url_pattern": "/products/{productId}",
+          "url_pattern": "/products/{product_id}",
           "method": "DELETE",
           "encoding": "json",
           "host": [

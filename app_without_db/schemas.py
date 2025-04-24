@@ -14,7 +14,7 @@ class ProductBase(BaseModel):
   This class is used for operations that do not need id (the product provided in the body
   of a PUT operation do not have id)
   """
-  productName: str = ""
+  product_name: str = ""
   description: str = ""
   price: float = 0.0
   category: str = ""
@@ -34,7 +34,7 @@ class Product(ProductBase):
     Adds an id to the given product
     """
     return Product(id=id_,
-                   productName=product.productName,
+                   product_name=product.product_name,
                    description=product.description,
                    price=product.price,
                    category=product.category,
@@ -79,9 +79,9 @@ class Item(BaseModel):
   This class represents an ordered product in an order. It has all the attributes of a product,
   plus an ordered quantity
   """
-  productId: int
-  orderedQuantity: int
-  unitPrice: float
+  product_id: int
+  ordered_quantity: int
+  unit_price: float
 
 
 class OrderBase(BaseModel):
@@ -90,7 +90,7 @@ class OrderBase(BaseModel):
   This class is used for operations that do not need id (the product provided in the body
   of a PUT operation do not have id)
   """
-  userId: int
+  user_id: int
   items: List[Item]
   total: float
   status: str
@@ -98,7 +98,7 @@ class OrderBase(BaseModel):
   def is_correct(self, products: List[Product]) -> bool:
     """
     Check that the order is correct, that is:
-    - the userId exists in the list of users
+    - the user_id exists in the list of users
     - the products in the order exists (the id is correct)
     - the stock of the product is bigger than the ordered quantity
     - the total amount of the order is correct (equals to the price
@@ -110,13 +110,13 @@ class OrderBase(BaseModel):
       for item in self.items:
         # check that the products in the order exist
         # Note: the name, description, etc are not checked
-        assert item.productId in {product.id for product in products}
+        assert item.product_id in {product.id for product in products}
         # check that the products in the order are available
-        product = products[item.productId]
-        assert item.orderedQuantity <= product.stock
+        product = products[item.product_id]
+        assert item.ordered_quantity <= product.stock
         # update the product's stock
-        product.stock -= item.orderedQuantity
-        order_amount += item.unitPrice * item.orderedQuantity
+        product.stock -= item.ordered_quantity
+        order_amount += item.unit_price * item.ordered_quantity
       # check that the total amount of the order is correct
       assert round(order_amount, 2) == self.total
       # check that the status is correct
@@ -139,7 +139,7 @@ class Order(OrderBase):
     Adds an id to the given order
     """
     return Order(id=id_,
-                 userId=order.userId,
+                 user_id=order.user_id,
                  items=order.items,
                  total=order.total,
                  status=order.status,

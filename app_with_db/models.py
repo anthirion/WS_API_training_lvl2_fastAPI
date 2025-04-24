@@ -20,8 +20,8 @@ class Product(Base):
 
   # define product attributes
   id: Mapped[int] = mapped_column(Integer, primary_key=True)
-  productName: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                           nullable=False)
+  product_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
+                                            nullable=False)
   description: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                            nullable=False)
   price: Mapped[float] = mapped_column(Float, nullable=False)
@@ -52,7 +52,7 @@ class Order(Base):
 
   # define product attributes
   id: Mapped[int] = mapped_column(Integer, primary_key=True)
-  userId: Mapped[int] = mapped_column(Integer, nullable=False)
+  user_id: Mapped[int] = mapped_column(Integer, nullable=False)
   total: Mapped[float] = mapped_column(Float, nullable=False)
   status: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
                                       nullable=False)
@@ -62,7 +62,7 @@ class Order(Base):
   def to_dict(self):
     return {
         "id": self.id,
-        "userId": self.userId,
+        "user_id": self.user_id,
         "items": self.items,
         "total": self.total,
         "status": self.status
@@ -74,18 +74,18 @@ class OrderLine(Base):
   __tablename__ = "orderlines"
 
   id: Mapped[int] = mapped_column(Integer, primary_key=True)
-  productId: Mapped[int] = mapped_column(Integer, ForeignKey("products.id"))
-  orderedQuantity: Mapped[int] = mapped_column(Integer)
-  orderId: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"))
-  unitPrice: Mapped[float] = mapped_column(Float)
+  product_id: Mapped[int] = mapped_column(Integer, ForeignKey("products.id"))
+  ordered_quantity: Mapped[int] = mapped_column(Integer)
+  order_id: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"))
+  unit_price: Mapped[float] = mapped_column(Float)
 
   order: Mapped["Order"] = relationship(back_populates="items")
 
   def to_dict(self):
     return {
         "id": self.id,
-        "productId": self.productId,
-        "orderedQuantity": self.orderedQuantity,
-        "orderId": self.orderId,
-        "unitPrice": self.unitPrice
+        "product_id": self.product_id,
+        "ordered_quantity": self.ordered_quantity,
+        "order_id": self.order_id,
+        "unit_price": self.unit_price
     }

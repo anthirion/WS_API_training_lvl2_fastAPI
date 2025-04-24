@@ -32,15 +32,15 @@ async def welcome():
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          response_description="	Liste des produits",
          )
-async def get_all_products(productName: str = "", product_category: str = "") -> List[schemas.Product]:
+async def get_all_products(product_name: str = "", product_category: str = "") -> List[schemas.Product]:
   # start a session to make requests to the database
   with Session(engine) as session:
     try:
-      if productName:
+      if product_name:
         """ Retrieve all elements of name "name" if the name parameter is declared  """
         query = (
             select(models.Product)
-            .where(models.Product.productName == productName)
+            .where(models.Product.product_name == product_name)
         )
         return [session.execute(query).scalar_one()]
       elif product_category:
@@ -60,19 +60,19 @@ async def get_all_products(productName: str = "", product_category: str = "") ->
       return {}
 
 
-@app.get("/products/{productId}",
+@app.get("/products/{product_id}",
          description="Retourne un objet JSON contenant les détails d'un produit spécifique",
          response_description="	Détails du produit",
          responses={404: {"model": ErrorMessage,
                           "description": "Produit introuvable"}},
          )
-async def get_product_by_id(productId: int) -> schemas.Product:
+async def get_product_by_id(product_id: int) -> schemas.Product:
   with Session(engine) as session:
     try:
       """ Search the product in the database with its id  """
       query = (
           select(models.Product)
-          .where(models.Product.id == productId)
+          .where(models.Product.id == product_id)
       )
       product = session.execute(query).scalar_one()
     # manage error in case no product was found
@@ -101,7 +101,7 @@ async def add_product(token: Annotated[str, Depends(oauth2_scheme)],
       """
       query = (
           select(models.Product)
-          .where(models.Product.productName == new_product.productName,
+          .where(models.Product.product_name == new_product.product_name,
                  models.Product.description == new_product.description,
                  models.Product.price == new_product.price,
                  models.Product.category == new_product.category,
@@ -118,7 +118,7 @@ async def add_product(token: Annotated[str, Depends(oauth2_scheme)],
       max_id_query = select(func.max(models.Product.id))
       max_id = session.execute(max_id_query).scalar_one()
       db_product = models.Product(id=max_id + 1,
-                                  productName=new_product.productName,
+                                  product_name=new_product.product_name,
                                   description=new_product.description,
                                   price=new_product.price,
                                   category=new_product.category,
@@ -130,7 +130,7 @@ async def add_product(token: Annotated[str, Depends(oauth2_scheme)],
       """ Retrieve the product and its id in the database  """
       query = (
           select(models.Product)
-          .where(models.Product.productName == new_product.productName,
+          .where(models.Product.product_name == new_product.product_name,
                  models.Product.description == new_product.description,
                  models.Product.price == new_product.price,
                  models.Product.category == new_product.category,
@@ -140,21 +140,21 @@ async def add_product(token: Annotated[str, Depends(oauth2_scheme)],
       return session.execute(query).scalar_one()
 
 
-@app.put("/products/{productId}",
+@app.put("/products/{product_id}",
          description="Modifier un produit existant",
          response_description="Produit mis à jour",
          responses={404: {"model": ErrorMessage,
                           "description": "Produit introuvable"}},
          )
 async def modify_product(token: Annotated[str, Depends(oauth2_scheme)],
-                         productId: int, new_product: schemas.ProductBase) -> schemas.Product:
+                         product_id: int, new_product: schemas.ProductBase) -> schemas.Product:
   check_token(token)
   with Session(engine) as session:
     """ Search the given product in the database with its name  """
     query = (
         update(models.Product)
-        .where(models.Product.id == productId)
-        .values(productName=new_product.productName,
+        .where(models.Product.id == product_id)
+        .values(product_name=new_product.product_name,
                 description=new_product.description,
                 price=new_product.price,
                 category=new_product.category,
@@ -171,7 +171,7 @@ async def modify_product(token: Annotated[str, Depends(oauth2_scheme)],
     """ Retrieve the product and its id in the database  """
     query = (
         select(models.Product)
-        .where(models.Product.productName == new_product.productName,
+        .where(models.Product.product_name == new_product.product_name,
                models.Product.description == new_product.description,
                models.Product.price == new_product.price,
                models.Product.category == new_product.category,
@@ -181,21 +181,21 @@ async def modify_product(token: Annotated[str, Depends(oauth2_scheme)],
     return session.execute(query).scalar_one()
 
 
-@app.delete("/products/{productId}",
+@app.delete("/products/{product_id}",
             description="Supprimer un produit",
             status_code=204,
             response_description="Produit supprimé",
             responses={404: {"model": ErrorMessage,
                              "description": "Produit introuvable"}},
             )
-async def delete_product(productId: int,
+async def delete_product(product_id: int,
                          token: Annotated[str, Depends(oauth2_scheme)]):
   check_token(token)
   with Session(engine) as session:
     """ Search the given product in the database with its name  """
     query = (
         delete(models.Product)
-        .where(models.Product.id == productId)
+        .where(models.Product.id == product_id)
     )
     rows_affected = session.execute(query).rowcount
     if rows_affected == 0:
@@ -448,7 +448,7 @@ async def add_order(token: Annotated[str, Depends(oauth2_scheme)],
       """
       query = (
           select(models.Order)
-          .where(models.Order.userId == new_order.userId,
+          .where(models.Order.user_id == new_order.user_id,
                  models.Order.total == new_order.total,
                  models.Order.status == new_order.status,
                  )
@@ -463,20 +463,20 @@ async def add_order(token: Annotated[str, Depends(oauth2_scheme)],
         assert new_order.amount_is_correct()
         assert new_order.status in schemas.allowed_status
         for item in new_order.items:
-          assert item.orderedQuantity > 0
+          assert item.ordered_quantity > 0
           """ Update the stock of the product in the products table """
           # update the stock of the ordered product
           query = (
               select(models.Product)
-              .where(models.Product.id == item.productId)
+              .where(models.Product.id == item.product_id)
           )
           product = session.execute(query).scalar_one()
-          new_stock = product.stock - item.orderedQuantity
+          new_stock = product.stock - item.ordered_quantity
           assert new_stock >= 0
           # update the product's stock
           query = (
               update(models.Product)
-              .where(models.Product.id == item.productId)
+              .where(models.Product.id == item.product_id)
               .values(stock=new_stock)
           )
           session.execute(query)
@@ -488,7 +488,7 @@ async def add_order(token: Annotated[str, Depends(oauth2_scheme)],
         query = (
             insert(models.Order)
             .values(id=max_id + 1,
-                    userId=new_order.userId,
+                    user_id=new_order.user_id,
                     total=new_order.total,
                     status=new_order.status,
                     )
@@ -498,7 +498,7 @@ async def add_order(token: Annotated[str, Depends(oauth2_scheme)],
         """ Retrieve the order and its id in the database  """
         query = (
             select(models.Order)
-            .where(models.Order.userId == new_order.userId,
+            .where(models.Order.user_id == new_order.user_id,
                    #    models.Order.total == new_order.total,
                    models.Order.status == new_order.status,
                    )
@@ -513,10 +513,10 @@ async def add_order(token: Annotated[str, Depends(oauth2_scheme)],
           query = (
               insert(models.OrderLine)
               .values(id=max_id + 1,
-                      productId=item.productId,
-                      orderedQuantity=item.orderedQuantity,
-                      orderId=db_order.id,
-                      unitPrice=item.unitPrice,
+                      product_id=item.product_id,
+                      ordered_quantity=item.ordered_quantity,
+                      order_id=db_order.id,
+                      unit_price=item.unit_price,
                       )
           )
           session.execute(query)
@@ -547,7 +547,7 @@ async def modify_order(token: Annotated[str, Depends(oauth2_scheme)],
       query = (
           update(models.Order)
           .where(models.Order.id == order_id)
-          .values(userId=new_order.userId,
+          .values(user_id=new_order.user_id,
                   total=new_order.total,
                   status=new_order.status,
                   )
@@ -565,7 +565,7 @@ async def modify_order(token: Annotated[str, Depends(oauth2_scheme)],
             """
       query = (
           delete(models.OrderLine)
-          .where(models.OrderLine.orderId == order_id)
+          .where(models.OrderLine.order_id == order_id)
       )
       session.execute(query)
       session.commit()
@@ -576,10 +576,10 @@ async def modify_order(token: Annotated[str, Depends(oauth2_scheme)],
         query = (
             insert(models.OrderLine)
             .values(id=max_id + 1,
-                    productId=item.productId,
-                    orderedQuantity=item.orderedQuantity,
-                    orderId=order_id,
-                    unitPrice=item.unitPrice,
+                    product_id=item.product_id,
+                    ordered_quantity=item.ordered_quantity,
+                    order_id=order_id,
+                    unit_price=item.unit_price,
                     )
         )
         session.execute(query)
@@ -587,7 +587,7 @@ async def modify_order(token: Annotated[str, Depends(oauth2_scheme)],
       """ Retrieve the order and its id in the database  """
       query = (
           select(models.Order)
-          .where(models.Order.userId == new_order.userId,
+          .where(models.Order.user_id == new_order.user_id,
                  #    models.Order.total == new_order.total,
                  models.Order.status == new_order.status,
                  )
@@ -613,7 +613,7 @@ async def delete_order(token: Annotated[str, Depends(oauth2_scheme)], order_id: 
       """ Check that the order to delete exists """
       query = (
           select(models.OrderLine)
-          .where(models.OrderLine.orderId == order_id)
+          .where(models.OrderLine.order_id == order_id)
       )
       session.execute(query)
     except exc.NoResultFound:
@@ -625,7 +625,7 @@ async def delete_order(token: Annotated[str, Depends(oauth2_scheme)], order_id: 
       # the update of the orders table to respect DB integrity
       query = (
           delete(models.OrderLine)
-          .where(models.OrderLine.orderId == order_id)
+          .where(models.OrderLine.order_id == order_id)
       )
       session.execute(query)
       session.commit()

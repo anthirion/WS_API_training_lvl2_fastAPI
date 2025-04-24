@@ -7,7 +7,7 @@ from .schemas import Product, User, Order, Item
 all_products = [
     Product(
         id=1,
-        productName="Smartwatch Alpha",
+        product_name="Smartwatch Alpha",
         description="Une montre intelligente avec des fonctionnalites avancees de suivi de la sante.",
         price=199.99,
         category="Electronique",
@@ -15,7 +15,7 @@ all_products = [
     ),
     Product(
         id=2,
-        productName="Cafe Gourmet",
+        product_name="Cafe Gourmet",
         description="Un melange exquis de grains de cafe biologiques provenant des meilleures plantations.",
         price=15.50,
         category="Alimentation",
@@ -23,7 +23,7 @@ all_products = [
     ),
     Product(
         id=3,
-        productName="Chaise de Bureau Ergonomique",
+        product_name="Chaise de Bureau Ergonomique",
         description="Chaise de bureau avec soutien lombaire ajustable et accoudoirs confortables.",
         price=129.99,
         category="Mobilier",
@@ -31,7 +31,7 @@ all_products = [
     ),
     Product(
         id=4,
-        productName="Sac a Dos de Randonnee",
+        product_name="Sac a Dos de Randonnee",
         description="Sac a dos durable et spacieux avec plusieurs compartiments pour le trekking.",
         price=89.95,
         category="Sport et Plein Air",
@@ -39,7 +39,7 @@ all_products = [
     ),
     Product(
         id=5,
-        productName="Serum Anti-age",
+        product_name="Serum Anti-age",
         description="Serum haut de gamme pour reduire les rides et ameliorer la texture de la peau.",
         price=49.99,
         category="Beaute",
@@ -78,47 +78,47 @@ all_users = [
 all_orders = [
     Order(
         id=1,
-        userId=1,
+        user_id=1,
         items=[
-            Item(productId=2, orderedQuantity=2, unitPrice=15.50),
-            Item(productId=4, orderedQuantity=1, unitPrice=89.95),
+            Item(product_id=2, ordered_quantity=2, unit_price=15.50),
+            Item(product_id=4, ordered_quantity=1, unit_price=89.95),
         ],
         total=120.95,
         status="Completed"
     ),
     Order(
         id=2,
-        userId=2,
+        user_id=2,
         items=[
-            Item(productId=3, orderedQuantity=2, unitPrice=15.50),
+            Item(product_id=3, ordered_quantity=2, unit_price=15.50),
         ],
         total=31,
         status="Pending"
     ),
     Order(
         id=3,
-        userId=3,
+        user_id=3,
         items=[
-            Item(productId=5, orderedQuantity=1, unitPrice=89.95),
+            Item(product_id=5, ordered_quantity=1, unit_price=89.95),
         ],
         total=89.95,
         status="Shipped"
     ),
     Order(
         id=4,
-        userId=1,
+        user_id=1,
         items=[
-            Item(productId=1, orderedQuantity=3, unitPrice=199.99),
+            Item(product_id=1, ordered_quantity=3, unit_price=199.99),
         ],
         total=599.97,
         status="Cancelled"
     ),
     Order(
         id=5,
-        userId=2,
+        user_id=2,
         items=[
-            Item(productId=1, orderedQuantity=2, unitPrice=199.99),
-            Item(productId=5, orderedQuantity=3, unitPrice=49.99),
+            Item(product_id=1, ordered_quantity=2, unit_price=199.99),
+            Item(product_id=5, ordered_quantity=3, unit_price=49.99),
         ],
         total=549.95,
         status="Pending"

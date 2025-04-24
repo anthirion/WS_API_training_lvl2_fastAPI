@@ -6,7 +6,7 @@ USE api_training;
 -- Table PRODUCTS
 CREATE TABLE IF NOT EXISTS products (
     id INT PRIMARY KEY,
-    productName VARCHAR(255) NOT NULL,
+    product_name VARCHAR(255) NOT NULL,
     description VARCHAR(255) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
     category VARCHAR(255) NOT NULL,
@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS products (
 );
 
 -- insérer des données uniquement si la table est vide
-INSERT INTO products (id, productName, description, price, category, stock)
+INSERT INTO products (id, product_name, description, price, category, stock)
 SELECT 1, "Smartwatch Alpha", "Une montre intelligente avec des fonctionnalites avancees de suivi de la sante.", 199.99, "Electronique", 150
 UNION ALL
 SELECT 2, "Cafe Gourmet", "Un melange exquis de grains de cafe biologiques provenant des meilleures plantations.", 15.50, "Alimentation", 300
@@ -53,14 +53,14 @@ WHERE (SELECT COUNT(*) FROM users) = 0;
 -- Table ORDERS
 CREATE TABLE IF NOT EXISTS orders (
     id INT PRIMARY KEY,
-    userId INT NOT NULL,
+    user_id INT NOT NULL,
     total FLOAT NOT NULL,
     status VARCHAR(255) NOT NULL,
-    FOREIGN KEY (userId) REFERENCES users(id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 -- insérer des données uniquement si la table est vide
-INSERT INTO orders (id, userId, total, status)
+INSERT INTO orders (id, user_id, total, status)
 SELECT 1, 1, 45.97, "Completed"
 UNION ALL
 SELECT 2, 2, 23.97, "Pending"
@@ -76,16 +76,16 @@ WHERE (SELECT COUNT(*) FROM orders) = 0;
 -- Table ORDERLINES
 CREATE TABLE IF NOT EXISTS orderlines (
     id INT PRIMARY KEY,
-    productId INT NOT NULL,
-    orderedQuantity INT NOT NULL,
-    orderId INT NOT NULL,
-    unitPrice DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (productId) REFERENCES products(id),
-    FOREIGN KEY (orderId) REFERENCES orders(id)
+    product_id INT NOT NULL,
+    ordered_quantity INT NOT NULL,
+    order_id INT NOT NULL,
+    unit_price DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (product_id) REFERENCES products(id),
+    FOREIGN KEY (order_id) REFERENCES orders(id)
 );
 
 -- insérer des données uniquement si la table est vide
-INSERT INTO orderlines (id, productId, orderedQuantity, orderId, unitPrice)
+INSERT INTO orderlines (id, product_id, ordered_quantity, order_id, unit_price)
 SELECT 1, 2, 1, 1, 199.99
 UNION ALL
 SELECT 2, 4, 3, 1, 129.99

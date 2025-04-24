@@ -31,7 +31,7 @@ async def get_all_products(name: str = "", category: str = "") -> List[Product]:
   if name:
     """ Retrieve all products of name "name" if the name parameter is declared  """
     return [product for product in all_products
-            if product.name == name]
+            if product.product_name == name]
   elif category:
     """ Retrieve all products of category "category" if the category parameter is declared  """
     return [product for product in all_products
@@ -41,7 +41,7 @@ async def get_all_products(name: str = "", category: str = "") -> List[Product]:
     return all_products
 
 
-@app.get("/products/{productId}",
+@app.get("/products/{product_id}",
          description="Retourne un objet JSON contenant les détails d'un produit spécifique",
          response_description="	Détails du produit",
          # responses enables you to async define additional responses code and message
@@ -49,9 +49,9 @@ async def get_all_products(name: str = "", category: str = "") -> List[Product]:
          responses={404: {"model": ErrorMessage,
                           "description": "Produit introuvable"}},
          )
-async def get_product_by_id(productId: int) -> Product:
+async def get_product_by_id(product_id: int) -> Product:
   for product in all_products:
-    if product.id == productId:
+    if product.id == product_id:
       return product
   # if no product is found, raise an error
   raise HTTPException(status_code=404, detail="Produit introuvable")
@@ -78,36 +78,36 @@ async def add_product(new_product: ProductBase) -> Product:
                         detail="Produit déjà existant")
 
 
-@app.put("/products/{productId}",
+@app.put("/products/{product_id}",
          description="Modifier un produit existant",
          response_description="Produit mis à jour",
          responses={404: {"model": ErrorMessage,
                           "description": "Produit introuvable"}},
          )
-async def modify_product(productId: int, new_product: ProductBase) -> Product:
+async def modify_product(product_id: int, new_product: ProductBase) -> Product:
   """ Search the given product in the database with its id  """
   for i, product in enumerate(all_products):
-    if product.id == productId:
+    if product.id == product_id:
       # add the id in the URL to the given product
-      new_product_with_id = Product.add_id(new_product, productId)
+      new_product_with_id = Product.add_id(new_product, product_id)
       all_products[i] = new_product_with_id
       return new_product_with_id
   raise HTTPException(status_code=404,
                       detail="Produit introuvable")
 
 
-@app.delete("/products/{productId}",
+@app.delete("/products/{product_id}",
             description="Supprimer un produit",
             response_description="Produit supprimé",
             status_code=204,
             responses={404: {"model": ErrorMessage,
                              "description": "Produit introuvable"}},
             )
-async def delete_product(productId: int):
+async def delete_product(product_id: int):
   """ Search the given product in the database with its id  """
   found = False
   for i, product in enumerate(all_products):
-    if product.id == productId:
+    if product.id == product_id:
       del all_products[i]
       found = True
   if not found:
@@ -128,7 +128,7 @@ async def get_all_users(name: str = "", email: str = "") -> List[User]:
   if name:
     """ Retrieve all users of name "name" if the name parameter is declared  """
     return [user for user in all_users
-            if user.name == name]
+            if user.username == name]
   elif email:
     """ Retrieve all users of email "email" if the email parameter is declared  """
     return [user for user in all_users
