@@ -46,10 +46,8 @@ class UserBase(BaseModel):
   This class is used for operations that do not need id (the product provided in the body
   of a PUT operation do not have id)
   """
-  username: str
-  email: str
-  address: str
-  password: str
+  # TODO
+  pass
 
 
 class User(UserBase):
@@ -57,7 +55,8 @@ class User(UserBase):
   This class adds the id attribute to the UserBase class. It is useful for all operations
   excluding PUT.
   """
-  id: int
+  # TODO
+  pass
 
   @staticmethod
   def add_id(user: UserBase, id_: int):
@@ -77,9 +76,8 @@ class Item(BaseModel):
   This class represents an ordered product in an order. It has all the attributes of a product,
   plus an ordered quantity
   """
-  productId: int
-  orderedQuantity: int
-  unitPrice: float
+  # TODO
+  pass
 
 
 class OrderBase(BaseModel):
@@ -88,10 +86,8 @@ class OrderBase(BaseModel):
   This class is used for operations that do not need id (the product provided in the body
   of a PUT operation do not have id)
   """
-  userId: int
-  items: List[Item]
-  total: float
-  status: str
+  # TODO
+  pass
 
   def is_correct(self, products: List[Product]) -> bool:
     """
@@ -129,7 +125,8 @@ class Order(OrderBase):
   This class adds the id attribute to the OrderBase class. It is useful for all operations
   excluding PUT.
   """
-  id: int
+  # TODO
+  pass
 
   @staticmethod
   def add_id(order: OrderBase, id_: int):

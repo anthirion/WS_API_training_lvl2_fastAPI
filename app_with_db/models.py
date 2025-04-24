@@ -34,29 +34,16 @@ class User(Base):
   # the name of the SQL table associated to this class
   __tablename__ = "users"
 
-  # define product attributes
-  id: Mapped[int] = mapped_column(Integer, primary_key=True)
-  username: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                        nullable=False)
-  email: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                     nullable=False)
-  address: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                       nullable=False)
-  password: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                        nullable=False)
+  # TODO: define product attributes
 
 
 class Order(Base):
   # the name of the SQL table associated to this class
   __tablename__ = "orders"
 
-  # define product attributes
-  id: Mapped[int] = mapped_column(Integer, primary_key=True)
-  userId: Mapped[int] = mapped_column(Integer, nullable=False)
-  total: Mapped[float] = mapped_column(Float, nullable=False)
-  status: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH),
-                                      nullable=False)
+  # TODO: define order attributes
 
+  # do not change this attribute (advanced level)
   items: Mapped[List["OrderLine"]] = relationship(back_populates="order")
 
   def to_dict(self):
@@ -73,12 +60,9 @@ class OrderLine(Base):
   # the name of the SQL table associated to this class
   __tablename__ = "orderlines"
 
-  id: Mapped[int] = mapped_column(Integer, primary_key=True)
-  productId: Mapped[int] = mapped_column(Integer, ForeignKey("products.id"))
-  orderedQuantity: Mapped[int] = mapped_column(Integer)
-  orderId: Mapped[int] = mapped_column(Integer, ForeignKey("orders.id"))
-  unitPrice: Mapped[float] = mapped_column(Float)
+  # TODO: define orderline attributes
 
+  # do not change this attribute (advanced level)
   order: Mapped["Order"] = relationship(back_populates="items")
 
   def to_dict(self):
