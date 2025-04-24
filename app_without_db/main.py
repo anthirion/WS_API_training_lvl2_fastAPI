@@ -11,6 +11,10 @@ from .resources import all_products, all_users, all_orders
 # start the API server
 app = FastAPI()
 
+products_next_id = len(all_products) + 1
+users_next_id = len(all_users) + 1
+orders_next_id = len(all_orders) + 1
+
 
 @app.get("/")
 async def welcome():
@@ -38,10 +42,11 @@ async def get_product_by_id(product_id: int) -> Product:
 
 @app.post("/products")
 async def add_product(new_product: ProductBase) -> Product:
+  global products_next_id
   """ Check that the product is not already in the database   """
   if new_product not in all_products:
-    max_id = max([product.id for product in all_products])
-    new_product = Product.add_id(new_product, max_id + 1)
+    new_product = Product.add_id(new_product, products_next_id)
+    products_next_id += 1
     all_products.append(new_product)
     return new_product
   else:
@@ -64,10 +69,12 @@ async def modify_product(product_id: int, new_product: ProductBase) -> Product:
 
 @app.delete("/products/{product_id}")
 async def delete_product(product_id: int):
+  global products_next_id
   """ Search the given product in the database with its id  """
   found = False
   for i, product in enumerate(all_products):
     if product.id == product_id:
+      products_next_id = product.id
       del all_products[i]
       found = True
   if not found:
@@ -96,10 +103,11 @@ async def get_user_by_id(user_id: int) -> User:
 
 @app.post("/users")
 async def add_user(new_user: UserBase) -> User:
+  global users_next_id
   """ Check that the user is not already in the database   """
   if new_user not in all_users:
-    max_id = max([user.id for user in all_users])
-    new_user = User.add_id(new_user, max_id + 1)
+    new_user = User.add_id(new_user, users_next_id)
+    users_next_id += 1
     all_users.append(new_user)
     return new_user
   else:
@@ -122,10 +130,12 @@ async def modify_user(user_id: int, new_user: UserBase) -> User:
 
 @app.delete("/admin/users/{user_id}")
 async def delete_user(user_id: int):
+  global users_next_id
   """ Search the given user in the database with its id  """
   found = False
   for i, user in enumerate(all_users):
     if user.id == user_id:
+      users_next_id = user.id
       del all_users[i]
       found = True
   if not found:
@@ -154,14 +164,15 @@ async def get_order_by_id(order_id: int) -> Order:
 
 @app.post("/admin/orders")
 async def add_order(new_order: OrderBase) -> Order:
+  global orders_next_id
   """ Check that the order is correct and is not already in the database   """
   if new_order not in all_orders:
     if new_order.is_correct(all_products) is False:
       raise HTTPException(status_code=400,
                           detail="Commande incorrecte")
     else:
-      max_id = max([order.id for order in all_orders])
-      new_order = Order.add_id(new_order, max_id + 1)
+      new_order = Order.add_id(new_order, orders_next_id)
+      orders_next_id += 1
       all_orders.append(new_order)
       return new_order
   else:
@@ -188,10 +199,12 @@ async def modify_order(order_id: int, new_order: OrderBase) -> Order:
 
 @app.delete("/admin/orders/{order_id}")
 async def delete_order(order_id: int):
+  global orders_next_id
   """ Search the given order in the database with its id  """
   found = False
   for i, order in enumerate(all_orders):
     if order.id == order_id:
+      orders_next_id = order.id
       del all_orders[i]
       found = True
   if not found:

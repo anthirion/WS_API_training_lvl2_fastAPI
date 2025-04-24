@@ -29,17 +29,12 @@ class Product(ProductBase):
   id: int
 
   @staticmethod
-  def add_id(product: ProductBase, id_: int):
+  def add_id(product_base: ProductBase, id_: int):
     """
-    Adds an id to the given product
+    Adds an id to the given product base
     """
-    return Product(id=id_,
-                   product_name=product.product_name,
-                   description=product.description,
-                   price=product.price,
-                   category=product.category,
-                   stock=product.stock,
-                   )
+    # model_dump generates a dictionary representation of the model
+    return Product(id=id_, **product_base.model_dump())
 
 
 class UserBase(BaseModel):
@@ -62,16 +57,12 @@ class User(UserBase):
   id: int
 
   @staticmethod
-  def add_id(user: UserBase, id_: int):
+  def add_id(user_base: UserBase, id_: int):
     """
-    Adds an id to the given user
+    Adds an id to the given user base
     """
-    return User(id=id_,
-                username=user.username,
-                email=user.email,
-                address=user.address,
-                password=user.password,
-                )
+    # model_dump generates a dictionary representation of the model
+    return User(id=id_, **user_base.model_dump())
 
 
 class Item(BaseModel):
@@ -134,13 +125,9 @@ class Order(OrderBase):
   id: int
 
   @staticmethod
-  def add_id(order: OrderBase, id_: int):
+  def add_id(order_base: OrderBase, id_: int):
     """
-    Adds an id to the given order
+    Adds an id to the given order base
     """
-    return Order(id=id_,
-                 user_id=order.user_id,
-                 items=order.items,
-                 total=order.total,
-                 status=order.status,
-                 )
+    # model_dump generates a dictionary representation of the model
+    return Order(id=id_, **order_base.model_dump())
