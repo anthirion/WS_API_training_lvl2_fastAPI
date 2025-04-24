@@ -25,7 +25,7 @@ async def welcome():
          # response_description is the description to display when no error occured (code 200)
          response_description="	Liste des produits",
          )
-# Declare query parameters for name and category only (makes more sense)
+# Declare query parameters for name and category (you can declare other parameters if you want)
 # WARNING: Do NOT add quotes for query parameters -> products?category=Alimentation
 async def get_all_products(name: str = "", category: str = "") -> List[Product]:
   if name:
