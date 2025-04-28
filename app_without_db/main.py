@@ -1,10 +1,14 @@
 from fastapi import FastAPI, HTTPException
 from typing import List
 from .schemas import Product, ProductBase
-from .resources import all_products
+from .resources import all_products, all_users, all_orders
 
 # start the API server
 app = FastAPI()
+
+products_next_id = len(all_products) + 1
+users_next_id = len(all_users) + 1
+orders_next_id = len(all_orders) + 1
 
 
 @app.get("/")

@@ -56,9 +56,9 @@ class OrderLineBase(BaseModel):
 
   def to_dict(self):
     return {
-        "productId": self.productId,
-        "orderedQuantity": self.orderedQuantity,
-        "unitPrice": self.unitPrice,
+        "product_id": self.product_id,
+        "ordered_quantity": self.ordered_quantity,
+        "unit_price": self.unit_price,
     }
 
 
@@ -69,10 +69,10 @@ class OrderLine(OrderLineBase):
   def to_dict(self):
     return {
         "id": self.id,
-        "productId": self.productId,
-        "orderedQuantity": self.orderedQuantity,
-        "unitPrice": self.unitPrice,
-        "orderId": self.orderId
+        "product_id": self.product_id,
+        "ordered_quantity": self.ordered_quantity,
+        "unit_price": self.unit_price,
+        "order_id": self.order_id
     }
 
 
@@ -97,12 +97,12 @@ class OrderBase(BaseModel):
       with Session(engine) as session:
         query = (
             select(models.Product)
-            .where(models.Product.id == item.productId)
+            .where(models.Product.id == item.product_id)
         )
         # we consider that the execution of the query cannot fail
         # because our database contains correct product ids
         product = session.execute(query).scalar_one()
-        price = product.price * item.orderedQuantity
+        price = product.price * item.ordered_quantity
         amount += price
     # WARNING: make sure you round up the amount to avoid approximation errors
     return round(amount, 2) == self.total
@@ -119,7 +119,7 @@ class Order(OrderBase):
   def to_dict(self):
     return {
         "id": self.id,
-        "userId": self.userId,
+        "user_id": self.user_id,
         "items": self.items,
         "total": self.total,
         "status": self.status

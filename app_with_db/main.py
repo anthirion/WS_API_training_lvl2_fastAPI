@@ -28,15 +28,15 @@ async def welcome():
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          response_description="	Liste des produits",
          )
-async def get_all_products(productName: str = "", product_category: str = "") -> List[schemas.Product]:
+async def get_all_products(product_name: str = "", product_category: str = "") -> List[schemas.Product]:
   # start a session to make requests to the database
   with Session(engine) as session:
     try:
-      if productName:
+      if product_name:
         """ Retrieve all elements of name "name" if the name parameter is declared  """
         query = (
             select(models.Product)
-            .where(models.Product.productName == productName)
+            .where(models.Product.product_name == product_name)
         )
         return [session.execute(query).scalar_one()]
       elif product_category:

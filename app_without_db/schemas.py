@@ -27,17 +27,12 @@ class Product(ProductBase):
   pass
 
   @staticmethod
-  def add_id(product: ProductBase, id_: int):
+  def add_id(product_base: ProductBase, id_: int):
     """
-    Adds an id to the given product
+    Adds an id to the given product base
     """
-    return Product(id=id_,
-                   productName=product.productName,
-                   description=product.description,
-                   price=product.price,
-                   category=product.category,
-                   stock=product.stock,
-                   )
+    # model_dump generates a dictionary representation of the model
+    return Product(id=id_, **product_base.model_dump())
 
 
 class UserBase(BaseModel):
@@ -59,16 +54,12 @@ class User(UserBase):
   pass
 
   @staticmethod
-  def add_id(user: UserBase, id_: int):
+  def add_id(user_base: UserBase, id_: int):
     """
-    Adds an id to the given user
+    Adds an id to the given user base
     """
-    return User(id=id_,
-                username=user.username,
-                email=user.email,
-                address=user.address,
-                password=user.password,
-                )
+    # model_dump generates a dictionary representation of the model
+    return User(id=id_, **user_base.model_dump())
 
 
 class Item(BaseModel):
@@ -89,35 +80,36 @@ class OrderBase(BaseModel):
   # TODO
   pass
 
-  def is_correct(self, products: List[Product]) -> bool:
-    """
-    Check that the order is correct, that is:
-    - the userId exists in the list of users
-    - the products in the order exists (the id is correct)
-    - the stock of the product is bigger than the ordered quantity
-    - the total amount of the order is correct (equals to the price
-    of the products multiplied by the quantity)
-    - the status type is allowed (is in the allowed_status list)
-    """
-    try:
-      order_amount = 0
-      for item in self.items:
-        # check that the products in the order exist
-        # Note: the name, description, etc are not checked
-        assert item.productId in {product.id for product in products}
-        # check that the products in the order are available
-        product = products[item.productId]
-        assert item.orderedQuantity <= product.stock
-        # update the product's stock
-        product.stock -= item.orderedQuantity
-        order_amount += item.unitPrice * item.orderedQuantity
-      # check that the total amount of the order is correct
-      assert round(order_amount, 2) == self.total
-      # check that the status is correct
-      assert self.status in allowed_status
-      return True
-    except AssertionError:
-      return False
+
+def is_correct(self, products: List[Product]) -> bool:
+  """
+  Check that the order is correct, that is:
+  - the user_id exists in the list of users
+  - the products in the order exists (the id is correct)
+  - the stock of the product is bigger than the ordered quantity
+  - the total amount of the order is correct (equals to the price
+  of the products multiplied by the quantity)
+  - the status type is allowed (is in the allowed_status list)
+  """
+  try:
+    order_amount = 0
+    for item in self.items:
+      # check that the products in the order exist
+      # Note: the name, description, etc are not checked
+      assert item.product_id in {product.id for product in products}
+      # check that the products in the order are available
+      product = products[item.product_id]
+      assert item.ordered_quantity <= product.stock
+      # update the product's stock
+      product.stock -= item.ordered_quantity
+      order_amount += item.unit_price * item.ordered_quantity
+    # check that the total amount of the order is correct
+    assert round(order_amount, 2) == self.total
+    # check that the status is correct
+    assert self.status in allowed_status
+    return True
+  except AssertionError:
+    return False
 
 
 class Order(OrderBase):
@@ -129,13 +121,9 @@ class Order(OrderBase):
   pass
 
   @staticmethod
-  def add_id(order: OrderBase, id_: int):
+  def add_id(order_base: OrderBase, id_: int):
     """
-    Adds an id to the given order
+    Adds an id to the given order base
     """
-    return Order(id=id_,
-                 userId=order.userId,
-                 items=order.items,
-                 total=order.total,
-                 status=order.status,
-                 )
+    # model_dump generates a dictionary representation of the model
+    return Order(id=id_, **order_base.model_dump())
