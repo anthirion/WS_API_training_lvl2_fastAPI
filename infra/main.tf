@@ -28,8 +28,7 @@ resource "google_compute_instance" "vm_api_server" {
   boot_disk {
     device_name = "api-server"
     initialize_params {
-      # disk optimized for containers
-      image = "cos-cloud/cos-stable"
+      image = "debian-cloud/debian-12"
     }
   }
 

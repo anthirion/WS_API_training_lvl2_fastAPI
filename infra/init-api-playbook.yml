@@ -64,7 +64,7 @@
         dest: /home/anthirion/app/
         mode: u=rw,g=r,o=r
       with_fileglob:
-        - "../containerized_app/*.py"
+        - "../app_with_db/*.py"
       tags: code_updated
 
     - name: Copier les fichiers de configuration dans app
@@ -73,9 +73,9 @@
           dest: /home/anthirion/app/
           mode: u=rw,g=r,o=r
       with_items:
-        - ../containerized_app/.env
-        - ../containerized_app/Dockerfile
+        - ../app_with_db/.env
         - ../requirements.txt
+        - ../app_with_db/gcp_install.sh
       tags: code_updated
 
     - name: Mettre à jour l'adresse IP du serveur DB dans le .env
@@ -84,49 +84,24 @@
         regexp: '^HOST='
         line: "HOST={{ hostvars['db-server']['ansible_host'] }}"
       tags: code_updated
+
+    - name: Installer python et pip
+      ansible.builtin.apt:
+        pkg:
+          - python3-pip
+          - python3.11-venv
+          - python3-setuptools
+          - pkg-config
+          - python3-dev 
+          - default-libmysqlclient-dev
+        update_cache: yes
+
+    - name: Démarrer le serveur API
+      ansible.builtin.shell: chmod +x gcp_install.sh && ./gcp_install.sh
+      args:
+        chdir: /home/anthirion/app/
+      tags: code_updated
     
-    - name: Arreter le conteneur qui s'exécute si rebuild est vrai
-      community.docker.docker_container:
-        name: "{{ container_name }}"
-        state: stopped
-      when: rebuild | bool == true
-      tags: code_updated
-
-    - name: Supprimer l'image Docker si rebuild est vrai
-      community.docker.docker_image:
-        name: "{{ image_name }}"
-        tag: latest
-        state: absent
-        # forcer la suppression de l'image
-        force_absent: true
-      when: rebuild | bool == true
-      tags: code_updated
-
-    - name: >
-        Construire l'image Docker de l'API serveur à partir du Dockerfile
-        Par défaut, si l'image existe déjà, elle n'est pas reconstruite
-      community.docker.docker_image:
-        name: "{{ image_name }}"
-        tag: latest
-        source: build
-        build:
-          path: /home/anthirion/app/
-        state: present
-      tags: code_updated
-
-    - name: Démarrer un conteneur Docker à partir de l'image construite
-      community.docker.docker_container:
-        name: "{{ container_name }}"
-        image: "{{ image_name }}:latest"
-        state: started
-        ports:
-          # signification: port_hote:port_conteneur
-          - "80:8000"
-      tags: code_updated
-
-## Pour voir les appels API effectués et leur réponse, afficher les logs:
-## docker logs <container_name> (à taper dans la VM)
-
 
 # Play sur la gateway
 - name: Gateway configuration
@@ -193,9 +168,6 @@
         ports:
           # signification: port_hote:port_conteneur
           - "80:8080"    
-
-## Pour voir les appels API effectués et leur réponse, afficher les logs:
-## docker logs <container_name> (à taper dans la VM)
 
 ## [ATTENTION] Par défaut, KrakenD n'accepte que les objets json
 ## Si le backend renvoie un ARRAY de json, il faut le spécifier dans le fichier

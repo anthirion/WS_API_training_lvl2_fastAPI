@@ -3,16 +3,14 @@ This module starts the database
 """
 
 from sqlalchemy import create_engine
-from dotenv import dotenv_values
+import os
 from .models import Base
 
-db_config = dotenv_values(".env")
-
-user = db_config["USER"]
-pswd = db_config["PSWD"]
-host = db_config["HOST"]
-port = db_config["PORT"]
-name = db_config["NAME"]
+user = os.environ["USER"]
+pswd = os.environ["PSWD"]
+host = os.environ["HOST"]
+port = os.environ["PORT"]
+name = os.environ["NAME"]
 
 DATABASE_URL = f"mysql://{user}:{pswd}@{host}:{port}/{name}"
 
