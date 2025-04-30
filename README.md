@@ -14,7 +14,7 @@ Prérequis:
 
 - avoir un compte GCP pour la formation
 - avoir une clé SSH pour se connecter aux VMs et l'avoir renseignée dans GCP
-- avoir initier terraform dans le dossier infra/ (commande terraform init)
+- avoir initier terraform dans le dossier gcp_infra/ (commande terraform init)
 
 0. Si nécessaire, configurer les différentes variables nécessaires à terraform (nom du compte, zone, etc) dans un fichier variables.tf (voir la doc officielle de terraform pour la syntaxe).
 
@@ -26,7 +26,7 @@ Sans modification de votre part, les credentials sont les suivants:
 - user: attendeeXX
 - password: ApiTraining (même password pour tout le monde)
 
-2. Provisionner les VMs nécessaires en exécutant la commande suivante depuis le dossier infra/:
+2. Provisionner les VMs nécessaires en exécutant la commande suivante depuis le dossier gcp_infra/:
 
 ```
     terraform apply
@@ -34,7 +34,7 @@ Sans modification de votre part, les credentials sont les suivants:
 
 3. Récupérer les addresses IP depuis la console GCP et les copier dans le fichier inventory.ini
 
-4. Lancer la configuration des VMs avec le playbook init-api-playbook.yml avec la commande suivante (commande à lancer depuis le dossier infra/):
+4. Lancer la configuration des VMs avec le playbook init-api-playbook.yml avec la commande suivante (commande à lancer depuis le dossier gcp_infra/):
 
 ```
    ansible-playbook init-api-playbook.yml -i inventory.ini

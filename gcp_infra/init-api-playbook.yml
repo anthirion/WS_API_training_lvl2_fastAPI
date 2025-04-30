@@ -75,7 +75,7 @@
       with_items:
         - ../app_with_db/.env
         - ../requirements.txt
-        - ../app_with_db/gcp_install.sh
+        - ./gcp_install.sh
       tags: code_updated
 
     - name: Mettre à jour l'adresse IP du serveur DB dans le .env
