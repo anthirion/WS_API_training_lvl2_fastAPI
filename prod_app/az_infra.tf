@@ -19,15 +19,15 @@ provider "azurerm" {
   subscription_id = "92c9bea0-3c7c-4dda-b314-2c97e654fb1b"
 }
 
-resource "azurerm_container_app_environment" "ws-api-training" {
+resource "azurerm_container_app_environment" "container-env" {
   name                       = "ws-api-training-env"
   location                   = local.region
   resource_group_name        = local.rg_name
 }
 
 resource "azurerm_container_app" "apiserver" {
-  name                         = "online-shop-api"
-  container_app_environment_id = azurerm_container_app_environment.ws-api-training.id
+  name                         = "online-shop-apiserver"
+  container_app_environment_id = azurerm_container_app_environment.container-env.id
   resource_group_name          = local.rg_name
   revision_mode                = "Single"
 
@@ -35,7 +35,7 @@ resource "azurerm_container_app" "apiserver" {
     
     container {
       name   = "apiserver"
-      image  = "anthirion/apiserver:v2"
+      image  = "anthirion/apiserver:v3"
       cpu    = 0.25
       memory = "0.5Gi"
     }
@@ -52,3 +52,20 @@ resource "azurerm_container_app" "apiserver" {
     target_port = 8000
   }
 }
+
+# B1s instances are not available for mysql flexible servers
+# resource "azurerm_mysql_flexible_server" "db" {
+#   name                   = "ws-api-training-main-db"
+#   resource_group_name    = local.rg_name
+#   location               = local.region
+#   administrator_login    = "user"
+#   administrator_password = "WavestoneApiTraining01"
+#   backup_retention_days  = 7
+#   public_network_access  = "Enabled"
+#   sku_name               = "B_Standard_B1ms"
+#   version = "8.0.21"
+
+#   storage {
+#     size_gb = 20
+#   }
+# }
