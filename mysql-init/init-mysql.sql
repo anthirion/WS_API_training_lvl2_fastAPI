@@ -1,4 +1,3 @@
--- init.sql
 CREATE DATABASE IF NOT EXISTS api_training;
 USE api_training;
 

@@ -29,15 +29,15 @@
 
     - name: Copier le script de configuration de la DB
       ansible.builtin.copy:
-        src: ../mysql-init/init.sql
-        dest: ./init.sql
+        src: ../mysql-init/init-mysql.sql
+        dest: ./init-mysql.sql
         # Rendre le script exécutable
         mode: "u+x,g=r,o=r"
 
 
     - name: Exécuter le script SQL pour initialiser la DB
       ansible.builtin.shell: |
-        mysql -u {{ mysql_user_name }} -p{{ mysql_user_password }} < ./init.sql
+        mysql -u {{ mysql_user_name }} -p{{ mysql_user_password }} < ./init-mysql.sql
     
   handlers:
   - name: Restart MySQL
