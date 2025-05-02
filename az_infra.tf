@@ -35,7 +35,7 @@ resource "azurerm_container_app" "apiserver" {
     
     container {
       name   = "apiserver"
-      image  = "anthirion/apiserver:v3"
+      image  = "anthirion/apiserver:v1"
       cpu    = 0.25
       memory = "0.5Gi"
     }
