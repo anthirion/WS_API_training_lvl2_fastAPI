@@ -19,6 +19,7 @@ provider "azurerm" {
   subscription_id = "92c9bea0-3c7c-4dda-b314-2c97e654fb1b"
 }
 
+##########################  RESOURCES ##########################
 resource "azurerm_container_app_environment" "container-env" {
   name                       = "ws-api-training-env"
   location                   = local.region
@@ -51,6 +52,18 @@ resource "azurerm_container_app" "apiserver" {
     transport = "http"
     target_port = 8000
   }
+}
+
+# WARNING: the activation of Azure APIM can take from 30 to 40 minutes
+# so please wait :)
+resource "azurerm_api_management" "apim-dev" {
+  name                = "ApiTrainingAPIM"
+  location            = local.region
+  resource_group_name = local.rg_name
+  publisher_name      = "Wavestone"
+  publisher_email     = "antoine.thirion@wavestone.com"
+
+  sku_name = "Developer_1"
 }
 
 # B1s instances are not available for mysql flexible servers
