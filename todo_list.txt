@@ -1,4 +1,0 @@
-# Ce fichier liste toutes les tâches à faire pour améliorer le déploiement de l'api server
-1. Passer les variables d'environnement en secret
-2. Créer un private endpoint sur le container environnement et retirer l'accès public à la DB Azure
-3. Mettre en place une pipeline via GitHub Actions qui build l'image des élèves et publie ce conteneur dans le container environnement
