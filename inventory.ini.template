@@ -1,0 +1,6 @@
+[apiserver]
+api-server ansible_host=<API_SERVER_IP>
+[dbserver]
+db-server ansible_host=<DB_SERVER_IP>
+[gatewayserver]
+gatewayserver ansible_host=<GATEWAY_SERVER_IP>
