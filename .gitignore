@@ -1,6 +1,6 @@
 __pycache__
 fast_api_venv
 app/.env
-terraform*
-.terraform.*
+*terraform*
+.terraform/
 inventory.ini
