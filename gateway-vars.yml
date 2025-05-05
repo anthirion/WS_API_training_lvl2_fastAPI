@@ -17,6 +17,6 @@ backend_config:
     "client_secret": "{{ client_secret }}"
     "token_url": "{{ token_url }}"
     "endpoint_params":
-      "client_id": "{{ client_id }}"
-      "client_secret": "{{ client_secret }}"
+      "client_id": ["{{ client_id }}"]
+      "client_secret": ["{{ client_secret }}"]
       "audience": ["{{ audience }}"]
