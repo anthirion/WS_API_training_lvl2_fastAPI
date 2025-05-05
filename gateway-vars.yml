@@ -1,0 +1,22 @@
+client_id: "EIyFauPKRylYhpo6SZQ2WnH5OZTrIAV4"
+client_secret: "EDZQ4VAtVuIZ2bzzKZrhNsvZT-iJ6Jr1M49PYQAOXH4fAQL0rhaPoeBaHzD-9gfP"
+token_url: "https://dev-3uj7yx4jt8xm3gws.eu.auth0.com/oauth/token"
+jwk_url: "https://dev-3uj7yx4jt8xm3gws.eu.auth0.com/.well-known/jwks.json"
+audience: "http://34.133.233.146/catfact"
+
+endpoint_config:
+  auth/validator:
+    alg: "RS256"
+    audience: ["{{ audience }}"]
+    jwk_url: "{{ jwk_url }}"
+    cache: true
+
+backend_config:
+  "auth/client-credentials":
+    "client_id": "{{ client_id }}"
+    "client_secret": "{{ client_secret }}"
+    "token_url": "{{ token_url }}"
+    "endpoint_params":
+      "client_id": "{{ client_id }}"
+      "client_secret": "{{ client_secret }}"
+      "audience": ["{{ audience }}"]
