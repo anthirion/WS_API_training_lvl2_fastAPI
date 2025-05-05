@@ -1,9 +1,7 @@
 __pycache__
 fast_api_venv
-.env
-gcp_infra/.*
-terraform.*
-gcp_infra/gateway-secrets.yml
-gcp_infra/roles/
-.terraform/
-gcp_infra/inventory.ini
+app/.env
+roles/
+terraform*
+.terraform.*
+inventory.ini
