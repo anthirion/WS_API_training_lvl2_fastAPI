@@ -97,7 +97,7 @@
         update_cache: yes
 
     - name: Démarrer le serveur API
-      ansible.builtin.shell: chmod +x gcp_install.sh && ./gcp_install.sh
+      ansible.builtin.shell: chmod +x gcp_install.sh && bash gcp_install.sh
       args:
         chdir: /home/anthirion/app/
       tags: code_updated
@@ -114,7 +114,7 @@
     rebuild: false  # changer la valeur de la variable avec l'option --extra-vars
 
   vars_files:
-    - gateway-secrets.yml
+    - gateway-vars.yml
 
   tasks:
     - name: Copier le Dockerfile du répertoire krakend sur le serveur distant
