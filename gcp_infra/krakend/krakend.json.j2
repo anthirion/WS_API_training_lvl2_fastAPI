@@ -1,0 +1,277 @@
+{
+  "$schema": "https://www.krakend.io/schema/v2.7/krakend.json",
+  "version": 3,
+  "endpoints": [
+    {
+      "endpoint": "/",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/",
+          "method": "GET",
+          "encoding": "string",
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/products",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/products",
+          "method": "GET",
+          "encoding": "json",
+          "is_collection": true,
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/products/{product_id}",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/products/{product_id}",
+          "method": "GET",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/products",
+      "method": "POST",
+      {# "no-op" indique à la gateway de retourner le status code
+        retourné par le backend
+        Pour un endpoint POST, le status code sera 201 au lieu de 200  #}
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/products",
+          "method": "POST",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/products/{product_id}",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/products/{product_id}",
+          "method": "PUT",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/products/{product_id}",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/products/{product_id}",
+          "method": "DELETE",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/admin/users",
+          "method": "GET",
+          "encoding": "json",
+          "is_collection": true,
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users/{user_id}",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/admin/users/{user_id}",
+          "method": "GET",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/users",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/users",
+          "method": "POST",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ]
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users/{user_id}",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/admin/users/{user_id}",
+          "method": "PUT",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/users/{user_id}",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/admin/users/{user_id}",
+          "method": "DELETE",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/admin/orders",
+          "method": "GET",
+          "encoding": "json",
+          "is_collection": true,
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders/{order_id}",
+      "method": "GET",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/admin/orders/{order_id}",
+          "method": "GET",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/admin/orders",
+          "method": "POST",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders/{order_id}",
+      "method": "PUT",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/admin/orders/{order_id}",
+          "method": "PUT",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    },
+    {
+      "endpoint": "/admin/orders/{order_id}",
+      "method": "DELETE",
+      "output_encoding": "no-op",
+      "extra_config": {{ endpoint_config | to_json }},
+      "backend": [
+        {
+          "url_pattern": "/admin/orders/{order_id}",
+          "method": "DELETE",
+          "encoding": "json",
+          "host": [
+            "http://127.0.0.1"
+          ],
+          "extra_config": {{ backend_config | to_json }}
+        }
+      ]
+    }
+  ],
+  "output_encoding": "no-op"
+}
