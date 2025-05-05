@@ -1,4 +1,4 @@
-# WS_API_training_lvl2
+# WS API training Niveau 2
 
 ## Instructions pour les exercices aux participants de la formation
 
@@ -28,7 +28,7 @@ Sans modification de votre part, les credentials sont les suivants:
 
 2. Provisionner les VMs nécessaires en exécutant la commande suivante depuis le dossier gcp_infra/:
 
-```
+```tf
     terraform apply
 ```
 
@@ -36,11 +36,18 @@ Sans modification de votre part, les credentials sont les suivants:
 
 4. Lancer la configuration des VMs avec le playbook init-api-playbook.yml avec la commande suivante (commande à lancer depuis le dossier gcp_infra/):
 
-```
+```bash
    ansible-playbook init-api-playbook.yml -i inventory.ini
 ```
 
 5. [VERIFIATION] Si vous taper dans le navigateur l'url _GatewayIP/products_ (où l'adresse ip de la gateway est à récupérer sur la console gcp), vous devriez voir s'afficher la liste des produits enregistrée dans la bdd
+
+6. Compléter le .env avec les informations adéquates (aidez-vous du template)
+
+7. A la fin de la formation, ne pas oublier de détruire les ressources construites via la commande suivante:
+```tf
+    terraform destroy
+```
 
 ### Démo de charge (partie throttling)
 
@@ -52,7 +59,7 @@ Cette démo a pour but de montrer un test de charge avec l'outil **Locust**.
 
 2. Depuis le dossier load_testing, lancer la commande suivante:
 
-```
+```bash
     locust -f load_test.py -H http://{gateway_ip}
 ```
 
