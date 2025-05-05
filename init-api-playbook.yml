@@ -29,7 +29,7 @@
 
     - name: Copier le script de configuration de la DB
       ansible.builtin.copy:
-        src: ../mysql-init/init-mysql.sql
+        src: init-mysql.sql
         dest: ./init-mysql.sql
         # Rendre le script exécutable
         mode: "u+x,g=r,o=r"
@@ -64,7 +64,7 @@
         dest: /home/anthirion/app/
         mode: u=rw,g=r,o=r
       with_fileglob:
-        - "../prod_app/*.py"
+        - "app/*.py"
       tags: code_updated
 
     - name: Copier les fichiers de configuration dans app
@@ -73,9 +73,9 @@
           dest: /home/anthirion/app/
           mode: u=rw,g=r,o=r
       with_items:
-        - ../app_with_db/.env
-        - ../requirements.txt
-        - ./gcp_install.sh
+        - app/.env
+        - requirements.txt
+        - gcp_install.sh
       tags: code_updated
 
     - name: Mettre à jour l'adresse IP du serveur DB dans le .env
@@ -119,13 +119,13 @@
   tasks:
     - name: Copier le Dockerfile du répertoire krakend sur le serveur distant
       ansible.builtin.copy:
-        src: ./krakend/Dockerfile
+        src: krakend/Dockerfile
         dest: /home/anthirion/krakend/
         mode: u=rw,g=r,o=rx
 
     - name: Générer le fichier krakend.json à partir du template
       ansible.builtin.template:
-        src: ./krakend/krakend.json.j2
+        src: krakend/krakend.json.j2
         dest: /home/anthirion/krakend/krakend.json
 
     - name: Remplacer localhost par l'adresse IP du serveur API dans krakend.json
