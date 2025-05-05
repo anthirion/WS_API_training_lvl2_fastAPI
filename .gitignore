@@ -1,5 +1,5 @@
 __pycache__
 fast_api_venv
 .env
-terraform.*
+*terraform.*
 .terraform/
