@@ -1,7 +1,3 @@
 __pycache__
 fast_api_venv
-.env
-infra/.*
-infra/terraform.*
-infra/gateway-secrets.yml
-infra/roles/
+*terraform*
