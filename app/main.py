@@ -10,6 +10,7 @@ from .schemas import ErrorMessage
 from .db import engine
 
 from .authentification import check_token
+from .logger import logger
 
 
 """
@@ -25,6 +26,7 @@ Define all endpoints relative to products below
 
 @app.get("/")
 async def welcome():
+  logger.info("Méthode GET / appelée")
   return "Welcome to the API training"
 
 
@@ -33,6 +35,7 @@ async def welcome():
          response_description="	Liste des produits",
          )
 async def get_all_products(product_name: str = "", product_category: str = "") -> List[schemas.Product]:
+  logger.info("Méthode GET /products appelée")
   # start a session to make requests to the database
   with Session(engine) as session:
     try:
