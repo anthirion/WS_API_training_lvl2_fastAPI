@@ -1,2 +1,4 @@
 .terraform/
 *terraform*
+fast_api_venv/
+__pycache__
