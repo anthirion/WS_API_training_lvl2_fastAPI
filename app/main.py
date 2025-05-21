@@ -35,7 +35,7 @@ async def get_all_products(product_name: str = "",
                            product_category: str = "",
                            min_stock: int = 0,
                            min_price: float = 0,
-                           max_price: float = 0,
+                           max_price: float = float('inf'),
                            ) -> List[schemas.Product]:
   # start a session to make requests to the database
   with Session(engine) as session:
