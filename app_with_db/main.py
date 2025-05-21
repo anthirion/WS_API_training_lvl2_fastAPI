@@ -72,7 +72,7 @@ async def get_all_products(product_name: str = "",
 
 
 # TODO: add parameters to the decorator in order to improve the documentation of the api
-@app.get("/products/{productId}")
+@app.get("/products/{product_id}")
 async def get_product_by_id():
   # TODO
   pass
@@ -90,7 +90,7 @@ async def add_product():
 # TODO: add parameters to the decorator in order to improve the documentation of the api
 
 
-@app.put("/products/{productId}")
+@app.put("/products/{product_id}")
 async def modify_product():
   # TODO
   pass
@@ -99,7 +99,7 @@ async def modify_product():
 # TODO: add parameters to the decorator in order to improve the documentation of the api
 
 
-@app.delete("/products/{productId}")
+@app.delete("/products/{product_id}")
 async def delete_product():
   # TODO
   pass

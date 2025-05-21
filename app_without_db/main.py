@@ -26,26 +26,26 @@ async def get_all_products() -> List[Product]:
   return all_products
 
 
-@app.get("/products/{productId}")
-async def get_product_by_id(productId: int) -> Product:
+@app.get("/products/{product_id}")
+async def get_product_by_id() -> Product:
   # TODO
   pass
 
 
 @app.post("/products")
-async def add_product(new_product: ProductBase) -> Product:
+async def add_product() -> Product:
   # TODO
   pass
 
 
-@app.put("/products/{productId}")
-async def modify_product(productId: int, new_product: ProductBase) -> Product:
+@app.put("/products/{product_id}")
+async def modify_product() -> Product:
   # TODO
   pass
 
 
-@app.delete("/products/{productId}")
-async def delete_product(productId: int):
+@app.delete("/products/{product_id}")
+async def delete_product():
   # TODO
   pass
 
