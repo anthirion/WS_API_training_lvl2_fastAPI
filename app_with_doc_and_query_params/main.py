@@ -29,18 +29,48 @@ async def welcome():
          )
 # Declare query parameters for name and category (you can declare other parameters if you want)
 # WARNING: Do NOT add quotes for query parameters -> products?category=Alimentation
-async def get_all_products(name: str = "", category: str = "") -> List[Product]:
-  if name:
-    """ Retrieve all products of name "name" if the name parameter is declared  """
-    return [product for product in all_products
-            if product.product_name == name]
-  elif category:
-    """ Retrieve all products of category "category" if the category parameter is declared  """
-    return [product for product in all_products
-            if product.category == category]
-  else:
-    """ Retrieve all products if no parameter is declared  """
-    return all_products
+async def get_all_products(product_name: str = "",
+                           product_category: str = "",
+                           min_stock: int = 0,
+                           min_price: float = 0,
+                           max_price: float = float('inf'),
+                           ) -> List[Product]:
+  if max_price < min_price:
+    raise HTTPException(
+        status_code=400,
+        detail="max_price parameter must be superior than min_price"
+    )
+  if max_price < 0 or min_price < 0:
+    raise HTTPException(
+        status_code=400,
+        detail="Prices must be positive"
+    )
+  if min_stock < 0:
+    raise HTTPException(
+        status_code=400,
+        detail="Stock parameter must be positive"
+    )
+  requested_products = set(all_products)
+  select_products_by_name = set(all_products)
+  select_products_by_category = set(all_products)
+  if product_name:
+    select_products_by_name = set(
+        [product for product in all_products if product.product_name == product_name])
+  if product_category:
+    select_products_by_category = set(
+        [product for product in all_products if product.category == product_category])
+  select_products_by_stock = set(
+      [product for product in all_products if product.stock >= min_stock])
+  select_products_by_min_price = set(
+      [product for product in all_products if product.price >= min_price])
+  select_products_by_max_price = set(
+      [product for product in all_products if product.price <= max_price])
+  return requested_products.intersection(select_products_by_name,
+                                         select_products_by_category,
+                                         select_products_by_stock,
+                                         select_products_by_min_price,
+                                         select_products_by_max_price,
+                                         )
 
 
 @app.get("/products/{product_id}",

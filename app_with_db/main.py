@@ -28,28 +28,43 @@ async def welcome():
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          response_description="	Liste des produits",
          )
-async def get_all_products(product_name: str = "", product_category: str = "") -> List[schemas.Product]:
+# example of product_name parameter usage:
+# http://127.0.0.1:8000/products?product_name=Cafe Gourmet
+# do not use double quotes or simple quotes
+async def get_all_products(product_name: str = "",
+                           product_category: str = "",
+                           min_stock: int = 0,
+                           min_price: float = 0,
+                           max_price: float = float('inf'),
+                           ) -> List[schemas.Product]:
   # start a session to make requests to the database
   with Session(engine) as session:
     try:
+      if max_price < min_price:
+        raise HTTPException(
+            status_code=400,
+            detail="max_price parameter must be superior than min_price"
+        )
+      if max_price < 0 or min_price < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Prices must be positive"
+        )
+      if min_stock < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Stock parameter must be positive"
+        )
+      query = select(models.Product)
       if product_name:
-        """ Retrieve all elements of name "name" if the name parameter is declared  """
-        query = (
-            select(models.Product)
-            .where(models.Product.product_name == product_name)
-        )
-        return [session.execute(query).scalar_one()]
-      elif product_category:
-        """ Retrieve all elements of category "category" if the category parameter is declared  """
-        query = (
-            select(models.Product)
-            .where(models.Product.category == product_category)
-        )
-        return [session.execute(query).scalar_one()]
-      else:
-        """ Retrieve all products if no parameter is declared  """
-        query = select(models.Product)
-        return session.execute(query).scalars().all()
+        query = query.where(models.Product.product_name == product_name)
+      if product_category:
+        query = query.where(models.Product.category == product_category)
+      query = query.where(models.Product.stock >= min_stock)
+      query = query.where(models.Product.price >= min_price)
+      query = query.where(models.Product.price <= max_price)
+
+      return session.execute(query).scalars().all()
     # manage error in case no product was found
     except exc.NoResultFound:
       # no product found in the db
