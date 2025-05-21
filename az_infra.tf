@@ -1,6 +1,6 @@
 locals {
   rg_name = "antoine-thirion21378"
-  region = "West Europe"
+  region  = "West Europe"
 }
 
 terraform {
@@ -20,7 +20,16 @@ provider "azurerm" {
 }
 
 ##########################  RESOURCES ##########################
-resource "azurerm_container_app_environment" "container-env" {
+
+resource "azurerm_container_registry" "container_reg" {
+  name                = "ws-api-training-acr"
+  resource_group_name = local.rg_name
+  location            = local.region
+  sku                 = "Basic"
+  admin_enabled       = false
+}
+
+resource "azurerm_container_app_environment" "container_env" {
   name                       = "ws-api-training-env"
   location                   = local.region
   resource_group_name        = local.rg_name
@@ -33,10 +42,9 @@ resource "azurerm_container_app" "apiserver" {
   revision_mode                = "Single"
 
   template {
-    
     container {
       name   = "apiserver"
-      image  = "anthirion/apiserver:v1"
+      image  = "${azurerm_container_registry.container_reg.name}/apiserver:v2"
       cpu    = 0.25
       memory = "0.5Gi"
     }
@@ -45,26 +53,26 @@ resource "azurerm_container_app" "apiserver" {
   ingress {
     traffic_weight {
       latest_revision = true
-      percentage = 100
+      percentage      = 100
     }
     allow_insecure_connections = true
-    external_enabled = true
-    transport = "http"
-    target_port = 8000
+    external_enabled           = true
+    transport                  = "http"
+    target_port                = 8000
   }
 }
 
 # WARNING: the activation of Azure APIM can take from 30 to 40 minutes
 # so please wait :)
-resource "azurerm_api_management" "apim-dev" {
-  name                = "ApiTrainingAPIM"
-  location            = local.region
-  resource_group_name = local.rg_name
-  publisher_name      = "Wavestone"
-  publisher_email     = "antoine.thirion@wavestone.com"
+# resource "azurerm_api_management" "apim-dev" {
+#   name                = "ApiTrainingAPIM"
+#   location            = local.region
+#   resource_group_name = local.rg_name
+#   publisher_name      = "Wavestone"
+#   publisher_email     = "antoine.thirion@wavestone.com"
 
-  sku_name = "Developer_1"
-}
+#   sku_name = "Developer_1"
+# }
 
 # B1s instances are not available for mysql flexible servers
 # resource "azurerm_mysql_flexible_server" "db" {
