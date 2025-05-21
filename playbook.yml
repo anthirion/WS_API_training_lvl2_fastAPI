@@ -55,7 +55,6 @@
   vars:
     image_name: shopapi
     container_name: apiserver
-    rebuild: false  # changer la valeur de la variable avec l'option --extra-vars
 
   tasks:
     - name: Copier les fichiers sources dans app
