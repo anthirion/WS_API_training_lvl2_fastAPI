@@ -42,7 +42,7 @@ Sans modification de votre part, les credentials sont les suivants:
    ansible-playbook init-api-playbook.yml -i inventory.ini
 ```
 
-[ATTENTION] Changer la séquence de fin de ligne du script gcp_install.sh à LF pour être pris en compte par Linux (voir dans les paramètres de VSCode)
+**[ATTENTION] Changer la séquence de fin de ligne du script gcp_install.sh à LF pour être pris en compte par Linux (voir dans les paramètres de VSCode)**
 
 6. [VERIFIATION] Si vous taper dans le navigateur l'url _GatewayIP/products_ (où l'adresse ip de la gateway est à récupérer sur la console gcp), vous devriez voir s'afficher la liste des produits enregistrée dans la bdd
 
