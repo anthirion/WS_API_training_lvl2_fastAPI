@@ -239,30 +239,18 @@ async def get_all_users(username: str = "",
   pagination_params = LimitOffsetParams(limit=limit, offset=offset)
   with Session(engine) as session:
     try:
+      query = select(models.User)
       if username:
         """ Retrieve all elements of name "name" if the name parameter is declared  """
-        query = (
-            select(models.User)
-            .where(models.User.username == username)
-        )
-        return [session.execute(query).scalar_one()]
+        query = query.where(models.User.username == username)
       elif email:
         """ Retrieve all elements of email "email" if the email parameter is declared  """
-        query = (
-            select(models.User)
-            .where(models.User.email == email)
-        )
-        return fp_sqlalchemy.paginate(session,
-                                      query=query,
-                                      params=pagination_params,
-                                      )
-      else:
-        """ Retrieve all users if no parameter is declared  """
-        query = select(models.User)
-        return fp_sqlalchemy.paginate(session,
-                                      query=query,
-                                      params=pagination_params,
-                                      )
+        query = query.where(models.User.email == email)
+
+      return fp_sqlalchemy.paginate(session,
+                                    query=query,
+                                    params=pagination_params,
+                                    )
     # manage error in case no user was found
     except exc.NoResultFound:
       return LimitOffsetPage[schemas.Product](items=[])
