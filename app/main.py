@@ -402,16 +402,31 @@ Define all endpoints relative to orders below
          description="Retourne un tableau JSON contenant les commandes avec leurs détails",
          response_description="Liste des commandes",
          )
-async def get_all_orders(limit: int = DEFAULT_PAGINATION_LIMIT,
+async def get_all_orders(total: float = 0.0,
+                         status: str = "",
+                         limit: int = DEFAULT_PAGINATION_LIMIT,
                          offset: int = DEFAULT_PAGINATION_OFFSET,
                          ) -> LimitOffsetPage[schemas.Order]:
   pagination_params = LimitOffsetParams(limit=limit, offset=offset)
   with Session(engine) as session:
-    query = select(models.Order)
-    return fp_sqlalchemy.paginate(session,
-                                  query=query,
-                                  params=pagination_params,
-                                  )
+    try:
+      query = select(models.Order)
+      if total < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Total parameter must be positive"
+        )
+      if total > 0:
+        query = query.where(models.Order.total == total)
+      if status:
+        query = query.where(models.Order.status == status)
+
+      return fp_sqlalchemy.paginate(session,
+                                    query=query,
+                                    params=pagination_params,
+                                    )
+    except exc.NoResultFound:
+      return LimitOffsetPage[schemas.Order](items=[])
 
 
 @app.get("/admin/orders/{order_id}",
