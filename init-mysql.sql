@@ -23,6 +23,12 @@ UNION ALL
 SELECT 4, "Sac a Dos de Randonnee", "Sac a dos durable et spacieux avec plusieurs compartiments pour le trekking.", 89.95, "Sport et Plein Air", 200
 UNION ALL
 SELECT 5, "Serum Anti-age", "Serum haut de gamme pour reduire les rides et ameliorer la texture de la peau.", 49.99, "Beaute", 500
+UNION ALL
+SELECT 6, "Ecouteurs Sans Fil Nova", "Ecouteurs Bluetooth avec réduction de bruit et autonomie longue durée.", 79.99, "Electronique", 250
+UNION ALL
+SELECT 7, "Tapis de Yoga Éco", "Tapis antidérapant fabriqué à partir de matériaux recyclés.", 39.90, "Sport et Plein Air", 120
+UNION ALL
+SELECT 8, "Lampe de Bureau LED", "Lampe avec éclairage ajustable et port USB intégré.", 29.99, "Mobilier", 180
 WHERE (SELECT COUNT(*) FROM products) = 0;
 
 ----------------------------------------------------------------
@@ -46,6 +52,12 @@ UNION ALL
 SELECT 4, "Diana", "diana@example.com", "321 Grape Rd Vineyard", "dianasecret"
 UNION ALL
 SELECT 5, "Eve", "eve@example.com", "654 Peach Ln Orchard", "evepassword"
+UNION ALL
+SELECT 6, "Frank", "frank@example.com", "987 Pear St Citrusville", "franksecure"
+UNION ALL
+SELECT 7, "Grace", "grace@example.com", "321 Lime Blvd Greenfield", "gracepass"
+UNION ALL
+SELECT 8, "Hugo", "hugo@example.com", "159 Cherry Ln Sweetland", "hugosecret"
 WHERE (SELECT COUNT(*) FROM users) = 0;
 
 ----------------------------------------------------------------
@@ -69,6 +81,12 @@ UNION ALL
 SELECT 4, 1, 17.45, "Cancelled"
 UNION ALL
 SELECT 5, 2, 76.98, "Processing"
+UNION ALL
+SELECT 6, 3, 64.80, "Pending"
+UNION ALL
+SELECT 7, 6, 149.99, "Completed"
+UNION ALL
+SELECT 8, 7, 88.50, "Processing"
 WHERE (SELECT COUNT(*) FROM orders) = 0;
 
 ----------------------------------------------------------------
