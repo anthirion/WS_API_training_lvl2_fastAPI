@@ -402,8 +402,7 @@ Define all endpoints relative to orders below
          description="Retourne un tableau JSON contenant les commandes avec leurs détails",
          response_description="Liste des commandes",
          )
-async def get_all_orders(total: float = 0.0,
-                         status: str = "",
+async def get_all_orders(status: str = "",
                          limit: int = DEFAULT_PAGINATION_LIMIT,
                          offset: int = DEFAULT_PAGINATION_OFFSET,
                          ) -> LimitOffsetPage[schemas.Order]:
@@ -411,13 +410,6 @@ async def get_all_orders(total: float = 0.0,
   with Session(engine) as session:
     try:
       query = select(models.Order)
-      if total < 0:
-        raise HTTPException(
-            status_code=400,
-            detail="Total parameter must be positive"
-        )
-      if total > 0:
-        query = query.where(models.Order.total == total)
       if status:
         query = query.where(models.Order.status == status)
 
