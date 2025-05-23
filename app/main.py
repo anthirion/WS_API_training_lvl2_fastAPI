@@ -3,16 +3,21 @@ from fastapi import FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select, insert, update, delete, exc, func
 from typing import List
+from fastapi_pagination import add_pagination
+import fastapi_pagination.ext.sqlalchemy as fp_sqlalchemy
+from fastapi_pagination.limit_offset import LimitOffsetParams, LimitOffsetPage
 
 from . import models, schemas
 from .schemas import ErrorMessage
 from .db import engine
+from .pagination import DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_OFFSET
 
 
 """
 Start the api server
 """
 app = FastAPI()
+add_pagination(app)
 
 """
 Define all endpoints relative to products below
@@ -35,8 +40,11 @@ async def get_all_products(product_name: str = "",
                            product_category: str = "",
                            min_stock: int = 0,
                            min_price: float = 0,
-                           max_price: float = float('inf'),
-                           ) -> List[schemas.Product]:
+                           max_price: float = 99_999_999,
+                           limit: int = DEFAULT_PAGINATION_LIMIT,
+                           offset: int = DEFAULT_PAGINATION_OFFSET,
+                           ) -> LimitOffsetPage[schemas.Product]:
+  pagination_params = LimitOffsetParams(limit=limit, offset=offset)
   # start a session to make requests to the database
   with Session(engine) as session:
     try:
@@ -64,11 +72,13 @@ async def get_all_products(product_name: str = "",
       query = query.where(models.Product.price >= min_price)
       query = query.where(models.Product.price <= max_price)
 
-      return session.execute(query).scalars().all()
-    # manage error in case no product was found
+      return fp_sqlalchemy.paginate(session,
+                                    query=query,
+                                    params=pagination_params,
+                                    )
     except exc.NoResultFound:
       # no product found in the db
-      return {}
+      return LimitOffsetPage[schemas.Product](items=[])
 
 
 @app.get("/products/{product_id}",
@@ -221,8 +231,12 @@ Define all endpoints relative to users below
          description="Retourne un tableau JSON contenant les utilisateurs avec leurs détails",
          response_description="	Liste des utilisateurs",
          )
-async def get_all_users(username: str = "", email: str = "") -> List[schemas.User]:
-  # start a session to make requests to the database
+async def get_all_users(username: str = "",
+                        email: str = "",
+                        limit: int = DEFAULT_PAGINATION_LIMIT,
+                        offset: int = DEFAULT_PAGINATION_OFFSET,
+                        ) -> LimitOffsetPage[schemas.User]:
+  pagination_params = LimitOffsetParams(limit=limit, offset=offset)
   with Session(engine) as session:
     try:
       if username:
@@ -238,14 +252,20 @@ async def get_all_users(username: str = "", email: str = "") -> List[schemas.Use
             select(models.User)
             .where(models.User.email == email)
         )
-        return [session.execute(query).scalar_one()]
+        return fp_sqlalchemy.paginate(session,
+                                      query=query,
+                                      params=pagination_params,
+                                      )
       else:
         """ Retrieve all users if no parameter is declared  """
         query = select(models.User)
-        return session.execute(query).scalars().all()
+        return fp_sqlalchemy.paginate(session,
+                                      query=query,
+                                      params=pagination_params,
+                                      )
     # manage error in case no user was found
     except exc.NoResultFound:
-      return {}
+      return LimitOffsetPage[schemas.Product](items=[])
 
 
 @app.get("/admin/users/{user_id}",
@@ -394,11 +414,16 @@ Define all endpoints relative to orders below
          description="Retourne un tableau JSON contenant les commandes avec leurs détails",
          response_description="Liste des commandes",
          )
-async def get_all_orders() -> List[schemas.Order]:
+async def get_all_orders(limit: int = DEFAULT_PAGINATION_LIMIT,
+                         offset: int = DEFAULT_PAGINATION_OFFSET,
+                         ) -> LimitOffsetPage[schemas.Order]:
+  pagination_params = LimitOffsetParams(limit=limit, offset=offset)
   with Session(engine) as session:
     query = select(models.Order)
-    orders = session.execute(query).scalars().all()
-    return [order.to_dict() for order in orders]
+    return fp_sqlalchemy.paginate(session,
+                                  query=query,
+                                  params=pagination_params,
+                                  )
 
 
 @app.get("/admin/orders/{order_id}",
