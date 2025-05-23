@@ -258,8 +258,14 @@ Define all endpoints relative to orders below
          description="Retourne un tableau JSON contenant les commandes avec leurs détails",
          response_description="	Liste des commandes",
          )
-async def get_all_orders() -> List[Order]:
-  return all_orders
+async def get_all_orders(status: str = "") -> List[Order]:
+  requested_orders = set(all_orders)
+  select_orders_by_status = set(all_orders)
+  if status:
+    select_orders_by_status = set(
+        [order for order in all_orders if order.status == status]
+    )
+  return requested_orders.intersection(select_orders_by_status)
 
 
 @app.get("/admin/orders/{order_id}",
