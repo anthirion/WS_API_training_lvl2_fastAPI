@@ -1,23 +1,23 @@
 # imports for API operation
-from fastapi import FastAPI, HTTPException, Depends
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import FastAPI, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import select, insert, update, delete, exc, func
-from typing import List, Annotated
+from typing import List
+from fastapi_pagination import add_pagination
+import fastapi_pagination.ext.sqlalchemy as fp_sqlalchemy
+from fastapi_pagination.limit_offset import LimitOffsetParams, LimitOffsetPage
 
 from . import models, schemas
 from .schemas import ErrorMessage
 from .db import engine
-
-from .authentification import check_token
-from .logger import logger
+from .pagination import DEFAULT_PAGINATION_LIMIT, DEFAULT_PAGINATION_OFFSET
 
 
 """
-Start the api server and configure authentification
+Start the api server
 """
 app = FastAPI()
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+add_pagination(app)
 
 """
 Define all endpoints relative to products below
@@ -26,7 +26,6 @@ Define all endpoints relative to products below
 
 @app.get("/")
 async def welcome():
-  logger.info("Méthode GET / appelée")
   return "Welcome to the API training"
 
 
@@ -34,33 +33,52 @@ async def welcome():
          description="Retourne un tableau JSON contenant les produits avec leurs détails",
          response_description="	Liste des produits",
          )
-async def get_all_products(product_name: str = "", product_category: str = "") -> List[schemas.Product]:
-  logger.info("Méthode GET /products appelée")
+# example of product_name parameter usage:
+# http://127.0.0.1:8000/products?product_name=Cafe Gourmet
+# do not use double quotes or simple quotes
+async def get_all_products(product_name: str = "",
+                           product_category: str = "",
+                           min_stock: int = 0,
+                           min_price: float = 0,
+                           max_price: float = 99_999_999,
+                           limit: int = DEFAULT_PAGINATION_LIMIT,
+                           offset: int = DEFAULT_PAGINATION_OFFSET,
+                           ) -> LimitOffsetPage[schemas.Product]:
+  pagination_params = LimitOffsetParams(limit=limit, offset=offset)
   # start a session to make requests to the database
   with Session(engine) as session:
     try:
+      if max_price < min_price:
+        raise HTTPException(
+            status_code=400,
+            detail="max_price parameter must be superior than min_price"
+        )
+      if max_price < 0 or min_price < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Prices must be positive"
+        )
+      if min_stock < 0:
+        raise HTTPException(
+            status_code=400,
+            detail="Stock parameter must be positive"
+        )
+      query = select(models.Product)
       if product_name:
-        """ Retrieve all elements of name "name" if the name parameter is declared  """
-        query = (
-            select(models.Product)
-            .where(models.Product.product_name == product_name)
-        )
-        return [session.execute(query).scalar_one()]
-      elif product_category:
-        """ Retrieve all elements of category "category" if the category parameter is declared  """
-        query = (
-            select(models.Product)
-            .where(models.Product.category == product_category)
-        )
-        return [session.execute(query).scalar_one()]
-      else:
-        """ Retrieve all products if no parameter is declared  """
-        query = select(models.Product)
-        return session.execute(query).scalars().all()
-    # manage error in case no product was found
+        query = query.where(models.Product.product_name == product_name)
+      if product_category:
+        query = query.where(models.Product.category == product_category)
+      query = query.where(models.Product.stock >= min_stock)
+      query = query.where(models.Product.price >= min_price)
+      query = query.where(models.Product.price <= max_price)
+
+      return fp_sqlalchemy.paginate(session,
+                                    query=query,
+                                    params=pagination_params,
+                                    )
     except exc.NoResultFound:
       # no product found in the db
-      return {}
+      return LimitOffsetPage[schemas.Product](items=[])
 
 
 @app.get("/products/{product_id}",
@@ -94,9 +112,7 @@ async def get_product_by_id(product_id: int) -> schemas.Product:
           responses={409: {"model": ErrorMessage,
                            "description": "Produit déjà existant"}},
           )
-async def add_product(token: Annotated[str, Depends(oauth2_scheme)],
-                      new_product: schemas.ProductBase) -> schemas.Product:
-  check_token(token)
+async def add_product(new_product: schemas.ProductBase) -> schemas.Product:
   with Session(engine) as session:
     try:
       """
@@ -149,9 +165,7 @@ async def add_product(token: Annotated[str, Depends(oauth2_scheme)],
          responses={404: {"model": ErrorMessage,
                           "description": "Produit introuvable"}},
          )
-async def modify_product(token: Annotated[str, Depends(oauth2_scheme)],
-                         product_id: int, new_product: schemas.ProductBase) -> schemas.Product:
-  check_token(token)
+async def modify_product(product_id: int, new_product: schemas.ProductBase) -> schemas.Product:
   with Session(engine) as session:
     """ Search the given product in the database with its name  """
     query = (
@@ -191,9 +205,7 @@ async def modify_product(token: Annotated[str, Depends(oauth2_scheme)],
             responses={404: {"model": ErrorMessage,
                              "description": "Produit introuvable"}},
             )
-async def delete_product(product_id: int,
-                         token: Annotated[str, Depends(oauth2_scheme)]):
-  check_token(token)
+async def delete_product(product_id: int):
   with Session(engine) as session:
     """ Search the given product in the database with its name  """
     query = (
@@ -219,33 +231,29 @@ Define all endpoints relative to users below
          description="Retourne un tableau JSON contenant les utilisateurs avec leurs détails",
          response_description="	Liste des utilisateurs",
          )
-async def get_all_users(token: Annotated[str, Depends(oauth2_scheme)],
-                        username: str = "", email: str = "") -> List[schemas.User]:
-  check_token(token)
-  # start a session to make requests to the database
+async def get_all_users(username: str = "",
+                        email: str = "",
+                        limit: int = DEFAULT_PAGINATION_LIMIT,
+                        offset: int = DEFAULT_PAGINATION_OFFSET,
+                        ) -> LimitOffsetPage[schemas.User]:
+  pagination_params = LimitOffsetParams(limit=limit, offset=offset)
   with Session(engine) as session:
     try:
+      query = select(models.User)
       if username:
         """ Retrieve all elements of name "name" if the name parameter is declared  """
-        query = (
-            select(models.User)
-            .where(models.User.username == username)
-        )
-        return [session.execute(query).scalar_one()]
+        query = query.where(models.User.username == username)
       elif email:
         """ Retrieve all elements of email "email" if the email parameter is declared  """
-        query = (
-            select(models.User)
-            .where(models.User.email == email)
-        )
-        return [session.execute(query).scalar_one()]
-      else:
-        """ Retrieve all users if no parameter is declared  """
-        query = select(models.User)
-        return session.execute(query).scalars().all()
+        query = query.where(models.User.email == email)
+
+      return fp_sqlalchemy.paginate(session,
+                                    query=query,
+                                    params=pagination_params,
+                                    )
     # manage error in case no user was found
     except exc.NoResultFound:
-      return {}
+      return LimitOffsetPage[schemas.Product](items=[])
 
 
 @app.get("/admin/users/{user_id}",
@@ -254,9 +262,7 @@ async def get_all_users(token: Annotated[str, Depends(oauth2_scheme)],
          responses={404: {"model": ErrorMessage,
                           "description": "Utilisateur introuvable"}},
          )
-async def get_user_by_id(token: Annotated[str, Depends(oauth2_scheme)],
-                         user_id: int) -> schemas.User:
-  check_token(token)
+async def get_user_by_id(user_id: int) -> schemas.User:
   with Session(engine) as session:
     try:
       """ Search the user in the database with its id  """
@@ -332,9 +338,7 @@ async def add_user(new_user: schemas.UserBase) -> schemas.User:
          responses={404: {"model": ErrorMessage,
                           "description": "Utilisateur introuvable"}},
          )
-async def modify_user(token: Annotated[str, Depends(oauth2_scheme)],
-                      user_id: int, new_user: schemas.UserBase) -> schemas.User:
-  check_token(token)
+async def modify_user(user_id: int, new_user: schemas.UserBase) -> schemas.User:
   with Session(engine) as session:
     """ Search the given user in the database with its id  """
     query = (
@@ -372,8 +376,7 @@ async def modify_user(token: Annotated[str, Depends(oauth2_scheme)],
             responses={404: {"model": ErrorMessage,
                              "description": "Utilisateur introuvable"}},
             )
-async def delete_user(token: Annotated[str, Depends(oauth2_scheme)], user_id: int):
-  check_token(token)
+async def delete_user(user_id: int):
   with Session(engine) as session:
     """ Search the given user in the database with its name  """
     query = (
@@ -399,12 +402,23 @@ Define all endpoints relative to orders below
          description="Retourne un tableau JSON contenant les commandes avec leurs détails",
          response_description="Liste des commandes",
          )
-async def get_all_orders(token: Annotated[str, Depends(oauth2_scheme)]) -> List[schemas.Order]:
-  check_token(token)
+async def get_all_orders(status: str = "",
+                         limit: int = DEFAULT_PAGINATION_LIMIT,
+                         offset: int = DEFAULT_PAGINATION_OFFSET,
+                         ) -> LimitOffsetPage[schemas.Order]:
+  pagination_params = LimitOffsetParams(limit=limit, offset=offset)
   with Session(engine) as session:
-    query = select(models.Order)
-    orders = session.execute(query).scalars().all()
-    return [order.to_dict() for order in orders]
+    try:
+      query = select(models.Order)
+      if status:
+        query = query.where(models.Order.status == status)
+
+      return fp_sqlalchemy.paginate(session,
+                                    query=query,
+                                    params=pagination_params,
+                                    )
+    except exc.NoResultFound:
+      return LimitOffsetPage[schemas.Order](items=[])
 
 
 @app.get("/admin/orders/{order_id}",
@@ -413,9 +427,7 @@ async def get_all_orders(token: Annotated[str, Depends(oauth2_scheme)]) -> List[
          responses={404: {"model": ErrorMessage,
                           "description": "Commande introuvable"}},
          )
-async def get_order_by_id(token: Annotated[str, Depends(oauth2_scheme)],
-                          order_id: int) -> schemas.Order:
-  check_token(token)
+async def get_order_by_id(order_id: int) -> schemas.Order:
   with Session(engine) as session:
     try:
       """ Search the order in the database with its id  """
@@ -440,9 +452,7 @@ async def get_order_by_id(token: Annotated[str, Depends(oauth2_scheme)],
                       400: {"model": ErrorMessage,
                             "description": "Commande incorrecte"}},
           )
-async def add_order(token: Annotated[str, Depends(oauth2_scheme)],
-                    new_order: schemas.OrderBase) -> schemas.Order:
-  check_token(token)
+async def add_order(new_order: schemas.OrderBase) -> schemas.Order:
   with Session(engine) as session:
     try:
       """
@@ -538,9 +548,7 @@ async def add_order(token: Annotated[str, Depends(oauth2_scheme)],
                      400: {"model": ErrorMessage,
                            "description": "Commande incorrecte"}},
          )
-async def modify_order(token: Annotated[str, Depends(oauth2_scheme)],
-                       order_id: int, new_order: schemas.OrderBase) -> schemas.Order:
-  check_token(token)
+async def modify_order(order_id: int, new_order: schemas.OrderBase) -> schemas.Order:
   with Session(engine) as session:
     try:
       # check that the provided order is correct
@@ -609,8 +617,7 @@ async def modify_order(token: Annotated[str, Depends(oauth2_scheme)],
             responses={404: {"model": ErrorMessage,
                              "description": "Commande introuvable"}},
             )
-async def delete_order(token: Annotated[str, Depends(oauth2_scheme)], order_id: int):
-  check_token(token)
+async def delete_order(order_id: int):
   with Session(engine) as session:
     try:
       """ Check that the order to delete exists """
