@@ -159,18 +159,21 @@ Define all endpoints relative to user below
          description="Retourne un tableau JSON contenant les utilisateurs avec leurs détails",
          response_description="	Liste des utilisateurs",
          )
-async def get_all_users(name: str = "", email: str = "") -> List[User]:
+async def get_all_users(name: str = "",
+                        email: str = "",
+                        ) -> List[User]:
+  requested_users = set(all_users)
+  select_users_by_name = set(all_users)
+  select_users_by_email = set(all_users)
   if name:
-    """ Retrieve all users of name "name" if the name parameter is declared  """
-    return [user for user in all_users
-            if user.username == name]
-  elif email:
-    """ Retrieve all users of email "email" if the email parameter is declared  """
-    return [user for user in all_users
-            if user.email == email]
-  else:
-    """ Retrieve all users if no parameter is declared  """
-    return all_users
+    select_users_by_name = set(
+        [user for user in all_users if user.username == name])
+  if email:
+    select_users_by_email = set(
+        [user for user in all_users if user.email == email])
+  return requested_users.intersection(select_users_by_name,
+                                      select_users_by_email,
+                                      )
 
 
 @app.get("/admin/users/{user_id}",
