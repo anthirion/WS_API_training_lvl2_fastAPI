@@ -1,26 +1,3 @@
-locals {
-  rg_name = "antoine-thirion21378"
-  region  = "West Europe"
-}
-
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "=4.27.0"
-    }
-  }
-}
-
-# Configure the Microsoft Azure Provider
-provider "azurerm" {
-  features {}
-
-  subscription_id = "92c9bea0-3c7c-4dda-b314-2c97e654fb1b"
-}
-
-##########################  RESOURCES ##########################
-
 resource "azurerm_container_registry" "container_reg" {
   name                = "ws-api-training-acr"
   resource_group_name = local.rg_name
